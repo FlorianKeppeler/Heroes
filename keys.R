@@ -1,5 +1,7 @@
 source("C:/Heroes/Funktionen.R")
 
+# hier nur ein Test
+
 imp_names = list()
 
 imp_names[["B102"]] = c("Leitung","SBBZ", "HZE.station", "HZE.teilst", "HZE.ambul")
