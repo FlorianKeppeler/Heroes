@@ -1,6 +1,5 @@
 source("C:/Heroes/Funktionen.R")
 source("C:/Heroes/keys.R")
-library(MASS)
 
 
 data = import_data_surv(Path="C:/Heroes/Downloads soscisurvey/CSV/data_HerOEs_2023-08-27_16-42.csv")
@@ -24,6 +23,17 @@ for(var_str in names(keys)){
   }
 }
 
+
+
+ska_tmp = data[,skalen[["Paed.Halt.2"]]]
+
+ska_tmp = ska_tmp[complete.cases(ska_tmp),]
+
+jitter(ska_tmp)
+
+apply(ska_tmp, 1, mean)
+
+factanal(ska_tmp, 1)
 
 
 plot(density(group[[1]][,n], bw = 0.5), xlim=c(1,m))

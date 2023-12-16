@@ -1,7 +1,5 @@
 source("C:/Heroes/Funktionen.R")
-
-# hier nur ein Test
-# Test zurück
+load("C:/Heroes/codebook.RData")
 
 imp_names = list()
 
@@ -17,7 +15,8 @@ keys[["Informationen"]] = create_simple_key("D302_", 1:10)
 keys[["Dokumente"]] = create_simple_key("D304_", 1:11)
 keys[["Informationsbedarf"]] = create_simple_key("D306_", 1:11)
 keys[["Informationswichtigkeit"]] = create_simple_key("D312_", 1:10)
-keys[["Aufnahme"]] = c("E402_01",create_complex_key("E4",9:12, 2:5), create_complex_key("E4",14:18, 7:11))
+keys[["Aufnahme"]] = c("E402_01",create_complex_key("E4",9:12, 2:5),
+                       create_complex_key("E4",14:18, 7:11))
 keys[["Vetor.Auf"]] = create_simple_key("E406_", 1:9)
 keys[["Vetoem.Auf"]] = create_simple_key("E407_", 1:9)
 keys[["Entscheidung.Auf"]] = create_simple_key("E408_", 1:9)
@@ -113,5 +112,20 @@ skalen[["Paed.Part.5"]] = c("H703_01","H706_02","H714_10","H802_01",
 skalen[["Haltekraft"]] = c("L301_01","L302_01","L303_01","L304_01","L305_01")
 skalen[["SEA"]] = c("M401_01","M401_02")
 
- 
+
+# Umsetzungsvariablen 
+
+cb_single = codebook[!duplicated(codebook$Variable),]
+
+a = strsplit(cb_single$`Variable Label`, " ")
+
+b = unlist(lapply(a, function(x){return(x[2])}))
+
+c = unlist(lapply(a, function(x){return(x[1])}))
+
+umsetzung = data.frame("Var.Key"=cb_single$Variable[b=="Umsetzung"], "var.Umgesetzt"=c[b=="Umsetzung"])
+umsetzung = umsetzung[complete.cases(umsetzung),]
+
+
+
 
