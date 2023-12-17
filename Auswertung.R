@@ -1,6 +1,5 @@
 source("C:/Heroes/Funktionen.R")
 source("C:/Heroes/keys.R")
-library(MASS)
 
 
 data = import_data_surv(Path="C:/Heroes/Downloads soscisurvey/CSV/data_HerOEs_2023-08-27_16-42.csv")
@@ -23,6 +22,22 @@ for(var_str in names(keys)){
     dist_plot(group = group, n = n, m = m, n_group=n_group)
   }
 }
+
+
+names(skalen)
+
+tmp = data[,skalen[["Paed.Halt.1"]]]
+
+tmp_var = data[,pred_var]
+
+tmp
+
+
+names(umsetzung)
+
+umsetzung[["Paed.Halt.1"]]
+
+
 
 
 
