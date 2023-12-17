@@ -1,4 +1,5 @@
 source("C:/Heroes/Funktionen.R")
+load("C:/Heroes/codebook.RData")
 
 # hier nur ein Test
 # Test zurück
