@@ -114,4 +114,16 @@ skalen[["Haltekraft"]] = c("L301_01","L302_01","L303_01","L304_01","L305_01")
 skalen[["SEA"]] = c("M401_01","M401_02")
 
  
+# Umsetzungsvariablen 
+
+cb_single = codebook[!duplicated(codebook$Variable),]
+
+a = strsplit(cb_single$`Variable Label`, " ")
+
+b = unlist(lapply(a, function(x){return(x[2])}))
+
+c = unlist(lapply(a, function(x){return(x[1])}))
+
+umsetzung = data.frame("Var.Key"=cb_single$Variable[b=="Umsetzung"], "var.Umgesetzt"=c[b=="Umsetzung"])
+umsetzung = umsetzung[complete.cases(umsetzung),]
 
