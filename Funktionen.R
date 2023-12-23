@@ -5,17 +5,9 @@ import_data_surv <- function(Path){
   data <- read.csv("C:/Heroes/Downloads soscisurvey/CSV/data_HerOEs_2023-08-27_16-42.csv",
                    skipNul = T, na.strings = "-9", stringsAsFactors = FALSE)
   
-  head(data[-1,6:25])
-  
-  names(data)
   
   data_compl <- data[!(is.na(as.numeric(data$A003)) | as.numeric((data$A003) == 2)),]
   
-  sum(is.na(as.numeric(data$A003)))
-  
-  as.numeric(data$A003)
-  
-  data_compl$QUESTNNR
   
   data_compl <- data_compl[,-c(598:680)]
   
