@@ -94,14 +94,14 @@ skalen[["Unterst.1"]] = c("H808_05","H809_06")
 skalen[["Unterst.2"]] = c("E418_11","G612_09")
 skalen[["Unterst.3"]] = c("K219_10","K220_11","K218_09","I910_03")
 skalen[["Unterst.4"]] = c("K202_01","K211_02")
-skalen[["Unterst.5"]] = c("K221_12", create_simple_key("K207_",1:16),"K208_01")
-skalen[["Unterst.6"]] = c(create_simple_key("K203_",1:19),"K204_01")
+skalen[["Unterst.5"]] = c("K221_12", create_simple_key("K207_",1:16))
+skalen[["Unterst.6"]] = c(create_simple_key("K203_",1:19))
 skalen[["Paed.Halt.1"]] = c("J117_12","J118_13","J116_11","J118_13",
                             "J115_10","J109_04")
 skalen[["Paed.Halt.2"]] = c("J102_01","J107_02","J108_03", "J111_06","J110_05",
                             "J112_07","J113_08","J114_09")
-skalen[["Paed.Komp"]] = c(create_simple_key("K205_",1:42), "K206_01")
-skalen[["Paed.Part.1"]] = c("Platzhalter für Vetorechte")
+skalen[["Paed.Komp"]] = c(create_simple_key("K205_",1:42))
+# skalen[["Paed.Part.1"]] = c("Platzhalter für Vetorechte")
 skalen[["Paed.Part.2"]] = c("G615_12","D312_06","D312_09","D312_10",
                             "E411_04","D312_08","F520_15","G609_06",
                             "G616_13","H817_14")
@@ -115,7 +115,14 @@ skalen[["Paed.Part.5"]] = c("H703_01","H706_02","H714_10","H802_01",
 skalen[["Haltekraft"]] = c("L301_01","L302_01","L303_01","L304_01","L305_01")
 skalen[["SEA"]] = c("M401_01","M401_02")
 
- 
+
+# doppelte Items entfernen:
+for(i in 1:length(skalen)){
+  
+  skalen[[i]] = unique(skalen[[i]])
+}
+
+
 # Umsetzungsvariablen 
 
 cb_single = codebook[!duplicated(codebook$Variable),]
@@ -132,4 +139,4 @@ umsetzung = umsetzung[complete.cases(umsetzung),]
 
 # erklärende Variablen
 
-pred_var = c("B102", "B103","B105","B107","B110")
+pred_var = c("B102", "B103","B105","B110")
