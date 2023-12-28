@@ -379,6 +379,11 @@ check_skalen_by_group = function(data, skalen_scores, pred_var,
                                  group_type, group_index, group_names){
   
   
+  if(is.null(skalen_scores[[score_name]][["p"]])){
+    
+    return(NA)
+  } 
+  
   if(is.na(skalen_scores[[score_name]][["p"]])){
     
     return(NA)

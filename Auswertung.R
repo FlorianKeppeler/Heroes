@@ -5,10 +5,10 @@ source("C:/Heroes/keys.R")
 data = import_data_surv(Path="C:/Heroes/Downloads soscisurvey/CSV/data_HerOEs_2023-08-27_16-42.csv")
 
 
-check_items_by_group(data = data,
-                     variables = names(keys),
-                     group_index = list(1,2,c(3,4,5),3,c(4,5)),
-                     group_names = imp_names[["B102_edit"]][1:5])
+# check_items_by_group(data = data,
+#                      variables = names(keys),
+#                      group_index = list(1,2,c(3,4,5),3,c(4,5)),
+#                      group_names = imp_names[["B102_edit"]][1:5])
 
 
 skalen_scores = get_skalen_scores(data = data,
@@ -17,17 +17,10 @@ skalen_scores = get_skalen_scores(data = data,
 
 
 
-# skalen_subsets
-score_type = "scores_mean"
-score_name = "Beziehung.2"
-group_index = c(2,3)
-group_type = "B102"
-group_names = imp_names
-
 
 check_skalen(data=data, 
              skalen_scores=skalen_scores,
-             variables=skalen_names,
+             variables=names(skalen),
              pred_var=pred_var,
              score_type = "scores_fact",
              group_names = imp_names)
