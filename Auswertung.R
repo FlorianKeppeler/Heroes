@@ -25,7 +25,11 @@ skalen_scores = get_skalen_scores(data = data,
 
 # skalen ordnen -> wichtigste Haltekräfte nach Umfragewert
 
-plot_skalen_imp(score_type = "scores_mean", skalen_scores = skalen_scores)
+plot_skalen_imp(create_skalen_imp(score_type = "scores_mean",
+                                  skalen_scores = skalen_scores))
+
+
+
 
 
 check_skalen(data=data, 
@@ -52,12 +56,41 @@ check_skalen(data=data,
 
 ums_data = create_ums_data(data, umsetzung)
 
+
+ums_proz = create_ums_proz(skalen, umsetzung, ums_data)
+
+skalen_imp = create_skalen_imp(score_type = "scores_mean",
+                   skalen_scores = skalen_scores)
+ 
+ 
+merged_imp = merge(skalen_imp, ums_proz, by.x = "Name", by.y="Skalen")
+
+merged_imp = merged_imp[order(merged_imp[,"Wert"], decreasing = T),]
+
+# ----- bis hier her erstmal
+
+plot_skalen_imp(merged_imp)
+points(1:nrow(merged_imp), merged_imp[,3]*max(merged_imp[,2]))
+ 
 ums_scores = get_skalen_scores(data = ums_data,
                                skalen = skalen,
                                skalen_names =  names(skalen))
 
 
-plot_skalen_imp(score_type = "scores_mean", skalen_scores = ums_scores)
+plot_skalen_imp(create_skalen_imp(score_type = "scores_mean", 
+                                  skalen_scores = ums_scores))
+
+
+plot_skalen_imp(compare_skalen_ums(skalen_scores, ums_scores, score_type = "scores_mean"))
+
+
+
+# return(most_imp)
+
+
+
+
+
 
 
 

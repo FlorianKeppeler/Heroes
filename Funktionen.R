@@ -441,7 +441,7 @@ check_skalen = function(data, skalen_scores, variables, pred_var,
 }
 
 
-plot_skalen_imp = function(score_type, skalen_scores=skalen_scores){
+create_skalen_imp = function(score_type, skalen_scores=skalen_scores){
   
   tmp_name = c()
   tmp_mean = c()
@@ -454,6 +454,13 @@ plot_skalen_imp = function(score_type, skalen_scores=skalen_scores){
   
   most_imp = data.frame("Name" = tmp_name[order(tmp_mean, decreasing = T)], "Wert" = sort(tmp_mean, decreasing = T))
   
+  return(most_imp)
+  
+}
+
+
+plot_skalen_imp = function(most_imp){
+  
   par(mfrow=c(1,1), mar=c(8,2,1,1))
   
   plot(most_imp[,2], xaxt="n", xlab="", pch=20)
@@ -461,7 +468,7 @@ plot_skalen_imp = function(score_type, skalen_scores=skalen_scores){
   arrows(x0 = 1:nrow(most_imp), y0 = rep(0, nrow(most_imp)),
          y1 = most_imp[,2], col="grey50", length = 0)
   points(1:nrow(most_imp), most_imp[,2], pch = 20)
-  
+
 }
 
 
@@ -478,3 +485,48 @@ create_ums_data = function(data, umsetzung){
   
   return(data_ums)
 }
+
+
+compare_skalen_ums = function(skalen_scores, ums_scores, score_type){
+  
+  tmp_mean = c()
+  tmp_name = c()
+  
+  for(i in 1:length(ums_scores)){
+    
+    tmp_mean = c(tmp_mean, mean(skalen_scores[[i]][[score_type]], na.rm=T) - mean(ums_scores[[i]][[score_type]], na.rm=T))
+    tmp_name = c(tmp_name, names(ums_scores)[i])
+  }
+  
+  most_imp = data.frame("Name" = tmp_name[order(tmp_mean, decreasing = T)], "Wert" = sort(tmp_mean, decreasing = T))
+  
+  most_imp = most_imp[most_imp[,2] > 0,]
+  
+  return(most_imp)
+  
+}
+
+
+create_ums_proz = function(skalen, umsetzung, ums_data){
+  
+  tmp_proz = c()
+  tmp_name = c()
+  
+  for(i in 1:length(skalen)){
+    
+    tmp = ums_data[, umsetzung[umsetzung[, 2] %in% skalen[[i]], 1]]
+    
+    if(is.null(dim(tmp))){
+      tmp_proz = c(tmp_proz, mean(tmp, na.rm = T))
+      
+    }else{
+      
+      tmp_proz = c(tmp_proz, mean(apply(tmp, 1, mean, na.rm=T), na.rm=T))
+    }
+    
+    tmp_name = c(tmp_name, names(skalen)[i])
+  }
+  
+  return(data.frame("Skalen"=tmp_name, "Prozente"=tmp_proz))
+}
+
