@@ -216,11 +216,6 @@ dist_plot = function(group, n, m, n_group){
 }
 
 
-
-
-
-
-
 t_plot = function(group, n, m, main){
   
   res = matrix(0, m, m)
@@ -321,7 +316,7 @@ get_skalen_scores = function(data, skalen, skalen_names){
     
     if(is.null(dim(tmp))){
       
-      tmp_ls[["scores_mean"]] = tmp
+      tmp_ls[["scores_mean"]] = as.numeric(tmp)
       
       tmp_ls[["scores_fact"]] = rep(NA, length(tmp))
       
@@ -378,15 +373,17 @@ check_skalen_by_group = function(data, skalen_scores, pred_var,
                                  score_type, score_name,
                                  group_type, group_index, group_names){
   
-  
-  if(is.null(skalen_scores[[score_name]][["p"]])){
+  if(score_type == "scores_fact"){
     
-    return(NA)
-  } 
-  
-  if(is.na(skalen_scores[[score_name]][["p"]])){
+    if(is.null(skalen_scores[[score_name]][["p"]])){
+      
+      return(NA)
+    } 
     
-    return(NA)
+    if(is.na(skalen_scores[[score_name]][["p"]])){
+      
+      return(NA)
+    }
   }
   
   group_names = group_names[[group_type]][group_index]
@@ -420,7 +417,7 @@ check_skalen = function(data, skalen_scores, variables, pred_var,
   
   for(var_str in variables){
     
-    par(mfrow=c(2,2))
+    par(mfrow=c(2,2), mar=c(4,4,4,4))
     
     check_skalen_by_group(data=data, skalen_scores=skalen_scores, pred_var=pred_var,
                           score_type = score_type, score_name = var_str,
@@ -443,3 +440,41 @@ check_skalen = function(data, skalen_scores, variables, pred_var,
   }
 }
 
+
+plot_skalen_imp = function(score_type, skalen_scores=skalen_scores){
+  
+  tmp_name = c()
+  tmp_mean = c()
+  
+  for(i in 1:length(skalen_scores)){
+    
+    tmp_mean = c(tmp_mean, mean(skalen_scores[[i]][[score_type]], na.rm = T))
+    tmp_name = c(tmp_name, names(skalen_scores)[i])
+  }
+  
+  most_imp = data.frame("Name" = tmp_name[order(tmp_mean, decreasing = T)], "Wert" = sort(tmp_mean, decreasing = T))
+  
+  par(mfrow=c(1,1), mar=c(8,2,1,1))
+  
+  plot(most_imp[,2], xaxt="n", xlab="", pch=20)
+  axis(side=1, at=1:nrow(most_imp), labels = most_imp[,1], las=2)
+  arrows(x0 = 1:nrow(most_imp), y0 = rep(0, nrow(most_imp)),
+         y1 = most_imp[,2], col="grey50", length = 0)
+  points(1:nrow(most_imp), most_imp[,2], pch = 20)
+  
+}
+
+
+create_ums_data = function(data, umsetzung){
+  
+  data_ums = data
+  
+  for(i in 1:nrow(umsetzung)){
+    
+    data_ums[,umsetzung[i,1]] = data_ums[,umsetzung[i,1]] - 1
+    
+    data_ums[,umsetzung[i,2]] = data_ums[,umsetzung[i,2]] * data_ums[,umsetzung[i,1]]
+  }
+  
+  return(data_ums)
+}

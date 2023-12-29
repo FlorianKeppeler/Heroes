@@ -5,8 +5,16 @@ source("C:/Heroes/keys.R")
 data = import_data_surv(Path="C:/Heroes/Downloads soscisurvey/CSV/data_HerOEs_2023-08-27_16-42.csv")
 
 
+
+
 # check_items_by_group(data = data,
 #                      variables = names(keys),
+#                      group_index = list(1,2,c(3,4,5),3,c(4,5)),
+#                      group_names = imp_names[["B102_edit"]][1:5])
+# 
+# 
+# check_items_by_group(data = data,
+#                      variables = "Krisenauf",
 #                      group_index = list(1,2,c(3,4,5),3,c(4,5)),
 #                      group_names = imp_names[["B102_edit"]][1:5])
 
@@ -15,16 +23,43 @@ skalen_scores = get_skalen_scores(data = data,
                                   skalen = skalen,
                                   skalen_names =  names(skalen))
 
+# skalen ordnen -> wichtigste Haltekräfte nach Umfragewert
 
+plot_skalen_imp(score_type = "scores_mean", skalen_scores = skalen_scores)
 
 
 check_skalen(data=data, 
              skalen_scores=skalen_scores,
              variables=names(skalen),
              pred_var=pred_var,
-             score_type = "scores_fact",
+             score_type = "scores_mean",
              group_names = imp_names)
-  
+
+check_skalen(data=data, 
+             skalen_scores=skalen_scores,
+             variables="Krisenauf.2",
+             pred_var=pred_var,
+             score_type = "scores_mean",
+             group_names = imp_names)
+
+
+# Faktorladungen pro Skala
+
+# fehlt nocht -------
+
+
+# wichtigste Haltekraft nach Abgleich mit tatsächlicher Haltekraft
+
+ums_data = create_ums_data(data, umsetzung)
+
+ums_scores = get_skalen_scores(data = ums_data,
+                               skalen = skalen,
+                               skalen_names =  names(skalen))
+
+
+plot_skalen_imp(score_type = "scores_mean", skalen_scores = ums_scores)
+
+
 
 
 imp_names
