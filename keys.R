@@ -2,6 +2,8 @@ source("C:/Heroes/Funktionen.R")
 load("C:/Heroes/codebook.RData")
 
 
+
+
 imp_names = list()
 
 imp_names[["B102"]] = c("Leitung","SBBZ", "HZE.station", "HZE.teilst", "HZE.ambul")
@@ -9,6 +11,7 @@ imp_names[["B102_edit"]] = c("Leitung","SBBZ", "HZE.gesamt", "HZE.station", "HZE
 imp_names[["B103"]] = c("weiblich","männlich","divers")
 imp_names[["B105"]] = c("< 3", "4 - 10", "> 11")
 imp_names[["B110"]] = c("< 30", "31 - 50", "> 51")
+imp_names[["B107"]] = codebook[codebook$Variable == "B107",]$`Response Label`
 
 keys = list()
 

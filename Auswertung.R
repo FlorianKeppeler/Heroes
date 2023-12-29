@@ -2,6 +2,9 @@ source("C:/Heroes/Funktionen.R")
 source("C:/Heroes/keys.R")
 
 
+library(randomForest)
+
+
 data = import_data_surv(Path="C:/Heroes/Downloads soscisurvey/CSV/data_HerOEs_2023-08-27_16-42.csv")
 
 
@@ -60,174 +63,87 @@ ums_data = create_ums_data(data, umsetzung)
 ums_proz = create_ums_proz(skalen, umsetzung, ums_data)
 
 skalen_imp = create_skalen_imp(score_type = "scores_mean",
-                   skalen_scores = skalen_scores)
- 
- 
+                               skalen_scores = skalen_scores)
+
+
 merged_imp = merge(skalen_imp, ums_proz, by.x = "Name", by.y="Skalen")
 
 merged_imp = merged_imp[order(merged_imp[,"Wert"], decreasing = T),]
 
-# ----- bis hier her erstmal
 
-plot_skalen_imp(merged_imp)
-points(1:nrow(merged_imp), merged_imp[,3]*max(merged_imp[,2]))
- 
+
+# Gemeinsame Darstellung: Skalen_scores und Umsetzung
+
+plot_skalen_imp(merged_imp, mar=c(8,3,1,3))
+
+arrows(x0 = 1:nrow(merged_imp)+0.05, x1 = 1:nrow(merged_imp)+0.05,
+      y0 = rep(2.5, nrow(merged_imp)),  y1 = 2.5 + merged_imp[,3]*max(merged_imp[,2]-2.5),
+      length=0, col="grey20", lwd=3)
+
+axis(4, at = c(2.5, (max(merged_imp[,2]) + 2.5)/2, max(merged_imp[,2])), labels = c(0, 0.5, 1))
+abline(h=2.5, lty=2)
+
+
+
+
 ums_scores = get_skalen_scores(data = ums_data,
                                skalen = skalen,
                                skalen_names =  names(skalen))
 
-
-plot_skalen_imp(create_skalen_imp(score_type = "scores_mean", 
-                                  skalen_scores = ums_scores))
-
-
-plot_skalen_imp(compare_skalen_ums(skalen_scores, ums_scores, score_type = "scores_mean"))
-
-
-
-# return(most_imp)
-
-
-
-
-
-
-
-
-
-imp_names
-
-
-tmp = data[,pred_var]
-
-tmp[!complete.cases(tmp),] = NA
-
-scores = skalen_scores$Beziehung.2$scores_fact
-
-tmp_scores = cbind(scores, tmp)
-
-
-dist_plot(test, n=1, m = 2)
-
-
-group_index = c(2,3)
-
-ls = list()
-
-m = length(group_index)
-
-for(i in 1:m){
-  
-  ls[[i]] = res$t[which(res$B102 %in% group_index[i])]
-}
-
-mat = matrix(0, m, m)
-
-
-for(i in 1:m){
-  for(j in 1:m){
-    if(i!=j){
-      mat[i,j] = round(t.test(ls[[i]], ls[[j]])$p.value,3)
-    }else{
-      mat[i,j] = round(mean(ls[[i]]),3)
-    }
-  }
-}
-
-
-# NA_vec = rep(NA, nrow(tmp))
 # 
-# NA_vec[tmp$B102 == 2] = 2
-# NA_vec[tmp$B102 %in% c(3,4,5)] = 3
-
-# tmp$B102_edited = NA_vec
-
-get_pred_variables 
+# plot_skalen_imp(create_skalen_imp(score_type = "scores_mean", 
+#                                   skalen_scores = ums_scores))
 
 
-
-# check_skalen_by_groups
-
-
-sum(is.na(data[,pred_var[2]]))
+# plot_skalen_imp(compare_skalen_ums(skalen_scores, ums_scores, score_type = "scores_mean"))
 
 
+# Random Forest Analyse
 
-skalen_scores[[2]]$scores_mean
+ums_df = create_model_df(ums_scores, score_type = "scores_mean")
+  
+rfm = randomForest(Haltekraft ~ ., data = ums_df)
+
+# was sind die wichtigsten Haltekräfte?
+
+rfm_import = varImpPlot(rfm)
 
 
+# was sind die wichtigsten 10?
 
-names(skalen_scores)
+tmp_names = names(rfm_import[,1])
 
-plot(scores_fact ~ scores_mean)
+tmp_names[order(rfm_import, decreasing = T)]
 
-a = 0
-k = 1
+best = tmp_names[order(rfm_import, decreasing = T)][1:8]
 
-while(a <= 0.05){
-  fact = factanal(tmp_jittered, k, scores = "regression")
-  a = fact$PVAL
-  k = k + 1
+
+# gibt es negative Zusammenhänge?
+
+par(mfrow=c(2,2))
+
+for(i in best){
+  
+  partialPlot(rfm, x.var = paste(i), pred.data = ums_df)
 }
 
-fact$loadings
-
-hist(fact$scores[,1])
+# nein!
 
 
-hist(jitter(tmp[,1]))
-hist(tmp[,1])
+# Welche Einrichtungen haben bei den wichtigsten ein Umsetzungsproblem?
+
+for(i in best){
+  
+  agg_ums = create_agg_ums(skalen, umsetzung, skala=i)
+  
+  plot_agg_ums(agg_ums, skala=i)
+}
 
 
+# Für die Einrichtungen aufschlüsseln
 
-names(skalen)
+agg_df = create_agg_df(skalen, umsetzung, variables = best)
 
-tmp = data[,skalen[["Paed.Halt.1"]]]
-
-tmp_var = data[,pred_var]
-
-tmp
-
-
-names(umsetzung)
-
-umsetzung[["Paed.Halt.1"]]
-
-
-
-
-
-plot(density(group[[1]][,n], bw = 0.5), xlim=c(1,m))
-lines(density(group[[2]][,n], bw = 0.5))
-lines(density(group[[3]][,n], bw = 0.5))
-lines(density(group[[4]][,n], bw = 0.5))
-lines(density(group[[5]][,n], bw = 0.5))
-mean(group[[5]][,1])
-
-
-# Arbeitsbereiche -> B102
-
-data_sub <- data[which(data$B102 == 3),]
-
-
-names(keys)
-
-
-data_item = data_sub[,l[["Begriffe"]]]
-
-data_item = data_item[complete.cases(data_item),]
-
-
-groups = list()
-
-groups[[1]] = data_item 
-
-
-
-names(data)
-
-
-
-
+plot_einrichtungen(agg_df)
 
 

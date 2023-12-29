@@ -459,9 +459,9 @@ create_skalen_imp = function(score_type, skalen_scores=skalen_scores){
 }
 
 
-plot_skalen_imp = function(most_imp){
+plot_skalen_imp = function(most_imp, mar){
   
-  par(mfrow=c(1,1), mar=c(8,2,1,1))
+  par(mfrow=c(1,1), mar=mar)
   
   plot(most_imp[,2], xaxt="n", xlab="", pch=20)
   axis(side=1, at=1:nrow(most_imp), labels = most_imp[,1], las=2)
@@ -530,3 +530,113 @@ create_ums_proz = function(skalen, umsetzung, ums_data){
   return(data.frame("Skalen"=tmp_name, "Prozente"=tmp_proz))
 }
 
+
+
+create_model_df = function(ums_scores, score_type){
+  
+  tmp = list()
+  
+  for(i in 1:length(ums_scores)){
+    
+    
+    tmp[[names(ums_scores)[i]]] = ums_scores[[i]][[score_type]]
+    
+  }
+  
+  
+  ums_df = as.data.frame(rlist::list.cbind(tmp))
+  
+  ums_df = ums_df[complete.cases(ums_df),]
+  
+  return(ums_df)
+}
+
+
+create_agg_ums = function(skalen, umsetzung, skala){
+  
+  tmp = ums_data[,umsetzung[umsetzung[,2] %in% skalen[[skala]],1]]
+  
+  if(is.null(dim(tmp))){
+    
+    tmp_mean = tmp
+    
+  }else{
+  
+    tmp_mean = apply(tmp, 1, mean, na.rm=T)
+  }
+  
+  tmp = cbind("Proz" = tmp_mean, "Einrichtung" = ums_data[,"B107"])
+  
+  tmp_agg = aggregate(tmp[,1], by = list(tmp[,2]), FUN = mean, na.rm = T)
+  
+  tmp_agg$Names = imp_names[["B107"]][tmp_agg[,1]]
+  tmp_agg$Anzahl = table(ums_data[,"B107"])
+  
+  tmp_agg = tmp_agg[tmp_agg$Anzahl > 2,]  # nur Einrichtungen mit mehr als 2 Abgaben
+  
+  return(tmp_agg)
+}
+
+
+plot_agg_ums = function(agg_ums, skala){
+  
+  par(mar=c(14,2,2,2))
+  
+  plot(agg_ums[,2], ylim=c(0,1), xaxt="n", xlab="", cex.axis=0.8, main=skala)
+  
+  axis(1, at = 1:nrow(agg_ums), labels = agg_ums[,"Names"], las=2, cex.axis=0.7)
+  
+  arrows(x0=1:nrow(agg_ums), x1=1:nrow(agg_ums),
+         y0 = rep(0, nrow(agg_ums)), y1 = agg_ums[,2], length=0, lwd=3)
+}
+
+
+
+
+create_agg_df = function(skalen, umsetzung, variables){
+  
+  agg_ums = create_agg_ums(skalen, umsetzung, skala=variables[1])
+  
+  tmp_value = agg_ums[,2]
+  
+  tmp_names = agg_ums[,"Names"]
+  tmp_id = agg_ums[,1]
+  tmp_anzahl = agg_ums[,"Anzahl"]
+  
+  for(i in 2:length(variables)){
+    
+    agg_ums = create_agg_ums(skalen, umsetzung, skala=variables[i])
+    
+    tmp_value = cbind(tmp_value, agg_ums[,2])
+  }
+  
+  tmp_value = as.data.frame(tmp_value)
+  names(tmp_value) = variables
+  
+  tmp = cbind(tmp_id, tmp_names, tmp_anzahl, tmp_value)
+  
+  tmp = tmp[,-3]
+  names(tmp)[1:3] = c("ID", "Name", "Anzahl")
+  
+  return(tmp)
+  
+}
+
+
+
+plot_einrichtungen = function(agg_df){
+  
+  agg_df = agg_df[,complete.cases(t(agg_df))]
+  
+  par(mfrow=c(1,1), mar=c(8,4,4,1))
+  
+  for(i in 1:nrow(agg_df)){
+    barplot(as.numeric(agg_df[i,4:ncol(agg_df)]),
+            ylim=c(0,1),
+            las=2,
+            cex.main = 0.8,
+            main=paste(agg_df[i,"Name"], "-", agg_df[i, "Anzahl"], "-",
+                       round(mean(as.numeric(agg_df[i,4:ncol(agg_df)]), na.rm=T),2), "%"),
+            names.arg = names(agg_df[,4:ncol(agg_df)]))
+  }
+}
