@@ -386,11 +386,17 @@ check_skalen_by_group = function(data, skalen_scores, pred_var,
     }
   }
   
-  group_names = group_names[[group_type]][group_index]
+  if(is.list(group_names)){
+    
+    group_names = group_names[[group_type]][group_index]
+  }
   
   tmp = data[,pred_var]
   
-  tmp[!complete.cases(tmp),] = NA
+  if(group_type != "B102"){
+    
+    tmp[!complete.cases(tmp),] = NA
+  }
   
   scores = skalen_scores[[score_name]][[score_type]]
   
@@ -402,7 +408,7 @@ check_skalen_by_group = function(data, skalen_scores, pred_var,
   
   for(i in 1:m){
     
-    group[[group_names[i]]] = data.frame(tmp_scores[tmp_scores[,group_type] == group_index[i], 1])
+    group[[group_names[i]]] = data.frame(tmp_scores[tmp_scores[,group_type] %in% group_index[[i]], 1])
     
   }
   
