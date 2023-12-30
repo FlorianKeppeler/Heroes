@@ -646,3 +646,31 @@ plot_einrichtungen = function(agg_df){
             names.arg = names(agg_df[,4:ncol(agg_df)]))
   }
 }
+
+
+
+check_loadings = function(skalen_scores){
+  res = list()
+  
+  for(i in 1:length(skalen_scores)){
+    
+    a = skalen_scores[[i]][["loadings"]]
+    
+    if(all(!is.na(a))){
+      
+      b = attr(a, "dimnames")[[1]]
+      
+      inspect = b[(a < 0.4 & a >= 0.2)]
+      bad = b[(a <  0.2)]
+      
+      res[[names(skalen_scores)[i]]] = list("inspect"=inspect, "bad"=bad)
+      
+    }else{
+      
+      res[[names(skalen_scores)[i]]] = list()
+    }
+  }
+  
+  return(res)
+}
+

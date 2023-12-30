@@ -39,11 +39,6 @@ plot_skalen_imp(create_skalen_imp(score_type = "scores_mean",
 
 
 
-
-
-
-
-
 check_skalen(data=data, 
              skalen_scores=skalen_scores,
              variables=names(skalen),
@@ -59,9 +54,10 @@ check_skalen(data=data,
              group_names = imp_names)
 
 
+
 # Faktorladungen pro Skala
 
-# fehlt nocht -------
+check_loadings(skalen_scores)
 
 
 # wichtigste Haltekraft nach Abgleich mit tatsächlicher Haltekraft
@@ -126,7 +122,7 @@ tmp_names[order(rfm_import, decreasing = T)]
 
 best = tmp_names[order(rfm_import, decreasing = T)][1:10]
 
-par(mar=c(7,7,4,2))
+par(mar=c(7,7,4,2), mfrow=c(2,2))
 
 for(i in best){
   
