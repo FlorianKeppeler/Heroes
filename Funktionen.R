@@ -634,7 +634,7 @@ plot_einrichtungen = function(agg_df){
   
   agg_df = agg_df[,complete.cases(t(agg_df))]
   
-  par(mfrow=c(1,1), mar=c(8,4,4,1))
+  par(mfrow=c(2,2), mar=c(8,4,4,1))
   
   for(i in 1:nrow(agg_df)){
     barplot(as.numeric(agg_df[i,4:ncol(agg_df)]),

@@ -16,10 +16,10 @@ data = import_data_surv(Path="C:/Heroes/Downloads soscisurvey/CSV/data_HerOEs_20
 #                      group_names = imp_names[["B102_edit"]][1:5])
 # 
 # 
-check_items_by_group(data = data,
-                     variables = "Krisenauf",
-                     group_index = list(1,2,c(3,4,5),3,c(4,5)),
-                     group_names = imp_names[["B102_edit"]][1:5])
+# check_items_by_group(data = data,
+#                      variables = "Krisenauf",
+#                      group_index = list(1,2,c(3,4,5),3,c(4,5)),
+#                      group_names = imp_names[["B102_edit"]][1:5])
 
 # -> auf Skalenebene ists interessanter
 
@@ -34,24 +34,24 @@ skalen_scores = get_skalen_scores(data = data,
 # skalen ordnen -> wichtigste Haltekräfte nach Umfragewert
 
 plot_skalen_imp(create_skalen_imp(score_type = "scores_mean",
-                                  skalen_scores = skalen_scores), mar=c(8,1,1,1))
+                                  skalen_scores = skalen_scores), mar=c(8,3,1,1))
 
 
 
-
-check_skalen(data=data, 
-             skalen_scores=skalen_scores,
-             variables=names(skalen),
-             pred_var=pred_var,
-             score_type = "scores_mean",
-             group_names = imp_names)
-
-check_skalen(data=data, 
-             skalen_scores=skalen_scores,
-             variables="Paed.Halt.2",
-             pred_var=pred_var,
-             score_type = "scores_mean",
-             group_names = imp_names)
+# 
+# check_skalen(data=data, 
+#              skalen_scores=skalen_scores,
+#              variables=names(skalen),
+#              pred_var=pred_var,
+#              score_type = "scores_mean",
+#              group_names = imp_names)
+# 
+# check_skalen(data=data, 
+#              skalen_scores=skalen_scores,
+#              variables="Paed.Halt.2",
+#              pred_var=pred_var,
+#              score_type = "scores_mean",
+#              group_names = imp_names)
 
 
 
@@ -111,6 +111,7 @@ rfm = randomForest(Haltekraft ~ ., data = ums_df)
 
 # was sind die wichtigsten Haltekräfte?
 
+par(mar=c(4,3,4,1))
 rfm_import = varImpPlot(rfm)
 
 
@@ -157,6 +158,14 @@ for(i in best){
 
 agg_df = create_agg_df(skalen, umsetzung, variables = best)
 
+par(mfrow=c(2,2))
 plot_einrichtungen(agg_df)
 
 
+
+check_skalen(data=data,
+             skalen_scores=skalen_scores,
+             variables=best,
+             pred_var=pred_var,
+             score_type = "scores_mean",
+             group_names = imp_names)
