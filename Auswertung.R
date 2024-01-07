@@ -26,8 +26,8 @@ data = import_data_surv(Path="C:/Heroes/Downloads soscisurvey/CSV/data_HerOEs_20
 
 
 skalen_scores = get_skalen_scores(data = data,
-                                  skalen = skalen,
-                                  skalen_names =  names(skalen))
+                                  skalen = skalen2_ohne,
+                                  skalen_names =  names(skalen2_ohne))
 
 
 
@@ -65,7 +65,7 @@ check_loadings(skalen_scores)
 ums_data = create_ums_data(data, umsetzung)
 
 
-ums_proz = create_ums_proz(skalen, umsetzung, ums_data)
+ums_proz = create_ums_proz(skalen2_ohne, umsetzung, ums_data)
 
 skalen_imp = create_skalen_imp(score_type = "scores_mean",
                                skalen_scores = skalen_scores)
@@ -81,23 +81,25 @@ merged_imp = merged_imp[order(merged_imp[,"Wert"], decreasing = T),]
 
 plot_skalen_imp(merged_imp, mar=c(8,3,1,3))
 
+offset = 1
+
 arrows(x0 = 1:nrow(merged_imp)+0.05, x1 = 1:nrow(merged_imp)+0.05,
-      y0 = rep(2.5, nrow(merged_imp)),  y1 = 2.5 + merged_imp[,3]*max(merged_imp[,2]-2.5),
+      y0 = rep(offset, nrow(merged_imp)),  y1 = offset + merged_imp[,3]*max(merged_imp[,2]-offset),
       length=0, col="grey20", lwd=3)
 
-axis(4, at = c(2.5, (max(merged_imp[,2]) + 2.5)/2, max(merged_imp[,2])), labels = c(0, 0.5, 1))
-abline(h=2.5, lty=2)
+axis(4, at = c(offset, (max(merged_imp[,2]) + offset)/2, max(merged_imp[,2])), labels = c(0, 0.5, 1))
+abline(h=offset, lty=2)
 
 
 
 
 ums_scores = get_skalen_scores(data = ums_data,
-                               skalen = skalen,
-                               skalen_names =  names(skalen))
+                               skalen = skalen2,
+                               skalen_names =  names(skalen2))
 
 
 plot_skalen_imp(create_skalen_imp(score_type = "scores_mean",
-                                  skalen_scores = ums_scores), mar=c(8,1,1,1))
+                                  skalen_scores = ums_scores), mar=c(8,3,1,1))
 
 
 # plot_skalen_imp(compare_skalen_ums(skalen_scores, ums_scores, score_type = "scores_mean"))
@@ -122,6 +124,7 @@ tmp_names = names(rfm_import[,1])
 tmp_names[order(rfm_import, decreasing = T)]
 
 best = tmp_names[order(rfm_import, decreasing = T)][1:10]
+
 
 par(mar=c(7,7,4,2), mfrow=c(2,2))
 
@@ -148,15 +151,15 @@ for(i in best){
 
 for(i in best){
   
-  agg_ums = create_agg_ums(skalen, umsetzung, skala=i)
+  agg_ums = create_agg_ums(skalen_tmp=skalen2, umsetzung = umsetzung, skala=i)
   
-  plot_agg_ums(agg_ums, skala=i)
+  plot_agg_ums(agg_ums = agg_ums, skala=i)
 }
 
 
 # Für die Einrichtungen aufschlüsseln
 
-agg_df = create_agg_df(skalen, umsetzung, variables = best)
+agg_df = create_agg_df(skalen_tmp = skalen2, umsetzung = umsetzung, variables = best)
 
 par(mfrow=c(2,2))
 plot_einrichtungen(agg_df)

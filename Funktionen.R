@@ -469,7 +469,7 @@ plot_skalen_imp = function(most_imp, mar){
   
   par(mfrow=c(1,1), mar=mar)
   
-  plot(most_imp[,2], xaxt="n", xlab="", pch=20)
+  plot(most_imp[,2], xaxt="n", xlab="", pch=20, ylim=c(1, 6))
   axis(side=1, at=1:nrow(most_imp), labels = most_imp[,1], las=2)
   arrows(x0 = 1:nrow(most_imp), y0 = rep(0, nrow(most_imp)),
          y1 = most_imp[,2], col="grey50", length = 0)
@@ -558,9 +558,9 @@ create_model_df = function(ums_scores, score_type){
 }
 
 
-create_agg_ums = function(skalen, umsetzung, skala){
+create_agg_ums = function(skalen_tmp, umsetzung, skala){
   
-  tmp = ums_data[,umsetzung[umsetzung[,2] %in% skalen[[skala]],1]]
+  tmp = ums_data[,umsetzung[umsetzung[,2] %in% skalen_tmp[[skala]],1]]
   
   if(is.null(dim(tmp))){
     
@@ -586,7 +586,7 @@ create_agg_ums = function(skalen, umsetzung, skala){
 
 plot_agg_ums = function(agg_ums, skala){
   
-  par(mar=c(14,2,2,2))
+  par(mar=c(14,2,2,2), mfrow=c(1,1))
   
   plot(agg_ums[,2], ylim=c(0,1), xaxt="n", xlab="", cex.axis=0.8, main=skala)
   
@@ -599,9 +599,9 @@ plot_agg_ums = function(agg_ums, skala){
 
 
 
-create_agg_df = function(skalen, umsetzung, variables){
+create_agg_df = function(skalen_tmp, umsetzung, variables){
   
-  agg_ums = create_agg_ums(skalen, umsetzung, skala=variables[1])
+  agg_ums = create_agg_ums(skalen_tmp, umsetzung, skala=variables[1])
   
   tmp_value = agg_ums[,2]
   
@@ -611,7 +611,7 @@ create_agg_df = function(skalen, umsetzung, variables){
   
   for(i in 2:length(variables)){
     
-    agg_ums = create_agg_ums(skalen, umsetzung, skala=variables[i])
+    agg_ums = create_agg_ums(skalen_tmp, umsetzung, skala=variables[i])
     
     tmp_value = cbind(tmp_value, agg_ums[,2])
   }
@@ -642,7 +642,7 @@ plot_einrichtungen = function(agg_df){
             las=2,
             cex.main = 0.8,
             main=paste(agg_df[i,"Name"], "-", agg_df[i, "Anzahl"], "-",
-                       round(mean(as.numeric(agg_df[i,4:ncol(agg_df)]), na.rm=T),2), "%"),
+                       round(mean(as.numeric(agg_df[i,4:ncol(agg_df)]), na.rm=T),2)*100, "%"),
             names.arg = names(agg_df[,4:ncol(agg_df)]))
   }
 }
