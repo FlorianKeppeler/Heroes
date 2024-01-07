@@ -172,3 +172,12 @@ check_skalen(data=data,
              pred_var=pred_var,
              score_type = "scores_mean",
              group_names = imp_names)
+
+
+
+
+fact_data = data[,c(skalen2[["Paed.Halt.1"]], skalen2[["Paed.Halt.2"]])]
+
+fact_data = apply(fact_data, 2, jitter, amount=0.01)
+
+factanal(fact_data, factors = 2)
