@@ -26,8 +26,8 @@ data = import_data_surv(Path="C:/Heroes/Downloads soscisurvey/CSV/data_HerOEs_20
 
 
 skalen_scores = get_skalen_scores(data = data,
-                                  skalen = skalen2_ohne,
-                                  skalen_names =  names(skalen2_ohne))
+                                  skalen = skalen_ohne,
+                                  skalen_names =  names(skalen_ohne))
 
 
 
@@ -65,7 +65,7 @@ check_loadings(skalen_scores)
 ums_data = create_ums_data(data, umsetzung)
 
 
-ums_proz = create_ums_proz(skalen2_ohne, umsetzung, ums_data)
+ums_proz = create_ums_proz(skalen_ohne, umsetzung, ums_data)
 
 skalen_imp = create_skalen_imp(score_type = "scores_mean",
                                skalen_scores = skalen_scores)
@@ -94,8 +94,8 @@ abline(h=offset, lty=2)
 
 
 ums_scores = get_skalen_scores(data = ums_data,
-                               skalen = skalen2,
-                               skalen_names =  names(skalen2))
+                               skalen = skalen,
+                               skalen_names =  names(skalen))
 
 
 plot_skalen_imp(create_skalen_imp(score_type = "scores_mean",
@@ -151,7 +151,7 @@ for(i in best){
 
 for(i in best){
   
-  agg_ums = create_agg_ums(skalen_tmp=skalen2, umsetzung = umsetzung, skala=i)
+  agg_ums = create_agg_ums(skalen_tmp=skalen, umsetzung = umsetzung, skala=i)
   
   plot_agg_ums(agg_ums = agg_ums, skala=i)
 }
@@ -159,7 +159,7 @@ for(i in best){
 
 # Für die Einrichtungen aufschlüsseln
 
-agg_df = create_agg_df(skalen_tmp = skalen2, umsetzung = umsetzung, variables = best)
+agg_df = create_agg_df(skalen_tmp = skalen, umsetzung = umsetzung, variables = best)
 
 par(mfrow=c(2,2))
 plot_einrichtungen(agg_df)
