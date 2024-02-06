@@ -369,6 +369,12 @@ get_skalen_scores = function(data, skalen, skalen_names){
 }
 
 
+get_index_by_group = function(data, group_keys){
+  
+  return(which(data$B102 %in% group_keys))
+}
+
+
 check_skalen_by_group = function(data, skalen_scores, pred_var,
                                  score_type, score_name,
                                  group_type, group_index, group_names){
@@ -447,14 +453,14 @@ check_skalen = function(data, skalen_scores, variables, pred_var,
 }
 
 
-create_skalen_imp = function(score_type, skalen_scores=skalen_scores){
+create_skalen_imp = function(score_type, skalen_scores=skalen_scores, group_index){
   
   tmp_name = c()
   tmp_mean = c()
   
   for(i in 1:length(skalen_scores)){
     
-    tmp_mean = c(tmp_mean, mean(skalen_scores[[i]][[score_type]], na.rm = T))
+    tmp_mean = c(tmp_mean, mean(skalen_scores[[i]][[score_type]][group_index], na.rm = T))
     tmp_name = c(tmp_name, names(skalen_scores)[i])
   }
   
@@ -465,11 +471,11 @@ create_skalen_imp = function(score_type, skalen_scores=skalen_scores){
 }
 
 
-plot_skalen_imp = function(most_imp, mar){
+plot_skalen_imp = function(most_imp, mar, main){
   
   par(mfrow=c(1,1), mar=mar)
   
-  plot(most_imp[,2], xaxt="n", xlab="", pch=20, ylim=c(1, 6))
+  plot(most_imp[,2], xaxt="n", xlab="", pch=20, ylim=c(1, 6), main=main)
   axis(side=1, at=1:nrow(most_imp), labels = most_imp[,1], las=2)
   arrows(x0 = 1:nrow(most_imp), y0 = rep(0, nrow(most_imp)),
          y1 = most_imp[,2], col="grey50", length = 0)
@@ -493,6 +499,42 @@ create_ums_data = function(data, umsetzung){
 }
 
 
+
+plot_combined_imp = function(skalen, data, skalen_scores,
+                             umsetzung, ums_data, group_list){
+  
+  for(i in 1:length(group_list)){
+    
+    ums_proz = create_ums_proz(data_skalen_ohne, umsetzung, ums_data,
+                               group_index=get_index_by_group(data, group_keys = group_list[[i]]))
+    
+    skalen_imp = create_skalen_imp(score_type = "scores_mean",
+                                   skalen_scores = skalen_scores,
+                                   group_index=get_index_by_group(data, group_keys = group_list[[i]]))
+    
+    
+    merged_imp = merge(skalen_imp, ums_proz, by.x = "Name", by.y="Skalen")
+    
+    merged_imp = merged_imp[order(merged_imp[,"Wert"], decreasing = T),]
+    
+    
+    
+    # Gemeinsame Darstellung: Skalen_scores und Umsetzung
+    
+    plot_skalen_imp(merged_imp, mar=c(8,3,3,3), main = names(group_list)[i])
+    
+    offset = 1
+    
+    arrows(x0 = 1:nrow(merged_imp)+0.05, x1 = 1:nrow(merged_imp)+0.05,
+           y0 = rep(offset, nrow(merged_imp)),  y1 = offset + merged_imp[,3]*max(merged_imp[,2]-offset),
+           length=0, col="grey20", lwd=3)
+    
+    axis(4, at = c(offset, (max(merged_imp[,2]) + offset)/2, max(merged_imp[,2])), labels = c(0, 0.5, 1))
+    abline(h=offset, lty=2)
+  }
+}
+
+
 compare_skalen_ums = function(skalen_scores, ums_scores, score_type){
   
   tmp_mean = c()
@@ -513,14 +555,14 @@ compare_skalen_ums = function(skalen_scores, ums_scores, score_type){
 }
 
 
-create_ums_proz = function(skalen, umsetzung, ums_data){
+create_ums_proz = function(skalen, umsetzung, ums_data, group_index){
   
   tmp_proz = c()
   tmp_name = c()
   
   for(i in 1:length(skalen)){
     
-    tmp = ums_data[, umsetzung[umsetzung[, 2] %in% skalen[[i]], 1]]
+    tmp = ums_data[group_index, umsetzung[umsetzung[, 2] %in% skalen[[i]], 1]]
     
     if(is.null(dim(tmp))){
       tmp_proz = c(tmp_proz, mean(tmp, na.rm = T))
@@ -552,9 +594,11 @@ create_model_df = function(ums_scores, score_type){
   
   ums_df = as.data.frame(rlist::list.cbind(tmp))
   
-  ums_df = ums_df[complete.cases(ums_df),]
+  index = complete.cases(ums_df)
   
-  return(ums_df)
+  ums_df = ums_df[index,]
+  
+  return(list(ums_df, index))
 }
 
 
@@ -674,3 +718,51 @@ check_loadings = function(skalen_scores){
   return(res)
 }
 
+
+plot_group_diff = function(skalen, umsetzung, ums_data, group_list){
+  
+  tmp = list()
+  
+  for(i in 1:length(group_list)){
+    
+    ums_proz = create_ums_proz(data_skalen_ohne, umsetzung, ums_data,
+                               group_index=get_index_by_group(data, group_keys = group_list[[i]]))
+    
+    skalen_imp = create_skalen_imp(score_type = "scores_mean",
+                                   skalen_scores = skalen_scores,
+                                   group_index=get_index_by_group(data, group_keys = group_list[[i]]))
+    
+    
+    merged_imp = merge(skalen_imp, ums_proz, by.x = "Name", by.y="Skalen")
+    
+    merged_imp = merged_imp[order(merged_imp[,"Wert"], decreasing = T),]
+    
+    tmp[[names(group_list)[i]]] = merged_imp
+  }
+  
+  res = merge(tmp[[1]], tmp[[2]], by ="Name")
+  
+  res$Diff.Wert = res$Wert.x - res$Wert.y
+  res$Diff.Proz = res$Prozente.x - res$Prozente.y
+  
+  tmp_Wert = res[order(res[,"Diff.Wert"], decreasing = F),]
+  
+  plot(tmp_Wert$Diff.Wert, xaxt="n", xlab="", pch=20, main=  paste("Bewertung:", paste(names(group_list), collapse = " - ")))
+  axis(side=1, at=1:nrow(tmp_Wert), labels = tmp_Wert$Name, las=2)
+  arrows(x0 = 1:nrow(tmp_Wert), y0 = rep(0, nrow(tmp_Wert)),
+         y1 = tmp_Wert$Diff.Wert, col="grey50", length = 0)
+  points(1:nrow(tmp_Wert), tmp_Wert$Diff.Wert, pch = 20)
+  abline(h=0)
+  
+  
+  tmp_Proz = res[order(res[,"Diff.Proz"], decreasing = F),]
+  tmp_Proz = tmp_Proz[complete.cases(tmp_Proz),]
+  
+  plot(tmp_Proz$Diff.Proz, xaxt="n", xlab="", pch=20, main=  paste("Umsetzung:", paste(names(group_list), collapse = " - ")))
+  axis(side=1, at=1:nrow(tmp_Proz), labels = tmp_Proz$Name, las=2)
+  arrows(x0 = 1:nrow(tmp_Proz), y0 = rep(0, nrow(tmp_Proz)),
+         y1 = tmp_Proz$Diff.Proz, col="grey50", length = 0)
+  points(1:nrow(tmp_Proz), tmp_Proz$Diff.Proz, pch = 20)
+  abline(h=0)
+  
+}

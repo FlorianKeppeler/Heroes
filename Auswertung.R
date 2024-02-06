@@ -7,6 +7,11 @@ library(randomForest)
 
 data = import_data_surv(Path="C:/Heroes/Downloads soscisurvey/CSV/data_HerOEs_2023-08-27_16-42.csv")
 
+data_skalen = skalen
+data_skalen_ohne = skalen_ohne
+
+
+
 
 
 
@@ -26,15 +31,17 @@ data = import_data_surv(Path="C:/Heroes/Downloads soscisurvey/CSV/data_HerOEs_20
 
 
 skalen_scores = get_skalen_scores(data = data,
-                                  skalen = skalen_ohne,
-                                  skalen_names =  names(skalen_ohne))
+                                  skalen = data_skalen_ohne,
+                                  skalen_names =  names(data_skalen_ohne))
 
 
 
 # skalen ordnen -> wichtigste Haltekräfte nach Umfragewert
 
 plot_skalen_imp(create_skalen_imp(score_type = "scores_mean",
-                                  skalen_scores = skalen_scores), mar=c(8,3,1,1))
+                                  skalen_scores = skalen_scores,
+                                  group_index=get_index_by_group(data, group_index = c(1:5))),
+                mar=c(8,3,1,1))
 
 
 
@@ -60,46 +67,36 @@ plot_skalen_imp(create_skalen_imp(score_type = "scores_mean",
 check_loadings(skalen_scores)
 
 
-# wichtigste Haltekraft nach Abgleich mit tatsächlicher Haltekraft
+# wichtigste Haltekraft nach Abgleich mit tatsächlicher Haltekraft für verschiedene Gruppierungen
+
+group_list = list("Alle" = 1:5, "SBBZ" = 2, "Leitung" = 1, "HZE" = 3:5)
+
 
 ums_data = create_ums_data(data, umsetzung)
 
 
-ums_proz = create_ums_proz(skalen_ohne, umsetzung, ums_data)
-
-skalen_imp = create_skalen_imp(score_type = "scores_mean",
-                               skalen_scores = skalen_scores)
-
-
-merged_imp = merge(skalen_imp, ums_proz, by.x = "Name", by.y="Skalen")
-
-merged_imp = merged_imp[order(merged_imp[,"Wert"], decreasing = T),]
+plot_combined_imp(skalen, data, skalen_scores,
+                             umsetzung, ums_data, group_list)
 
 
 
-# Gemeinsame Darstellung: Skalen_scores und Umsetzung
+# Vergleiche der Skalen unter den Gruppen:
 
-plot_skalen_imp(merged_imp, mar=c(8,3,1,3))
+plot_group_diff(skalen, umsetzung, ums_data, group_list = list("SBBZ" = 2,"HZE" = 3:5))
 
-offset = 1
+plot_group_diff(skalen, umsetzung, ums_data, group_list = list("Leitung" = 1,"Mitarbeiter" = 2:5))
 
-arrows(x0 = 1:nrow(merged_imp)+0.05, x1 = 1:nrow(merged_imp)+0.05,
-      y0 = rep(offset, nrow(merged_imp)),  y1 = offset + merged_imp[,3]*max(merged_imp[,2]-offset),
-      length=0, col="grey20", lwd=3)
-
-axis(4, at = c(offset, (max(merged_imp[,2]) + offset)/2, max(merged_imp[,2])), labels = c(0, 0.5, 1))
-abline(h=offset, lty=2)
 
 
 
 
 ums_scores = get_skalen_scores(data = ums_data,
-                               skalen = skalen,
-                               skalen_names =  names(skalen))
+                               skalen = data_skalen,
+                               skalen_names =  names(data_skalen))
 
 
 plot_skalen_imp(create_skalen_imp(score_type = "scores_mean",
-                                  skalen_scores = ums_scores), mar=c(8,3,1,1))
+                                  skalen_scores = ums_scores), mar=c(8,3,1,1), main="")
 
 
 # plot_skalen_imp(compare_skalen_ums(skalen_scores, ums_scores, score_type = "scores_mean"))
@@ -107,9 +104,18 @@ plot_skalen_imp(create_skalen_imp(score_type = "scores_mean",
 
 # Random Forest Analyse
 
-ums_df = create_model_df(ums_scores, score_type = "scores_mean")
+ums_tmp = create_model_df(ums_scores, score_type = "scores_mean")
+
+ums_df = ums_tmp[[1]]
+
+
   
-rfm = randomForest(Haltekraft ~ ., data = ums_df)
+rfm = randomForest(Haltekraft ~ ., data = ums_df, ntree=10000)
+
+m1 = lm(Haltekraft ~ ., data = ums_df)
+
+summary(m1)
+anova(m1)
 
 # was sind die wichtigsten Haltekräfte?
 
@@ -137,21 +143,69 @@ for(i in best){
 
 # gibt es negative Zusammenhänge?
 
-par(mfrow=c(2,2))
+# par(mfrow=c(2,2))
+# 
+# for(i in best){
+#   
+#   partialPlot(rfm, x.var = paste(i), pred.data = ums_df)
+# }
 
-for(i in best){
-  
-  partialPlot(rfm, x.var = paste(i), pred.data = ums_df)
-}
+
 
 # nein!
 
+# Scatterplots
+
+index = ums_tmp[[2]]
+
+names(data)
+
+FB =  data[,"B102"]
+
+FB[FB >= 3] = 3
+
+table(FB)
+
+ums_df$FB = FB[index]
+
+variables = names(ums_df)[!names(ums_df) %in% c("Haltekraft", "FB")]
+
+
+col = c("red", "blue", "black")
+
+par(mfrow=c(2,2), mar=c(4,4,4,4))
+
+for(i in 1:length(variables)){
+  
+  plot(jitter(ums_df$Haltekraft, amount = 0.05) ~ ums_df[,variables[i]],
+       # plot(ums_df$Haltekraft ~ ums_df[,variables[1]],
+       pch = 20,
+       col = ifelse(ums_df$FB == 1, col[1], ifelse(ums_df$FB == 2, col[2], col[3])),
+       main= paste("Haltekraft ~ ", variables[i]),
+       xlab= variables[i],
+       ylab= "Haltekraft")
+  
+  spline = smooth.spline(ums_df[,variables[i]], jitter(ums_df$Haltekraft, amount = 0.05), spar = 0.5)
+  
+  pred = partialPlot(rfm, x.var = paste(variables[i]), pred.data = ums_df, plot=F)
+  
+  lines(spline, lwd = 2, lty = 2)
+  lines(pred$x, pred$y, lwd=2, lty=2, col="red")
+  
+  if(i %% 3 == 0){
+    plot(1:10, 1:10, type = "n", xaxt="n", yaxt="n", xlab="", ylab="")
+    legend("topleft",
+           legend = c("Leitung","SBBZ", "HZE.Gesamt"),
+           fill= col, cex = 1, bty = "n")
+
+  }
+}
 
 # Welche Einrichtungen haben bei den wichtigsten ein Umsetzungsproblem?
 
 for(i in best){
   
-  agg_ums = create_agg_ums(skalen_tmp=skalen, umsetzung = umsetzung, skala=i)
+  agg_ums = create_agg_ums(skalen_tmp=data_skalen, umsetzung = umsetzung, skala=i)
   
   plot_agg_ums(agg_ums = agg_ums, skala=i)
 }
@@ -159,7 +213,7 @@ for(i in best){
 
 # Für die Einrichtungen aufschlüsseln
 
-agg_df = create_agg_df(skalen_tmp = skalen, umsetzung = umsetzung, variables = best)
+agg_df = create_agg_df(skalen_tmp = data_skalen, umsetzung = umsetzung, variables = best)
 
 par(mfrow=c(2,2))
 plot_einrichtungen(agg_df)
@@ -176,7 +230,12 @@ check_skalen(data=data,
 
 
 
-fact_data = data[,c(skalen2[["Paed.Halt.1"]], skalen2[["Paed.Halt.2"]])]
+ums_df
+
+
+
+
+fact_data = data[,c(data_skalen[["Paed.Halt.1"]], data_skalen[["Paed.Halt.2"]])]
 
 fact_data = apply(fact_data, 2, jitter, amount=0.01)
 
