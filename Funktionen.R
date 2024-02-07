@@ -471,16 +471,16 @@ create_skalen_imp = function(score_type, skalen_scores=skalen_scores, group_inde
 }
 
 
-plot_skalen_imp = function(most_imp, mar, main){
+plot_skalen_imp = function(most_imp, mar, ylim, main){
   
   par(mfrow=c(1,1), mar=mar)
   
-  plot(most_imp[,2], xaxt="n", xlab="", pch=20, ylim=c(1, 6), main=main)
+  plot(most_imp[,2], xaxt="n", xlab="", pch=20, ylim=ylim, main=main)
   axis(side=1, at=1:nrow(most_imp), labels = most_imp[,1], las=2)
   arrows(x0 = 1:nrow(most_imp), y0 = rep(0, nrow(most_imp)),
          y1 = most_imp[,2], col="grey50", length = 0)
   points(1:nrow(most_imp), most_imp[,2], pch = 20)
-
+  
 }
 
 
@@ -611,7 +611,7 @@ create_agg_ums = function(skalen_tmp, umsetzung, skala){
     tmp_mean = tmp
     
   }else{
-  
+    
     tmp_mean = apply(tmp, 1, mean, na.rm=T)
   }
   
@@ -765,4 +765,81 @@ plot_group_diff = function(skalen, umsetzung, ums_data, group_list){
   points(1:nrow(tmp_Proz), tmp_Proz$Diff.Proz, pch = 20)
   abline(h=0)
   
+}
+
+
+get_ums_scores = function(ums_data, skalen, skalen_names){
+  
+  skalen_scores = list()
+  
+  
+  for(i in 1:length(skalen_names)){
+    
+    tmp_ls = list()
+    
+    
+    tmp_var = umsetzung[umsetzung[,"var.Umgesetzt"] %in% skalen[[skalen_names[i]]], "var.Key"]
+    
+    tmp = as.data.frame(ums_data[,tmp_var])
+    
+    if(ncol(tmp) > 0){
+      
+      
+      if(ncol(tmp) == 1){
+        
+        tmp_ls[["scores_mean"]] = as.numeric(tmp[,1])
+        
+        tmp_ls[["scores_fact"]] = rep(NA, length(tmp[,1]))
+        
+        tmp_ls[["loadings"]] = rep(NA, 1)
+        
+        tmp_ls[["p"]] = NA
+        
+        skalen_scores[[skalen_names[i]]] = tmp_ls
+        
+      }else{
+        
+        na_index = complete.cases(tmp)
+        
+        tmp = tmp[na_index,]
+        
+        tmp_na = rep(NA, length(na_index))
+        
+        tmp_na[na_index] = as.numeric(apply(tmp, 1, mean, na.rm=T))
+        
+        tmp_ls[["scores_mean"]] = tmp_na
+        
+        if(ncol(tmp) < 3){
+          tmp_ls[["scores_fact"]] = rep(NA, nrow(tmp))
+          
+          tmp_ls[["loadings"]] = rep(NA, ncol(tmp))
+          
+          tmp_ls[["p"]] = NA
+          
+          skalen_scores[[skalen_names[i]]] = tmp_ls
+          
+        }else{
+          
+          tmp_jittered = apply(tmp, 2, jitter, factor = 0.01)
+          
+          fact = factanal(tmp_jittered, 1, scores = "regression")
+          
+          tmp_na[na_index] = fact$scores
+          
+          tmp_ls[["scores_fact"]] = tmp_na
+          
+          tmp_ls[["loadings"]] = fact$loadings
+          
+          tmp_ls[["p"]] = fact$PVAL
+          
+          
+          skalen_scores[[skalen_names[i]]] = tmp_ls
+        }
+      }
+    }else{
+      print(paste(skalen_names[i], "besitzt keine Umsetzungsabfrage"))
+    }
+  }
+  
+  return(skalen_scores)
 }

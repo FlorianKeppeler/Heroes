@@ -181,7 +181,7 @@ b = unlist(lapply(a, function(x){return(x[2])}))
 
 c = unlist(lapply(a, function(x){return(x[1])}))
 
-umsetzung = data.frame("Var.Key"=cb_single$Variable[b=="Umsetzung"], "var.Umgesetzt"=c[b=="Umsetzung"])
+umsetzung = data.frame("var.Key"=cb_single$Variable[b=="Umsetzung"], "var.Umgesetzt"=c[b=="Umsetzung"])
 umsetzung = umsetzung[complete.cases(umsetzung),]
 
 

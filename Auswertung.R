@@ -74,7 +74,6 @@ group_list = list("Alle" = 1:5, "SBBZ" = 2, "Leitung" = 1, "HZE" = 3:5)
 
 ums_data = create_ums_data(data, umsetzung)
 
-
 plot_combined_imp(skalen, data, skalen_scores,
                              umsetzung, ums_data, group_list)
 
@@ -88,15 +87,87 @@ plot_group_diff(skalen, umsetzung, ums_data, group_list = list("Leitung" = 1,"Mi
 
 
 
+# Umsetzungsscores für RF generieren:
+
+ums_scores = get_ums_scores(ums_data, skalen = data_skalen, names(data_skalen))
 
 
-ums_scores = get_skalen_scores(data = ums_data,
-                               skalen = data_skalen,
-                               skalen_names =  names(data_skalen))
 
 
-plot_skalen_imp(create_skalen_imp(score_type = "scores_mean",
-                                  skalen_scores = ums_scores), mar=c(8,3,1,1), main="")
+Halte_scores = get_skalen_scores(data = data,
+                                 skalen = data_skalen,
+                                 skalen_names = "Haltekraft")
+
+
+ums_scores[["Haltekraft"]] = Halte_scores[["Haltekraft"]]
+
+# Was ist mit der Transparenz.jM los?
+
+hist(ums_scores[["Transparenz.jM"]]$scores_mean)
+hist(skalen_scores[["Transparenz.jM"]]$scores_mean)
+
+plot(ums_scores[["Haltekraft"]]$scores_mean ~ jitter(skalen_scores[["Transparenz.jM"]]$scores_mean),
+     ylab="Haltekraft", xlab ="Transparenz.jM")
+
+plot(ums_scores[["Haltekraft"]]$scores_mean ~ jitter(ums_scores[["Transparenz.jM"]]$scores_mean),
+     ylab="Haltekraft", xlab ="Transparenz.jM")
+
+# -> wahrscheinlich finden das eben alle wichtig und bereits gut umgesetzt
+
+
+skalen_imp = create_skalen_imp(score_type = "scores_mean", skalen_scores = ums_scores, group_index = get_index_by_group(data, c(1:5)))
+
+skalen_imp = skalen_imp[-1,]
+
+plot_skalen_imp(skalen_imp,
+                mar=c(8,3,4,1),
+                ylim=c(0,1),
+                main="bereits umgesetzt")
+
+# jap! Transparenz.jM ist die die Variable die bereits am meisten in den Einrichtungen umgesetzt wird.
+# -> 
+
+
+
+ums_tmp = create_model_df(ums_scores = ums_scores, score_type = "scores_mean")
+
+ums_df = ums_tmp[[1]]
+
+rfm = randomForest(Haltekraft ~ ., data = ums_df, ntree=1500)
+
+par(mar=c(4,3,4,1))
+rfm_import = varImpPlot(rfm)
+
+
+
+# gibt es unterschiede zwischen den Beschäftigten?
+
+group_list = list("Alle" = 1:5, "SBBZ" = 2, "HZE" = 3:5, "Leitung" = 1, "Mitarbeiter"= 2:5)
+
+for(i in 1:length(group_list)){
+  
+  index = get_index_by_group(data = data, group_keys = group_list[[i]])
+  
+  rfm = randomForest(Haltekraft ~ .,
+                     data = ums_df[index,],
+                     ntree=1500)
+  
+  par(mar=c(4,3,4,1))
+  varImpPlot(rfm, main=names(group_list)[i])
+  
+}
+
+# a = importance(rfm, type = 2)
+# 
+# imp = data.frame("Name"=rownames(a), "Importance"=a, row.names = NULL)
+# 
+# tmp_df = list()
+# tmp_df[]
+
+
+
+
+
 
 
 # plot_skalen_imp(compare_skalen_ums(skalen_scores, ums_scores, score_type = "scores_mean"))
@@ -104,18 +175,21 @@ plot_skalen_imp(create_skalen_imp(score_type = "scores_mean",
 
 # Random Forest Analyse
 
-ums_tmp = create_model_df(ums_scores, score_type = "scores_mean")
+ums_tmp = create_model_df(ums_scores=get_skalen_scores(data = data,
+                                                       skalen = data_skalen,
+                                                       skalen_names =  names(data_skalen)),
+                          score_type = "scores_mean")
+
+
 
 ums_df = ums_tmp[[1]]
 
+rfm = randomForest(Haltekraft ~ ., data = ums_df, ntree=1500, )
 
-  
-rfm = randomForest(Haltekraft ~ ., data = ums_df, ntree=10000)
+# m1 = lm(Haltekraft ~ ., data = ums_df)
 
-m1 = lm(Haltekraft ~ ., data = ums_df)
-
-summary(m1)
-anova(m1)
+# summary(m1)
+# anova(m1)
 
 # was sind die wichtigsten Haltekräfte?
 
@@ -146,7 +220,7 @@ for(i in best){
 # par(mfrow=c(2,2))
 # 
 # for(i in best){
-#   
+# 
 #   partialPlot(rfm, x.var = paste(i), pred.data = ums_df)
 # }
 
