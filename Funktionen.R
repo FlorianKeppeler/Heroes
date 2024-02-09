@@ -369,9 +369,9 @@ get_skalen_scores = function(data, skalen, skalen_names){
 }
 
 
-get_index_by_group = function(data, group_keys){
+get_index_by_group = function(data, var.name, group_keys){
   
-  return(which(data$B102 %in% group_keys))
+  return(which(data[,var.name] %in% group_keys))
 }
 
 
@@ -521,7 +521,7 @@ plot_combined_imp = function(skalen, data, skalen_scores,
     
     # Gemeinsame Darstellung: Skalen_scores und Umsetzung
     
-    plot_skalen_imp(merged_imp, mar=c(8,3,3,3), main = names(group_list)[i])
+    plot_skalen_imp(merged_imp, mar=c(8,3,3,3), main = names(group_list)[i], ylim=c(1, 6))
     
     offset = 1
     

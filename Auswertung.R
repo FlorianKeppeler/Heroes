@@ -40,7 +40,9 @@ skalen_scores = get_skalen_scores(data = data,
 
 plot_skalen_imp(create_skalen_imp(score_type = "scores_mean",
                                   skalen_scores = skalen_scores,
-                                  group_index=get_index_by_group(data, group_index = c(1:5))),
+                                  group_index=get_index_by_group(data,
+                                                                 "B102",
+                                                                 group_index = c(1:5))),
                 mar=c(8,3,1,1))
 
 
@@ -115,7 +117,8 @@ plot(ums_scores[["Haltekraft"]]$scores_mean ~ jitter(ums_scores[["Transparenz.jM
 # -> wahrscheinlich finden das eben alle wichtig und bereits gut umgesetzt
 
 
-skalen_imp = create_skalen_imp(score_type = "scores_mean", skalen_scores = ums_scores, group_index = get_index_by_group(data, c(1:5)))
+skalen_imp = create_skalen_imp(score_type = "scores_mean", skalen_scores = ums_scores,
+                               group_index = get_index_by_group(data, "B102", c(1:5)))
 
 skalen_imp = skalen_imp[-1,]
 
@@ -125,7 +128,6 @@ plot_skalen_imp(skalen_imp,
                 main="bereits umgesetzt")
 
 # jap! Transparenz.jM ist die die Variable die bereits am meisten in den Einrichtungen umgesetzt wird.
-# -> 
 
 
 
@@ -133,11 +135,103 @@ ums_tmp = create_model_df(ums_scores = ums_scores, score_type = "scores_mean")
 
 ums_df = ums_tmp[[1]]
 
+
+ums_df_agg = ums_df
+
+ums_df_agg$Einrichtung = data$B107
+ums_df_agg$Gruppe = data$B102
+
+
+for(i in unique(ums_df_agg$Einrichtung)){
+  
+  if(i == 11 | i == 40) next
+  
+  data_slice = ums_df_agg[get_index_by_group(data, "B107", i), ]
+  
+  plot(density((data_slice$Haltekraft[get_index_by_group(data_slice, "Gruppe", c(3:5))])),
+       col="#e7298a", 
+       main=imp_names[["B107"]][i],
+       xlim=c(1, 6),
+       ylim=c(0, 1), lwd=2, xlab="Haltekraft")
+  
+  if(length(get_index_by_group(data_slice, "Gruppe", 2)) > 2){
+    lines(density((data_slice$Haltekraft[get_index_by_group(data_slice, "Gruppe", 2)])),
+          col="#e6ab02", lwd=2)
+  }
+  if(length(get_index_by_group(data_slice, "Gruppe", 1)) > 2){
+    lines(density((data_slice$Haltekraft[get_index_by_group(data_slice, "Gruppe", 1)])),
+          col="#1b9e77", lwd=2)
+  }
+  
+  points(jitter(data_slice$Haltekraft, 3), rep(0, nrow(data_slice)),
+         pch="|", col=ifelse(data_slice$Gruppe == 1, "#1b9e77",
+                             ifelse(data_slice$Gruppe == 2, "#e6ab02", "#e7298a")),
+         cex=2)
+  
+  legend("topleft", fill = c("#1b9e77", "#e6ab02", "#e7298a"),
+         legend = c("Leitung","SBBZ","HZE"), bty="n")
+  
+}
+
+
+data_slice = ums_df_agg
+
+plot(density((data_slice$Haltekraft[get_index_by_group(data_slice, "Gruppe", c(3:5))])),
+     col="#e7298a", 
+     main="Alle Einrichtungen",
+     xlim=c(1, 6),
+     ylim=c(0, 0.7), lwd=2, xlab="Haltekraft")
+
+if(length(get_index_by_group(data_slice, "Gruppe", 2)) > 2){
+  lines(density((data_slice$Haltekraft[get_index_by_group(data_slice, "Gruppe", 2)])),
+        col="#e6ab02", lwd=2)
+}
+if(length(get_index_by_group(data_slice, "Gruppe", 1)) > 2){
+  lines(density((data_slice$Haltekraft[get_index_by_group(data_slice, "Gruppe", 1)])),
+        col="#1b9e77", lwd=2)
+}
+
+points(jitter(data_slice$Haltekraft, 3), rep(0, nrow(data_slice)),
+       pch="|", col=ifelse(data_slice$Gruppe == 1, "#1b9e77",
+                           ifelse(data_slice$Gruppe == 2, "#e6ab02", "#e7298a")),
+       cex=2)
+
+legend("topleft", fill = c("#1b9e77", "#e6ab02", "#e7298a"),
+       legend = c("Leitung","SBBZ","HZE"), bty="n")
+
+
+nrow(data_slice)
+
+
+plot(1:5, col=c("#1b9e77", "#e7298a","#7570b3","#66a61e", "#e6ab02"), pch=20)
+
+c("#1b9e77", "#e7298a","#7570b3","#66a61e", "#e6ab02")
+
+index = get_index_by_group(data = data, "B102", group_keys = c(3:5))
+
+ums_df_agg = ums_df_agg[index, ]
+
+ums_df_agg = aggregate(ums_df_agg, by = list(ums_df_agg$Einrichtung), mean)  
+
+
+rfm_agg = randomForest(Haltekraft ~ ., data = ums_df_agg[, -ncol(ums_df_agg)], ntree=1500)
+
+par(mar=c(4,3,4,1))
+varImpPlot(rfm_agg)
+rfm_agg
+
+par(mfrow=c(2,2), mar=c(2,2,2,2))
+for(i in names(ums_df_agg)){
+  plot(ums_df_agg[,"Haltekraft"] ~ ums_df_agg[,i], main=i)
+}
+
+
+
 rfm = randomForest(Haltekraft ~ ., data = ums_df, ntree=1500)
 
 par(mar=c(4,3,4,1))
-rfm_import = varImpPlot(rfm)
-
+varImpPlot(rfm)
+rfm
 
 
 # gibt es unterschiede zwischen den Beschäftigten?
@@ -146,7 +240,7 @@ group_list = list("Alle" = 1:5, "SBBZ" = 2, "HZE" = 3:5, "Leitung" = 1, "Mitarbe
 
 for(i in 1:length(group_list)){
   
-  index = get_index_by_group(data = data, group_keys = group_list[[i]])
+  index = get_index_by_group(data = data, "B102", group_keys = group_list[[i]])
   
   rfm = randomForest(Haltekraft ~ .,
                      data = ums_df[index,],
@@ -184,7 +278,7 @@ ums_tmp = create_model_df(ums_scores=get_skalen_scores(data = data,
 
 ums_df = ums_tmp[[1]]
 
-rfm = randomForest(Haltekraft ~ ., data = ums_df, ntree=1500, )
+rfm = randomForest(Haltekraft ~ ., data = ums_df, ntree=1500)
 
 # m1 = lm(Haltekraft ~ ., data = ums_df)
 
