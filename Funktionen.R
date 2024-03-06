@@ -1,4 +1,30 @@
 
+#  noch nicht fertig
+##################################################
+
+
+get_codebook_varnames = function(var_name){
+  
+  tmp = c()
+  
+  for (var in keys[[var_name]]){
+    
+    a = codebook[codebook$Variable == var, "Variable Label"][1]
+    print(a)
+    c = unlist(strsplit(a, ":")); c = c[length(c)]
+    
+    c = unlist(strsplit(c, " "))[-1]
+    
+    c = paste(c, collapse = " ")
+    
+    tmp = c(tmp, c)
+  }
+  return(tmp)
+}
+
+
+####################################################
+
 
 import_data_surv <- function(Path){
   
@@ -106,6 +132,30 @@ add_missing = function(vec, m){
   tmp[check] = vec
   return(tmp)
 }
+
+
+
+get_ranking = function(data, var_name){
+  
+  df_begr = data.frame("mean"=apply(data[,keys[[var_name]]], 2, mean, na.rm=T), "name"=imp_names[[var_name]])
+  
+  return (df_begr[order(df_begr$mean, decreasing = T),])
+}
+
+
+plot_ranked = function(data, var_name, mar, main){
+  
+  ranked = get_ranking(data, var_name)
+  
+  par(mar=mar)
+  plot(ranked$mean, xaxt = "n", xlab = "", pch = 20, ylab="Mittelwert Item", main = main)
+  arrows(x0 = 1:nrow(ranked), y0 = rep(0, nrow(ranked)),
+         y1 = ranked[,1], col="grey50", length = 0, lwd=2)
+  points(ranked$mean,  pch = 20)
+  axis(1, las=2, at = 1:nrow(ranked), labels = ranked$name)
+}
+
+
 
 
 item_dist = function(group1, group2, n, m){

@@ -7,6 +7,55 @@ library(randomForest)
 
 data = import_data_surv(Path="C:/Heroes/Downloads soscisurvey/CSV/data_HerOEs_2023-08-27_16-42.csv")
 
+
+# Leute entfernen die nicht mit jM arbeiten:
+
+data = data[-unique(c(which(data$C207_07 == 2), which(data$B101_04 == 2))), ]
+
+# alle offenen Fragen ausgeben:
+
+write.table(unique(data$C202_01), file = "C:/Heroes/Sammlung/C202_01_sonstige_Begriffe.txt", row.names = F, col.names = F)
+write.table(unique(data$C206_01), file = "C:/Heroes/Sammlung/C206_01_sonstige_Verhaltensweisen.txt", row.names = F, col.names = F)
+write.table(unique(data$D334_01), file = "C:/Heroes/Sammlung/D334_01_sonstige_Info_Anmerkung.txt", row.names = F, col.names = F)
+write.table(unique(data$D305_01), file = "C:/Heroes/Sammlung/D305_01_sonstige_Dokumente.txt", row.names = F, col.names = F)
+write.table(unique(data$D306_11a), file = "C:/Heroes/Sammlung/D306_11a_sonstige_weitereInfos.txt", row.names = F, col.names = F)
+write.table(unique(data$D311_01), file = "C:/Heroes/Sammlung/D311_01_sonstige_VerbesserungAnfrage.txt", row.names = F, col.names = F)
+write.table(unique(data$D334_01), file = "C:/Heroes/Sammlung/D334_01_sonstige_Anmerkung_VerbesserungAnfrage.txt", row.names = F, col.names = F)
+write.table(unique(data$E406_09a), file = "C:/Heroes/Sammlung/E406_09a_sonstige_Vetorecht_Aufnahme.txt", row.names = F, col.names = F)
+write.table(unique(data$E407_09a), file = "C:/Heroes/Sammlung/E407_09a_sonstige_Vetorempfehlung_Aufnahme.txt", row.names = F, col.names = F)
+write.table(unique(data$E403_01), file = "C:/Heroes/Sammlung/E403_01_sonstige_Verb_Aufn_Bez.txt", row.names = F, col.names = F)
+write.table(unique(data$F505_01), file = "C:/Heroes/Sammlung/F505_01_sonstige_Verb_Setting.txt", row.names = F, col.names = F)
+write.table(unique(data$G603_01), file = "C:/Heroes/Sammlung/G603_01_sonstige_Verb_Alltag.txt", row.names = F, col.names = F)
+write.table(unique(data$H704_01), file = "C:/Heroes/Sammlung/H704_01_sonstige_Verb_Krisenbew.txt", row.names = F, col.names = F)
+write.table(unique(data$H803_01), file = "C:/Heroes/Sammlung/H803_011_sonstige_Verb_Krisenauf.txt", row.names = F, col.names = F)
+write.table(unique(data$I903_01), file = "C:/Heroes/Sammlung/I903_01_sonstige_Verb_Entlassung.txt", row.names = F, col.names = F)
+write.table(unique(data$I904_09a), file = "C:/Heroes/Sammlung/I904_09a_sonstige_Vetorecht_Entlassung.txt", row.names = F, col.names = F)
+write.table(unique(data$J103_01), file = "C:/Heroes/Sammlung/J103_01_sonstige_Verbesserung_Haltung.txt", row.names = F, col.names = F)
+write.table(unique(data$K204_01), file = "C:/Heroes/Sammlung/K204_01_sonstige_Interdisz_Team.txt", row.names = F, col.names = F)
+write.table(unique(data$K209_01), file = "C:/Heroes/Sammlung/K209_01_sonstige_Verbesserung_Teamqual_Qualifikation.txt", row.names = F, col.names = F)
+write.table(unique(data$N503_01), file = "C:/Heroes/Sammlung/N503_01_sonstige_Anmerkungen_Abschluss.txt", row.names = F, col.names = F)
+
+
+
+
+
+#  Begriffe:
+
+plot_ranked(data, "Begriffe", mar=c(18,5,3,3), main="Begriffe")
+
+plot_ranked(data, "Verhaltensweisen", mar=c(18,5,3,3), main="Verhaltensweisen")
+
+plot_ranked(data, "Informationen", mar=c(18,5,3,3), main="Informationen")
+
+
+
+check_items_by_group(data = data,
+                     variables = "Begriffe",
+                     group_index = list(1,2,c(3,4,5),3,c(4,5)),
+                     group_names = imp_names[["B102_edit"]][1:5])
+
+
+
 data_skalen = skalen
 data_skalen_ohne = skalen_ohne
 

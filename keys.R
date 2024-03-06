@@ -10,6 +10,23 @@ imp_names[["B103"]] = c("weiblich","männlich","divers")
 imp_names[["B105"]] = c("< 3", "4 - 10", "> 11")
 imp_names[["B110"]] = c("< 30", "31 - 50", "> 51")
 imp_names[["B107"]] = codebook[codebook$Variable == "B107",]$`Response Label`
+imp_names[["Begriffe"]] = c("Herausfordernde junge Menschen", "Systemsprenger:innen", "Die Schwierigsten",
+                            "Knaller", "Brecher", "Verhaltenskreative", "Problemkinder/-jugendliche", "Erziehungsresistente",
+                            "Verhaltensgestörte", "Hilferesistente", "Schwierige Kinder/Jugendliche", "Jugendhilfe-Aversive",
+                            "Riskant agierende Kinder/Jugendliche", "Heiße Kastanien", "Hoch-Risiko-Klientel", "Vom System Gesprengte",
+                            "Grenzgänger:innen", "Verweigerer:innen", "Systemverlierer:innen")
+imp_names[["Verhaltensweisen"]] = c("Eingeschränkte Gruppenfähigkeit", "Viele kurzfristige Aufenthalte (Einrichtungen,\n KJP, Eltern, Straße, Pflegeeltern)",
+                                    "Diagnostizierte psychische Störung", "Psychische Auffälligkeiten","Selbstgefährdung (z.B: Autoaggression,\n Suizidalität, selbstverletzendes Verhalten)",
+                                    "Vandalismus, Gewalt gegen Gegenstände", "Fremdgefährdung - sexuelle Gewalt \n (auch Übergriffigkeit)", "Fremdgefährdung - psychische Gewalt",
+                                    "Fremdgefährdung - körperliche Gewalt", "Gewalt gerichtet gegen - Fremde", "Gewalt gerichtet gegen - Familienmitglieder",
+                                    "Gewalt gerichtet gegen - Gruppenmitglieder", "Gewalt gerichtet gegen - Mitarbeiter:innen")
+
+
+imp_names[["Informationen"]] = c("Biografie des Falls (Jugendamt)", "Bedarfseinschätzung (Jugendamt)", "Diagnostik der KJP",
+                                 "Soziale Kontakte im Herkunftssozialraum", "Aufenthalte in anderen HzE Einrichtungen", "Schulbesuche und -wechsel",
+                                 "KJP-Aufenthalte", "Straftaten", "Über Eltern/Familie", "Durch persönliches Kennenlernen")
+
+
 
 keys = list()
 
