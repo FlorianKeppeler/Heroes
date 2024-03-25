@@ -14,26 +14,26 @@ data = data[-unique(c(which(data$C207_07 == 2), which(data$B101_04 == 2))), ]
 
 # alle offenen Fragen ausgeben:
 
-write.table(unique(data$C202_01), file = "C:/Heroes/Sammlung/C202_01_sonstige_Begriffe.txt", row.names = F, col.names = F)
-write.table(unique(data$C206_01), file = "C:/Heroes/Sammlung/C206_01_sonstige_Verhaltensweisen.txt", row.names = F, col.names = F)
-write.table(unique(data$D334_01), file = "C:/Heroes/Sammlung/D334_01_sonstige_Info_Anmerkung.txt", row.names = F, col.names = F)
-write.table(unique(data$D305_01), file = "C:/Heroes/Sammlung/D305_01_sonstige_Dokumente.txt", row.names = F, col.names = F)
-write.table(unique(data$D306_11a), file = "C:/Heroes/Sammlung/D306_11a_sonstige_weitereInfos.txt", row.names = F, col.names = F)
-write.table(unique(data$D311_01), file = "C:/Heroes/Sammlung/D311_01_sonstige_VerbesserungAnfrage.txt", row.names = F, col.names = F)
-write.table(unique(data$D334_01), file = "C:/Heroes/Sammlung/D334_01_sonstige_Anmerkung_VerbesserungAnfrage.txt", row.names = F, col.names = F)
-write.table(unique(data$E406_09a), file = "C:/Heroes/Sammlung/E406_09a_sonstige_Vetorecht_Aufnahme.txt", row.names = F, col.names = F)
-write.table(unique(data$E407_09a), file = "C:/Heroes/Sammlung/E407_09a_sonstige_Vetorempfehlung_Aufnahme.txt", row.names = F, col.names = F)
-write.table(unique(data$E403_01), file = "C:/Heroes/Sammlung/E403_01_sonstige_Verb_Aufn_Bez.txt", row.names = F, col.names = F)
-write.table(unique(data$F505_01), file = "C:/Heroes/Sammlung/F505_01_sonstige_Verb_Setting.txt", row.names = F, col.names = F)
-write.table(unique(data$G603_01), file = "C:/Heroes/Sammlung/G603_01_sonstige_Verb_Alltag.txt", row.names = F, col.names = F)
-write.table(unique(data$H704_01), file = "C:/Heroes/Sammlung/H704_01_sonstige_Verb_Krisenbew.txt", row.names = F, col.names = F)
-write.table(unique(data$H803_01), file = "C:/Heroes/Sammlung/H803_011_sonstige_Verb_Krisenauf.txt", row.names = F, col.names = F)
-write.table(unique(data$I903_01), file = "C:/Heroes/Sammlung/I903_01_sonstige_Verb_Entlassung.txt", row.names = F, col.names = F)
-write.table(unique(data$I904_09a), file = "C:/Heroes/Sammlung/I904_09a_sonstige_Vetorecht_Entlassung.txt", row.names = F, col.names = F)
-write.table(unique(data$J103_01), file = "C:/Heroes/Sammlung/J103_01_sonstige_Verbesserung_Haltung.txt", row.names = F, col.names = F)
-write.table(unique(data$K204_01), file = "C:/Heroes/Sammlung/K204_01_sonstige_Interdisz_Team.txt", row.names = F, col.names = F)
-write.table(unique(data$K209_01), file = "C:/Heroes/Sammlung/K209_01_sonstige_Verbesserung_Teamqual_Qualifikation.txt", row.names = F, col.names = F)
-write.table(unique(data$N503_01), file = "C:/Heroes/Sammlung/N503_01_sonstige_Anmerkungen_Abschluss.txt", row.names = F, col.names = F)
+# write.table(unique(data$C202_01), file = "C:/Heroes/Sammlung/C202_01_sonstige_Begriffe.txt", row.names = F, col.names = F)
+# write.table(unique(data$C206_01), file = "C:/Heroes/Sammlung/C206_01_sonstige_Verhaltensweisen.txt", row.names = F, col.names = F)
+# write.table(unique(data$D334_01), file = "C:/Heroes/Sammlung/D334_01_sonstige_Info_Anmerkung.txt", row.names = F, col.names = F)
+# write.table(unique(data$D305_01), file = "C:/Heroes/Sammlung/D305_01_sonstige_Dokumente.txt", row.names = F, col.names = F)
+# write.table(unique(data$D306_11a), file = "C:/Heroes/Sammlung/D306_11a_sonstige_weitereInfos.txt", row.names = F, col.names = F)
+# write.table(unique(data$D311_01), file = "C:/Heroes/Sammlung/D311_01_sonstige_VerbesserungAnfrage.txt", row.names = F, col.names = F)
+# write.table(unique(data$D334_01), file = "C:/Heroes/Sammlung/D334_01_sonstige_Anmerkung_VerbesserungAnfrage.txt", row.names = F, col.names = F)
+# write.table(unique(data$E406_09a), file = "C:/Heroes/Sammlung/E406_09a_sonstige_Vetorecht_Aufnahme.txt", row.names = F, col.names = F)
+# write.table(unique(data$E407_09a), file = "C:/Heroes/Sammlung/E407_09a_sonstige_Vetorempfehlung_Aufnahme.txt", row.names = F, col.names = F)
+# write.table(unique(data$E403_01), file = "C:/Heroes/Sammlung/E403_01_sonstige_Verb_Aufn_Bez.txt", row.names = F, col.names = F)
+# write.table(unique(data$F505_01), file = "C:/Heroes/Sammlung/F505_01_sonstige_Verb_Setting.txt", row.names = F, col.names = F)
+# write.table(unique(data$G603_01), file = "C:/Heroes/Sammlung/G603_01_sonstige_Verb_Alltag.txt", row.names = F, col.names = F)
+# write.table(unique(data$H704_01), file = "C:/Heroes/Sammlung/H704_01_sonstige_Verb_Krisenbew.txt", row.names = F, col.names = F)
+# write.table(unique(data$H803_01), file = "C:/Heroes/Sammlung/H803_011_sonstige_Verb_Krisenauf.txt", row.names = F, col.names = F)
+# write.table(unique(data$I903_01), file = "C:/Heroes/Sammlung/I903_01_sonstige_Verb_Entlassung.txt", row.names = F, col.names = F)
+# write.table(unique(data$I904_09a), file = "C:/Heroes/Sammlung/I904_09a_sonstige_Vetorecht_Entlassung.txt", row.names = F, col.names = F)
+# write.table(unique(data$J103_01), file = "C:/Heroes/Sammlung/J103_01_sonstige_Verbesserung_Haltung.txt", row.names = F, col.names = F)
+# write.table(unique(data$K204_01), file = "C:/Heroes/Sammlung/K204_01_sonstige_Interdisz_Team.txt", row.names = F, col.names = F)
+# write.table(unique(data$K209_01), file = "C:/Heroes/Sammlung/K209_01_sonstige_Verbesserung_Teamqual_Qualifikation.txt", row.names = F, col.names = F)
+# write.table(unique(data$N503_01), file = "C:/Heroes/Sammlung/N503_01_sonstige_Anmerkungen_Abschluss.txt", row.names = F, col.names = F)
 
 
 
@@ -41,11 +41,144 @@ write.table(unique(data$N503_01), file = "C:/Heroes/Sammlung/N503_01_sonstige_An
 
 #  Begriffe:
 
-plot_ranked(data, "Begriffe", mar=c(18,5,3,3), main="Begriffe")
 
-plot_ranked(data, "Verhaltensweisen", mar=c(18,5,3,3), main="Verhaltensweisen")
 
-plot_ranked(data, "Informationen", mar=c(18,5,3,3), main="Informationen")
+plot_ranked(data, "Begriffe",
+            yx= c("nie", "selten", "häufig", "immer"),
+            mar=c(18,5,3,3),
+            main="Begriffe",
+            file="C:/Heroes/Ergebnisse/PDF/aktuell/Begriff_gesamt.pdf")
+
+plot_ranked(data, "Verhaltensweisen",
+            yx = c("gar nicht kennzeichnend", "eher nicht kennzeichnend",
+                   "eher kennzeichnend", "vollkommen kennzeichnend"),
+            mar=c(18,12,3,3),
+            main="Verhaltensweisen",
+            file="C:/Heroes/Ergebnisse/PDF/aktuell/Verhaltenweisen_gesamt.pdf")
+
+plot_ranked(data, "Informationen", 
+            yx=c("unwichtig","eher unwichtig","eher wichtig","wichtig"), 
+            mar=c(18,7,3,3),
+            main="Informationen",
+            file= "C:/Heroes/Ergebnisse/PDF/aktuell/Informationen_gesamt.pdf")
+
+
+# Hier muss noch mit den Altersgruppen geschaut werden, was da am besten wäre -> binäre Daten
+
+plot_binary(data,
+            var_name="AlterGruppen",
+            main="Altersgruppen",
+            mar=c(12,5,3,3),
+            ylab="Anzahl Mitarbeitende",
+            file="C:/Heroes/Ergebnisse/PDF/aktuell/Altersgruppen.pdf")
+
+
+
+# bei D303 Auf welche Weise Infos: Unklar was tun da binäre Daten
+plot_binary(data,
+            var_name="Informationsart",
+            main="Art der Information",
+            mar=c(12,5,3,3),
+            ylab="Anzahl Mitarbeitende",
+            file="C:/Heroes/Ergebnisse/PDF/aktuell/Informationsart.pdf", ranked = T)
+
+
+plot_ranked(data = data,
+            yx=c("nie",
+                 "selten",
+                 "häufig",
+                 "immer"),
+            var_name = "Dokumente",
+            mar=c(18,5,3,3),
+            main="Dokumente", file="C:/Heroes/Ergebnisse/PDF/aktuell/Dokumente_gesamt.pdf")
+
+
+plot_binary(data,
+            var_name="Informationsbedarf",
+            main="Informationsbedarf",
+            mar=c(18,5,3,3),
+            ylab="Anzahl Mitarbeitende",
+            file="C:/Heroes/Ergebnisse/PDF/aktuell/Informationsbedarf.pdf", ranked = T)
+
+
+plot_binary(data,
+            var_name="Vetor.Auf",
+            main="Vetorecht Aufnahme",
+            mar=c(15,5,3,3),
+            ylab="Anzahl Mitarbeitende",
+            file="C:/Heroes/Ergebnisse/PDF/aktuell/Vetorecht Aufnahme_gesamt.pdf", ranked = T)
+
+
+plot_binary(data,
+            var_name="Vetoem.Auf",
+            main="Vetoempfehlung Aufnahme",
+            mar=c(15,5,3,3),
+            ylab="Anzahl Mitarbeitende",
+            file="C:/Heroes/Ergebnisse/PDF/aktuell/Vetoempfehlung Aufnahme_gesamt.pdf", ranked = T)
+
+
+plot_binary(data,
+            var_name="Entscheidung.Auf",
+            main="Entscheidung Aufnahme",
+            mar=c(15,5,3,3),
+            ylab="Anzahl Mitarbeitende",
+            file="C:/Heroes/Ergebnisse/PDF/aktuell/Entscheidung Aufnahme_gesamt.pdf", ranked = T)
+
+
+
+plot_binary(data,
+            var_name="Vetor.Ent",
+            main="Vetorecht Entlassung",
+            mar=c(15,5,3,3),
+            ylab="Anzahl Mitarbeitende",
+            file="C:/Heroes/Ergebnisse/PDF/aktuell/Vetorecht Entlassung_gesamt.pdf", ranked = T)
+
+
+plot_binary(data,
+            var_name="Vetoem.Ent",
+            main="Vetoempfehlung Entlassung",
+            mar=c(15,5,3,3),
+            ylab="Anzahl Mitarbeitende",
+            file="C:/Heroes/Ergebnisse/PDF/aktuell/Vetoempfehlung Entlassung_gesamt.pdf", ranked = T)
+
+
+plot_binary(data,
+            var_name="Entscheidung.Ent",
+            main="Entscheidung Entlassung",
+            mar=c(15,5,3,3),
+            ylab="Anzahl Mitarbeitende",
+            file="C:/Heroes/Ergebnisse/PDF/aktuell/Entscheidung Entlassung_gesamt.pdf", ranked = T)
+
+
+plot_ranked(data,
+            yx=c("gar nicht wichtig", "nicht wichtig", "eher nicht wichtig",
+                 "eher wichtig", "wichtig", "vollkommen wichtig"),
+            var_name = "Interdisz",
+            mar=c(14,9,3,3),
+            main="Interdisziplinäres Team",
+            file = "C:/Heroes/Ergebnisse/PDF/aktuell/Interdisz_Team_gesamt.pdf")
+
+
+
+plot_ranked(data,
+            yx=c("gar nicht wichtig", "nicht wichtig", "eher nicht wichtig",
+                 "eher wichtig", "wichtig", "vollkommen wichtig"),
+            var_name = "Kompetenzen",
+            mar=c(24,9,3,3),
+            main="Kompetenzen",
+            file = "C:/Heroes/Ergebnisse/PDF/aktuell/Kompetenzen_gesamt.pdf")
+
+
+plot_ranked(data,
+            yx=c("gar nicht wichtig", "nicht wichtig", "eher nicht wichtig",
+                 "eher wichtig", "wichtig", "vollkommen wichtig"),
+            var_name = "Fortbildung",
+            mar=c(18,9,3,3),
+            main="Fortbildungen",
+            file = "C:/Heroes/Ergebnisse/PDF/aktuell/Fortbildungen_gesamt.pdf")
+
+
+
 
 
 

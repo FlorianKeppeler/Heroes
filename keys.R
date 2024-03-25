@@ -10,11 +10,15 @@ imp_names[["B103"]] = c("weiblich","männlich","divers")
 imp_names[["B105"]] = c("< 3", "4 - 10", "> 11")
 imp_names[["B110"]] = c("< 30", "31 - 50", "> 51")
 imp_names[["B107"]] = codebook[codebook$Variable == "B107",]$`Response Label`
+
 imp_names[["Begriffe"]] = c("Herausfordernde junge Menschen", "Systemsprenger:innen", "Die Schwierigsten",
                             "Knaller", "Brecher", "Verhaltenskreative", "Problemkinder/-jugendliche", "Erziehungsresistente",
                             "Verhaltensgestörte", "Hilferesistente", "Schwierige Kinder/Jugendliche", "Jugendhilfe-Aversive",
                             "Riskant agierende Kinder/Jugendliche", "Heiße Kastanien", "Hoch-Risiko-Klientel", "Vom System Gesprengte",
                             "Grenzgänger:innen", "Verweigerer:innen", "Systemverlierer:innen")
+
+imp_names[["AlterGruppen"]] = c("< 6-Jährige", "6 bis 10-Jährige", "11 bis 14-Jährige","15 bis 17-Jährige", "18 bis 21-Jährige", "> 21-Jährige")
+
 imp_names[["Verhaltensweisen"]] = c("Eingeschränkte Gruppenfähigkeit", "Viele kurzfristige Aufenthalte (Einrichtungen,\n KJP, Eltern, Straße, Pflegeeltern)",
                                     "Diagnostizierte psychische Störung", "Psychische Auffälligkeiten","Selbstgefährdung (z.B: Autoaggression,\n Suizidalität, selbstverletzendes Verhalten)",
                                     "Vandalismus, Gewalt gegen Gegenstände", "Fremdgefährdung - sexuelle Gewalt \n (auch Übergriffigkeit)", "Fremdgefährdung - psychische Gewalt",
@@ -26,14 +30,62 @@ imp_names[["Informationen"]] = c("Biografie des Falls (Jugendamt)", "Bedarfseins
                                  "Soziale Kontakte im Herkunftssozialraum", "Aufenthalte in anderen HzE Einrichtungen", "Schulbesuche und -wechsel",
                                  "KJP-Aufenthalte", "Straftaten", "Über Eltern/Familie", "Durch persönliches Kennenlernen")
 
+imp_names[["Informationsart"]] = c("persönlich", "telefonisch", "schriftlich")
 
+imp_names[["Dokumente"]] = c("Schriftliche Biografie (Fließtext)", "Genogramm", "Netzwerkkarte", "Lebensverlaufs-Linie (Grafik/Übersicht)",
+                             "Bogen zur Gefährdungseinschätzung", "Gutachten", "Individuelle Lern- und \nEntwicklungsbegleitung (ILEB)", "U-Untersuchungshefte (U1 - U9)",
+                             "Zeugnisse", "Schulische Diagnostik", "Ressourcen-Karte")
+
+imp_names[["Informationsbedarf"]] = c("Biografie des Falls", "Diagnostik der KJP", "Soziale Kontakte im Herkunftssozialraum", "Aufenthalte in anderen HzE Einrichtungen",
+                                      "Schulbesuche und -wechsel", "Schulische Diagnostik", "KJP-Aufenthalte", "Straftaten", "Informationen über Eltern/Familie",
+                                      "Informationen durch \npersönliches Kennenlernen des j.M.",
+                                      "Sonstiges")
+
+imp_names[["Vetor.Auf"]] = c("Einrichtungsleitung", "Bereichsleitung stationär", "Bereichsleitung ambulant", "Fachdienst", "Lehrkraft",
+                             "WG-Team", "Kinder/Jugendliche in der WG", "Schulleitung SBBZ ESENT", "Sonstiges")
+
+
+imp_names[["Vetoem.Auf"]] = c("Einrichtungsleitung", "Bereichsleitung stationär", "Bereichsleitung ambulant", "Fachdienst", "Lehrkraft",
+                              "WG-Team", "Kinder/Jugendliche in der WG", "Schulleitung SBBZ ESENT", "Sonstiges")
+
+imp_names[["Entscheidung.Auf"]] = c("Einrichtungsleitung", "Bereichsleitung stationär", "Bereichsleitung ambulant", "Fachdienst", "Lehrkraft",
+                                   "WG-Team", "Kinder/Jugendliche in der WG", "Schulleitung SBBZ ESENT", "Sonstiges")
+
+imp_names[["Vetor.Ent"]] =  c("Einrichtungsleitung", "Bereichsleitung stationär", "Bereichsleitung ambulant", "Fachdienst", "Lehrkraft",
+                              "WG-Team", "Kinder/Jugendliche in der WG", "Schulleitung SBBZ ESENT", "Sonstiges")
+
+imp_names[["Vetoem.Ent"]] =  c("Einrichtungsleitung", "Bereichsleitung stationär", "Bereichsleitung ambulant", "Fachdienst", "Lehrkraft",
+                               "WG-Team", "Kinder/Jugendliche in der WG", "Schulleitung SBBZ ESENT", "Sonstiges")
+
+imp_names[["Entscheidung.Ent"]] =  c("Einrichtungsleitung", "Bereichsleitung stationär", "Bereichsleitung ambulant", "Fachdienst", "Lehrkraft",
+                                     "WG-Team", "Kinder/Jugendliche in der WG", "Schulleitung SBBZ ESENT", "Sonstiges")
+
+imp_names[["Interdisz"]] = c("Sozialpädagog:in","Erzieher:in", "Psycholog:in", "Naturpädagog:in", "Psychotherapeut:in", "Psychiater:in (Arzt/Ärztin)",
+                             "Kinderarzt/ärztin", "SBBZ ESENT Lehrkraft", "Tierpädagog:in", "Schulbegleiter:in", "Schulsozialarbeiter:in", "Mobile Jugendarbeiter:in",
+                             "Anti-Aggressions-Trainer:in", "Erlebnispädagog:in", "Fachdienst", "Bereichsleitung", "Schulleitung", "Jurist:in", "Polizei")
+
+imp_names[["Kompetenzen"]] = c("Reflexionsfähigkeit (eigene Anteile der Beziehungsdynamik)", "Gelassenheit", "Aushalten-Können", "Durchsetzungsfähigkeit",
+                               "Empathie", "Teamfähigkeit", "Fähigkeit zu eigenständigen Entscheidungen", "Fachliches Wissen", "Regelwissen", "Berufserfahrung", "Intuition",
+                               "Kreativität", "Humor", "Positive Beziehungsgestaltung", "Kompetenz zu Reframing (Umdeutung eines Problems)",
+                               "Kompetenz beim Umgang mit Widerständen", "Überzeugung schwierige Situationen bewältigen zu können", "Bereitschaft in Konflikte zu gehen",
+                               "Flexibilität", "Selbstwirksamkeit", "Pragmatismus", "Kompetenz zur Selbststeuerung", "Fähigkeit zur Abgrenzung", "Authentizität", "Offenheit Neues zu lernen",
+                               "Kompetenz zu paradoxem Verhalten", "Ausstrahlung von Sicherheit", "Menschlichkeit", "Bereitschaft zur Transparenz (ggü. j.M.)", "Klare Kommunikation (in non- & verbaler Form)",
+                               "Fähigkeit zur Selbstfürsorge", "Freude an der Arbeit", "Konsequentes Handeln", "Lockerheit", "Handlungssicherheit", "Fehlerakzeptanz/-freundlichkeit (ggü. eigenem Scheitern)",
+                               "Akzeptanz", "Ressourcenorientierung", "Lösungsorientierung", "Angemessener Umgang Nähe und Distanz zu j.M.", "Eigenmotivation", "Lernbereitschaft")
+
+imp_names[["Fortbildung"]] = c("Selbstfürsorge/Abgrenzung","Verhaltenstherapeutische Schulungen \n(für Gespräche auf Augenhöhe)", "Traumapädagogik", "Bindungsthemen","Entwicklungstraumata",
+                               "Rechtliches Wissen", "Umgang mit Betroffenheit", "Verhaltensbezogene Subjektlogik \n(z.B. Annahme des guten Grundes)", "Wissen zu psychischen Störungen",
+                               "Wissen zu Wirkungen von Stimulanzien", "Psychoedukation", "Personalentwicklungsgespräche", "Konfliktlösung", "Deeskalationstechniken", "Gruppendynamische Prozesse",
+                               "Autorität durch Beziehung")
 
 keys = list()
 
 # nur Items
 keys[["Begriffe"]] = create_simple_key("C201_", 1:19)
 keys[["Verhaltensweisen"]] = create_simple_key("C205_", 1:13)
+keys[["AlterGruppen"]] = create_simple_key("C207_", 1:6)
 keys[["Informationen"]] = create_simple_key("D302_", 1:10)
+keys[["Informationsart"]] = create_simple_key("D303_",1:3)
 keys[["Dokumente"]] = create_simple_key("D304_", 1:11)
 keys[["Informationsbedarf"]] = create_simple_key("D306_", 1:11)
 keys[["Informationswichtigkeit"]] = create_simple_key("D312_", 1:10)

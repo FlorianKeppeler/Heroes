@@ -143,19 +143,54 @@ get_ranking = function(data, var_name){
 }
 
 
-plot_ranked = function(data, var_name, mar, main){
+plot_ranked = function(data, var_name, yx, mar, main, file){
   
   ranked = get_ranking(data, var_name)
-  
+  pdf(file=file, width=14, height = 12, paper = "a4r")
   par(mar=mar)
-  plot(ranked$mean, xaxt = "n", xlab = "", pch = 20, ylab="Mittelwert Item", main = main)
+  plot(ranked$mean, xaxt = "n", xlab = "", pch = 20,
+       ylab="", yaxt="n", main = main, ylim=c(1, length(yx)))
   arrows(x0 = 1:nrow(ranked), y0 = rep(0, nrow(ranked)),
          y1 = ranked[,1], col="grey50", length = 0, lwd=2)
   points(ranked$mean,  pch = 20)
+  abline(h=1:length(yx), lwd=0.5, col="grey60")
   axis(1, las=2, at = 1:nrow(ranked), labels = ranked$name)
+  axis(2, las=2, at = 1:length(yx), labels=yx)
+  dev.off()
 }
 
-
+plot_binary = function(data, var_name, main, mar, ylab, file, ranked=FALSE){
+  
+  
+  tmp = apply(data[,keys[[var_name]]] - 1, 2, sum, na.rm=T)
+  
+  if(ranked == TRUE){
+    tmp_labels = imp_names[[var_name]][order(tmp, decreasing = T)]
+    tmp = sort(tmp, decreasing = T)
+    
+  }
+  
+  pdf(file=file, width=14, height = 12, paper = "a4r")
+  
+    par(mar=mar)
+    
+  
+    plot(tmp, xlab="", xaxt="n", ylab=ylab, main = main, type="n", ylim=c(0,max(tmp)))
+    
+    arrows(x0 = 1:length(tmp), y0 = rep(0, length(tmp)),
+           y1 = tmp, col="grey50", length = 0, lwd=2)
+    points(1:length(tmp), tmp, pch = 20)
+    
+    if(ranked == TRUE){
+      
+      axis(side=1, at=1:length(tmp), labels = tmp_labels, las=2)
+    }else{
+    
+      axis(side=1, at=1:length(tmp), labels = imp_names[[var_name]], las=2)
+    }
+  
+  dev.off()
+}
 
 
 item_dist = function(group1, group2, n, m){
