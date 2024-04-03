@@ -12,6 +12,9 @@ data = import_data_surv(Path="C:/Heroes/Downloads soscisurvey/CSV/data_HerOEs_20
 
 data = data[-unique(c(which(data$C207_07 == 2), which(data$B101_04 == 2))), ]
 
+
+
+#-----------------------------------------------------------------------------
 # alle offenen Fragen ausgeben:
 
 # write.table(unique(data$C202_01), file = "C:/Heroes/Sammlung/C202_01_sonstige_Begriffe.txt", row.names = F, col.names = F)
@@ -37,148 +40,10 @@ data = data[-unique(c(which(data$C207_07 == 2), which(data$B101_04 == 2))), ]
 
 
 
+#-----------------------------------------------------------------------------------
+# Deskriptive Analyse
 
-
-#  Begriffe:
-
-
-
-plot_ranked(data, "Begriffe",
-            yx= c("nie", "selten", "häufig", "immer"),
-            mar=c(18,5,3,3),
-            main="Begriffe",
-            file="C:/Heroes/Ergebnisse/PDF/aktuell/Begriff_gesamt.pdf")
-
-plot_ranked(data, "Verhaltensweisen",
-            yx = c("gar nicht kennzeichnend", "eher nicht kennzeichnend",
-                   "eher kennzeichnend", "vollkommen kennzeichnend"),
-            mar=c(18,12,3,3),
-            main="Verhaltensweisen",
-            file="C:/Heroes/Ergebnisse/PDF/aktuell/Verhaltenweisen_gesamt.pdf")
-
-plot_ranked(data, "Informationen", 
-            yx=c("unwichtig","eher unwichtig","eher wichtig","wichtig"), 
-            mar=c(18,7,3,3),
-            main="Informationen",
-            file= "C:/Heroes/Ergebnisse/PDF/aktuell/Informationen_gesamt.pdf")
-
-
-# Hier muss noch mit den Altersgruppen geschaut werden, was da am besten wäre -> binäre Daten
-
-plot_binary(data,
-            var_name="AlterGruppen",
-            main="Altersgruppen",
-            mar=c(12,5,3,3),
-            ylab="Anzahl Mitarbeitende",
-            file="C:/Heroes/Ergebnisse/PDF/aktuell/Altersgruppen.pdf")
-
-
-
-# bei D303 Auf welche Weise Infos: Unklar was tun da binäre Daten
-plot_binary(data,
-            var_name="Informationsart",
-            main="Art der Information",
-            mar=c(12,5,3,3),
-            ylab="Anzahl Mitarbeitende",
-            file="C:/Heroes/Ergebnisse/PDF/aktuell/Informationsart.pdf", ranked = T)
-
-
-plot_ranked(data = data,
-            yx=c("nie",
-                 "selten",
-                 "häufig",
-                 "immer"),
-            var_name = "Dokumente",
-            mar=c(18,5,3,3),
-            main="Dokumente", file="C:/Heroes/Ergebnisse/PDF/aktuell/Dokumente_gesamt.pdf")
-
-
-plot_binary(data,
-            var_name="Informationsbedarf",
-            main="Informationsbedarf",
-            mar=c(18,5,3,3),
-            ylab="Anzahl Mitarbeitende",
-            file="C:/Heroes/Ergebnisse/PDF/aktuell/Informationsbedarf.pdf", ranked = T)
-
-
-plot_binary(data,
-            var_name="Vetor.Auf",
-            main="Vetorecht Aufnahme",
-            mar=c(15,5,3,3),
-            ylab="Anzahl Mitarbeitende",
-            file="C:/Heroes/Ergebnisse/PDF/aktuell/Vetorecht Aufnahme_gesamt.pdf", ranked = T)
-
-
-plot_binary(data,
-            var_name="Vetoem.Auf",
-            main="Vetoempfehlung Aufnahme",
-            mar=c(15,5,3,3),
-            ylab="Anzahl Mitarbeitende",
-            file="C:/Heroes/Ergebnisse/PDF/aktuell/Vetoempfehlung Aufnahme_gesamt.pdf", ranked = T)
-
-
-plot_binary(data,
-            var_name="Entscheidung.Auf",
-            main="Entscheidung Aufnahme",
-            mar=c(15,5,3,3),
-            ylab="Anzahl Mitarbeitende",
-            file="C:/Heroes/Ergebnisse/PDF/aktuell/Entscheidung Aufnahme_gesamt.pdf", ranked = T)
-
-
-
-plot_binary(data,
-            var_name="Vetor.Ent",
-            main="Vetorecht Entlassung",
-            mar=c(15,5,3,3),
-            ylab="Anzahl Mitarbeitende",
-            file="C:/Heroes/Ergebnisse/PDF/aktuell/Vetorecht Entlassung_gesamt.pdf", ranked = T)
-
-
-plot_binary(data,
-            var_name="Vetoem.Ent",
-            main="Vetoempfehlung Entlassung",
-            mar=c(15,5,3,3),
-            ylab="Anzahl Mitarbeitende",
-            file="C:/Heroes/Ergebnisse/PDF/aktuell/Vetoempfehlung Entlassung_gesamt.pdf", ranked = T)
-
-
-plot_binary(data,
-            var_name="Entscheidung.Ent",
-            main="Entscheidung Entlassung",
-            mar=c(15,5,3,3),
-            ylab="Anzahl Mitarbeitende",
-            file="C:/Heroes/Ergebnisse/PDF/aktuell/Entscheidung Entlassung_gesamt.pdf", ranked = T)
-
-
-plot_ranked(data,
-            yx=c("gar nicht wichtig", "nicht wichtig", "eher nicht wichtig",
-                 "eher wichtig", "wichtig", "vollkommen wichtig"),
-            var_name = "Interdisz",
-            mar=c(14,9,3,3),
-            main="Interdisziplinäres Team",
-            file = "C:/Heroes/Ergebnisse/PDF/aktuell/Interdisz_Team_gesamt.pdf")
-
-
-
-plot_ranked(data,
-            yx=c("gar nicht wichtig", "nicht wichtig", "eher nicht wichtig",
-                 "eher wichtig", "wichtig", "vollkommen wichtig"),
-            var_name = "Kompetenzen",
-            mar=c(24,9,3,3),
-            main="Kompetenzen",
-            file = "C:/Heroes/Ergebnisse/PDF/aktuell/Kompetenzen_gesamt.pdf")
-
-
-plot_ranked(data,
-            yx=c("gar nicht wichtig", "nicht wichtig", "eher nicht wichtig",
-                 "eher wichtig", "wichtig", "vollkommen wichtig"),
-            var_name = "Fortbildung",
-            mar=c(18,9,3,3),
-            main="Fortbildungen",
-            file = "C:/Heroes/Ergebnisse/PDF/aktuell/Fortbildungen_gesamt.pdf")
-
-
-
+descriptive_anal_plots(data=data, path="C:/Heroes/Ergebnisse/PDF/aktuell")
 
 
 
@@ -193,7 +58,7 @@ data_skalen = skalen
 data_skalen_ohne = skalen_ohne
 
 
-
+skalen2
 
 
 
@@ -224,8 +89,8 @@ plot_skalen_imp(create_skalen_imp(score_type = "scores_mean",
                                   skalen_scores = skalen_scores,
                                   group_index=get_index_by_group(data,
                                                                  "B102",
-                                                                 group_index = c(1:5))),
-                mar=c(8,3,1,1))
+                                                                 group_keys = c(1:5))),
+                mar=c(8,3,1,1), ylim = c(0,6), main = "")
 
 
 

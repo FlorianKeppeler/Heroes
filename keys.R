@@ -11,6 +11,10 @@ imp_names[["B105"]] = c("< 3", "4 - 10", "> 11")
 imp_names[["B110"]] = c("< 30", "31 - 50", "> 51")
 imp_names[["B107"]] = codebook[codebook$Variable == "B107",]$`Response Label`
 
+imp_names[["B107"]][c(10, 14, 21, 28, 37)] = c("ev Jugendhilfe Heilbronn", "Johannes_Falk_Haus Stuttgart", "Kinder und Jugendhilfe Karlshöhe Ludwigsburg",
+                                       "Oberlin Jugendhilfe Reutlingen", "Stiftung Tragwerk KirchheimTeck")
+
+
 imp_names[["Begriffe"]] = c("Herausfordernde junge Menschen", "Systemsprenger:innen", "Die Schwierigsten",
                             "Knaller", "Brecher", "Verhaltenskreative", "Problemkinder/-jugendliche", "Erziehungsresistente",
                             "Verhaltensgestörte", "Hilferesistente", "Schwierige Kinder/Jugendliche", "Jugendhilfe-Aversive",
