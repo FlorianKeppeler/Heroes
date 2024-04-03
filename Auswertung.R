@@ -43,7 +43,7 @@ data = data[-unique(c(which(data$C207_07 == 2), which(data$B101_04 == 2))), ]
 #-----------------------------------------------------------------------------------
 # Deskriptive Analyse
 
-descriptive_anal_plots(data=data, path="C:/Heroes/Ergebnisse/PDF/aktuell")
+descriptive_anal_plots(data=data, path="C:/Heroes/Ergebnisse/PDF/aktuell/Deskriptive Analyse Plots")
 
 
 
