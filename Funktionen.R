@@ -1178,6 +1178,7 @@ create_ums_proz = function(skalen, umsetzung, ums_data, group_index){
     tmp = ums_data[group_index, umsetzung[umsetzung[, 2] %in% skalen[[i]], 1]]
     
     if(is.null(dim(tmp))){
+
       tmp_proz = c(tmp_proz, mean(tmp, na.rm = T))
       
     }else{
@@ -1332,52 +1333,118 @@ check_loadings = function(skalen_scores){
 }
 
 
-plot_group_diff = function(skalen, umsetzung, ums_data, group_list){
+plot_group_diff = function(skalen, umsetzung, ums_data, group_list, path){
   
   tmp = list()
   
   for(i in 1:length(group_list)){
     
     ums_proz = create_ums_proz(data_skalen_ohne, umsetzung, ums_data,
-                               group_index=get_index_by_group(data, group_keys = group_list[[i]]))
+                               group_index=get_index_by_group(data, var_name_group = "B102", group_keys = group_list[[i]]))
     
     skalen_imp = create_skalen_imp(score_type = "scores_mean",
                                    skalen_scores = skalen_scores,
-                                   group_index=get_index_by_group(data, group_keys = group_list[[i]]))
+                                   group_index=get_index_by_group(data, var_name_group = "B102", group_keys = group_list[[i]]))
     
     
     merged_imp = merge(skalen_imp, ums_proz, by.x = "Name", by.y="Skalen")
     
-    merged_imp = merged_imp[order(merged_imp[,"Wert"], decreasing = T),]
+    merged_imp = merged_imp[order(merged_imp[,"mean"], decreasing = T),]
     
     tmp[[names(group_list)[i]]] = merged_imp
   }
   
   res = merge(tmp[[1]], tmp[[2]], by ="Name")
   
-  res$Diff.Wert = res$Wert.x - res$Wert.y
+  res$Diff.Wert = res$mean.x - res$mean.y
   res$Diff.Proz = res$Prozente.x - res$Prozente.y
   
   tmp_Wert = res[order(res[,"Diff.Wert"], decreasing = F),]
   
-  plot(tmp_Wert$Diff.Wert, xaxt="n", xlab="", pch=20, main=  paste("Bewertung:", paste(names(group_list), collapse = " - ")))
+  
+  
+  pdf(file=paste0(path, "Vergleich_Bewertung_", paste(names(group_list), collapse = "_"), ".pdf"),
+      width=14, height = 12, paper = "a4r")
+  
+  par(mar=c(12, 6, 3,3))
+  
+  plot(tmp_Wert$Diff.Wert,
+       xaxt="n",
+       xlab="",
+       type="n",
+       main=paste("Bewertung:", paste(names(group_list), collapse = " - ")),
+       ylim=c(-0.5, 0.5), 
+       ylab="Unterschiede Bewertung")
+  
+  
   axis(side=1, at=1:nrow(tmp_Wert), labels = tmp_Wert$Name, las=2)
+  
+  arrows(x0 = 1:nrow(tmp_Wert), y0 = rep(-1, nrow(tmp_Wert)),
+         y1 = 0,
+         col="grey80",
+         length = 0, lwd=1)
+  
   arrows(x0 = 1:nrow(tmp_Wert), y0 = rep(0, nrow(tmp_Wert)),
-         y1 = tmp_Wert$Diff.Wert, col="grey50", length = 0)
+         y1 = tmp_Wert$Diff.Wert,
+         col=ifelse(tmp_Wert$Diff.Wert <= 0, "#1b9e77", "#e7298a"),
+         length = 0, lwd=5)
+  
   points(1:nrow(tmp_Wert), tmp_Wert$Diff.Wert, pch = 20)
+  
   abline(h=0)
+  
+  legend("topleft",
+         lty=1,
+         lwd=5,
+         col=c("#1b9e77", "#e7298a"),
+         # legend = c("Höher bewertet HZE", "Höher bewertet SBBZ"),
+         legend = paste("Höher bewertet", rev(names(group_list))),
+         bty = "n")
+  
+  dev.off()
+  
   
   
   tmp_Proz = res[order(res[,"Diff.Proz"], decreasing = F),]
   tmp_Proz = tmp_Proz[complete.cases(tmp_Proz),]
   
-  plot(tmp_Proz$Diff.Proz, xaxt="n", xlab="", pch=20, main=  paste("Umsetzung:", paste(names(group_list), collapse = " - ")))
+  pdf(file=paste0(path, "Vergleich_Umsetzung_", paste(names(group_list), collapse = "_"), ".pdf"),
+      width=14, height = 12, paper = "a4r")
+  
+  
+  par(mar=c(12, 6, 3,3))
+  
+  plot(tmp_Proz$Diff.Proz, xaxt="n",
+       xlab="",
+       pch=20,
+       main=  paste("Umsetzung:", paste(names(group_list), collapse = " - ")),
+       ylab = "Unterschied Einschätzung Umsetzung", ylim=c(-0.2, 0.2))
+  
+  arrows(x0 = 1:nrow(tmp_Proz), y0 = rep(-1, nrow(tmp_Proz)),
+         y1 = 0,
+         col="grey80",
+         length = 0, lwd=1)
+  
   axis(side=1, at=1:nrow(tmp_Proz), labels = tmp_Proz$Name, las=2)
-  arrows(x0 = 1:nrow(tmp_Proz), y0 = rep(0, nrow(tmp_Proz)),
-         y1 = tmp_Proz$Diff.Proz, col="grey50", length = 0)
+  arrows(x0 = 1:nrow(tmp_Proz),
+         y0 = rep(0, nrow(tmp_Proz)),
+         y1 = tmp_Proz$Diff.Proz,
+         col=ifelse(tmp_Proz$Diff.Proz <= 0, "#1b9e77", "#e7298a"),
+         length = 0,
+         lwd=5)
+  
   points(1:nrow(tmp_Proz), tmp_Proz$Diff.Proz, pch = 20)
   abline(h=0)
   
+  legend("topleft",
+         lty=1,
+         lwd=5,
+         col=c("#1b9e77", "#e7298a"),
+         # legend = c("Höher bewertet HZE", "Höher bewertet SBBZ"),
+         legend = paste("Höher eingeschätzt", rev(names(group_list))),
+         bty = "n")
+  
+  dev.off()
 }
 
 
@@ -1770,4 +1837,58 @@ write_einrichtungen_sbbz_hze = function(data, file){
   names(res) = res_names
   
   write.xlsx(res, file = file)
+}
+
+
+
+fit_randomForest = function(data,
+                            ums_data,
+                            skalen,
+                            skalen_names,
+                            main,
+                            file){
+  
+  ums_scores = get_ums_scores(ums_data, skalen = data_skalen, names(data_skalen))
+  
+  Halte_scores = get_skalen_scores(data = data,
+                                   skalen = data_skalen,
+                                   skalen_names = "HK.subj.Einrichtung")
+  
+  
+  ums_scores[["HK.subj.Einrichtung"]] = Halte_scores[["HK.subj.Einrichtung"]]
+  
+  
+  ums_tmp = create_model_df(ums_scores = ums_scores, score_type = "scores_mean")
+  
+  ums_df = ums_tmp[[1]]
+  
+  
+  rfm = randomForest(HK.subj.Einrichtung ~ ., data = ums_df, ntree=5000)
+  
+  
+  m_imp = importance(rfm)
+  
+  m_names = rownames(m_imp)
+  m_names = m_names[order(m_imp, decreasing = T)]
+  m_imp = sort(m_imp, decreasing = T)
+  
+  pdf(file=file, width=14, height = 12, paper = "a4r")
+  
+  par(mar=c(12,4,3,3))
+  
+  plot(m_imp,
+       type="n",
+       xaxt="n",
+       xlab="",
+       ylab="Wichtigkeit nach Modell",
+       main = main)
+  
+  arrows(x0 = 1:length(m_imp), y0 = 0, y1 = m_imp, length = 0, lwd=5, col="grey50")
+  
+  points(1:length(m_imp), m_imp, pch=20)
+  axis(side = 1, las= 2, at= 1:length(m_imp), labels = m_names)
+  
+  dev.off()
+  
+  return (rfm)
 }
