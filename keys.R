@@ -1,5 +1,6 @@
 source("C:/Heroes/Funktionen.R")
 load("C:/Heroes/codebook.RData")
+n_items = read.xlsx(xlsxFile = "C:/Heroes/N_pro Item.xlsx", sheet = 1)
 
 
 imp_names = list()

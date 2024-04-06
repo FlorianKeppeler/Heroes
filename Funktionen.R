@@ -1631,39 +1631,128 @@ descriptive_anal_plots = function(data, type, path){
 
 
 
-get_item_summary = function(data, file){
+get_item_summary = function(data, file, file.excel, path.plot){
   
   res_tmp = data.frame("Gruppe"=character(0),
+                       "Skale"=character(0),
                        "Item"=character(0),
                        "mean"=numeric(0),
-                       "median"=numeric(0),
-                       "sd"=numeric(0),
+                       "se.1"=numeric(0),
+                       "se.2"=numeric(0),
                        "umsetzung"=numeric(0),
                        "Frage"=character(0))
   
   res_tmp_names = names(res_tmp)
+
+  skalen_df = data.frame("Skale"=character(0), "Item"=character(0))
   
-  i = names(keys)[1]
+  names_skalen_df = names(skalen_df)
   
-  for(i in names(keys)){
+  skalen_names = names(skalen)
+  
+  for(i in 1:length(skalen)){
     
-    for(j in 1:length(keys[[i]])){
-      tmp = c(i, keys[[i]][j], round(mean(data[,keys[[i]][j]], na.rm=T), 2),
-              median(data[,keys[[i]][j]], na.rm=T), round(sd(data[,keys[[i]][j]], na.rm=T), 3))
+    for(j in 1:length(skalen[[i]])){
       
-      ums_tmp = data[ ,umsetzung$var.Key[umsetzung$var.Umgesetzt == keys[[i]][j]]]
-      tmp = c(tmp, round(mean(ums_tmp - 1, na.rm=T)*100, 0))
-      
-      tmp = c(tmp, codebook$`Variable Label`[codebook$Variable == keys[[i]][j]][1])
-      
-      res_tmp = rbind(res_tmp, tmp,deparse.level = 2)
-      
+      tmp = c(skalen_names[i], skalen[[i]][j])
+      skalen_df = rbind(skalen_df, tmp)
     }
   }
   
+  names(skalen_df) = names_skalen_df
+  
+  
+  
+  for(i in names(keys)){
+
+    for(j in 1:length(keys[[i]])){
+      
+      tmp_skale = skalen_df$Skale[skalen_df$Item == keys[[i]][j]]
+      
+      tmp_fit = binom_est(data[,keys[[i]][j]], yx = 1:n_items$n[n_items$Item == keys[[i]][j]])
+      
+      # tmp = c(i,
+      #         ifelse(length(tmp_skale) == 0, NA, tmp_skale),
+      #         keys[[i]][j],
+      #         round(mean(data[,keys[[i]][j]], na.rm=T), 2),
+      #         median(data[,keys[[i]][j]], na.rm=T),
+      #         round(sd(data[,keys[[i]][j]], na.rm=T), 3))
+      
+      tmp = c(i,
+              ifelse(length(tmp_skale) == 0, NA, tmp_skale),
+              keys[[i]][j],
+              round(tmp_fit[1], 2),
+              round(tmp_fit[2], 3),
+              round(tmp_fit[3], 3))
+
+      ums_tmp = data[ ,umsetzung$var.Key[umsetzung$var.Umgesetzt == keys[[i]][j]]]
+      tmp = c(tmp, round(mean(ums_tmp - 1, na.rm=T)*100, 0))
+
+      tmp = c(tmp, codebook$`Variable Label`[codebook$Variable == keys[[i]][j]][1])
+
+      res_tmp = rbind(res_tmp, tmp,deparse.level = 2)
+
+    }
+  }
+  
+  
   names(res_tmp) = res_tmp_names
   
-  write.xlsx(res_tmp,file = file)
+  res_tmp = res_tmp[order(res_tmp$Skale),]
+  
+  write.xlsx(res_tmp,file = file.excel, overwrite = T)
+  
+  
+  for(i in 1:length(skalen)){
+  
+  fit = as.numeric(res_tmp[res_tmp$Skale == names(skalen)[i],"mean"])
+  se1 = as.numeric(res_tmp[res_tmp$Skale == names(skalen)[i],"se.1"])
+  se2 = as.numeric(res_tmp[res_tmp$Skale == names(skalen)[i],"se.2"])
+  
+  
+  fit = fit[!is.na(fit)]
+  se1 = se1[!is.na(se1)]
+  se2 = se2[!is.na(se2)]
+  
+  if(length(fit) > 0){
+    
+    jpeg(filename = paste0(path.plot, "_", i, ".jpg"), width=1000, height=570, pointsize = 20)
+    
+    par(mar=c(10, 5, 3, 3))
+    
+    plot(fit, 1:length(fit),
+         xlim=c(1,6),
+         xaxt="n",
+         xlab="",
+         yaxt="n",
+         ylab="",
+         type="n",
+         main=names(skalen)[i],
+         ylim=c(0.5, length(fit)+0.5))
+    
+    abline(v=c(1:6), col="grey80")
+    
+    arrows(x0 = rep(0, length(fit)), x1 = fit, y0 = 1:length(fit), lty=2, length = 0, lwd=1, col="grey50")
+    
+    arrows(x0 = fit, x1 = se1, y0 = 1:length(fit), length = 0.1, lwd=2, col="grey40", angle = 90)
+    arrows(x0 = fit, x1 = se2, y0 = 1:length(fit), length = 0.1, lwd=2, col="grey40", angle = 90)
+    
+     points(fit, 1:length(fit), pch=20, cex=1.3)
+    
+    labels = res_tmp$Item[res_tmp$Skale == names(skalen)[i]]
+    
+    labels = labels[!is.na(labels)]
+    
+    axis(side=2, at = 1:length(fit), labels = labels, las=2)
+    axis(side=1,
+         at = 1:6,
+         labels = c("stimme gar nicht zu", "stimme nicht zu", "stimme eher nicht zu",
+                    "stimme eher zu", "stimme zu", "stimme vollkommen zu"),
+         las=2)
+    
+    dev.off()
+    }
+  }
 }
 
 

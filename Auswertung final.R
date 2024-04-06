@@ -4,10 +4,12 @@ source("C:/Heroes/keys.R")
 
 library(randomForest)
 library(openxlsx)
+library(betareg)
 
 
 data = import_data_surv(Path="C:/Heroes/Downloads soscisurvey/CSV/data_HerOEs_2023-08-27_16-42.csv")
 
+nrow(data)
 
 # Leute entfernen die nicht mit jM arbeiten:
 
@@ -98,12 +100,14 @@ write_einrichtungen_sbbz_hze(data, file= "C:/Heroes/Ergebnisse/Excel/Einrichtung
 
 # Plots
 
-descriptive_anal_plots(data=data, path="C:/Heroes/Ergebnisse/PDF/aktuell/Deskriptive Analyse Plots")
+descriptive_anal_plots(data=data, type="binom", path="C:/Heroes/Ergebnisse/Grafiken/Deskriptive Analyse Plots")
 
 
 # Mittelwerte von Items und Umsetzung
 
-get_item_summary(data, "C:/Heroes/Ergebnisse/Mittelwerte/Items.xlsx")
+get_item_summary(data,
+                 file.excel = "C:/Heroes/Ergebnisse/Excel/Mittelwerte/Items.xlsx",
+                 path.plot="C:/Heroes/Ergebnisse/Grafiken/Items nach Skala/Skala")
 
 
 
@@ -161,7 +165,7 @@ plot_combined_imp(skalen = skalen,
                   var_name_group= "B102",
                   ums_data = ums_data,
                   group_list = group_list,
-                  path="C:/Heroes/Ergebnisse/PDF/aktuell/Wichtigkeit und Umsetzung/Wichtigkeit", 
+                  path="C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Wichtigkeit", 
                   combined=FALSE)
 
 plot_combined_imp(skalen = skalen,
@@ -171,7 +175,7 @@ plot_combined_imp(skalen = skalen,
                   var_name_group= "B102",
                   ums_data = ums_data,
                   group_list = group_list,
-                  path="C:/Heroes/Ergebnisse/PDF/aktuell/Wichtigkeit und Umsetzung/Wichtigkeit_Umsetzung", 
+                  path="C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Wichtigkeit_Umsetzung", 
                   combined=TRUE)
 
 
