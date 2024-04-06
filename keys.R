@@ -118,73 +118,73 @@ keys[["SEA"]] = create_simple_key("M401_", 1:2)
 skalen = list()
 
 # nur Skalen
-skalen[["Beziehung.1"]] = create_simple_key("D312_", 2:3)
-skalen[["Beziehung.2"]] = c(create_complex_key("E4",14:18,7:11), "F508_03")
-skalen[["Beziehung.3"]] = c("I902_01","I911_04", create_complex_key("H8",11:12,8:9))
-skalen[["Beziehung.4"]] = c("F524_19", "I912_05","I915_08")
-skalen[["Transparenz.jM"]] = c("E402_01","G607_04")
-skalen[["Beteiligung.jM"]] = c("E409_02","E410_03","F502_01","G602_01","G605_02",
+skalen[["Bez.bisherige"]] = create_simple_key("D312_", 2:3)
+skalen[["Bez.Planung"]] = c(create_complex_key("E4",14:18,7:11), "F508_03")
+skalen[["Bez.Kontinuität.int"]] = c("I902_01","I911_04", create_complex_key("H8",11:12,8:9))
+skalen[["Bez.Kontinuität.ext"]] = c("F524_19", "I912_05","I915_08")
+skalen[["Transp.jM"]] = c("E402_01","G607_04")
+skalen[["Beteil.jM"]] = c("E409_02","E410_03","F502_01","G602_01","G605_02",
                                "G606_03", "I909_02","H810_07")
-skalen[["Transparenz.WG"]] = c("G615_12")
-skalen[["Beteiligung.WG"]] = c("E412_05")
-skalen[["Fallkomm.JA.1"]] = c("F508_03","F544_02", "F550_08", "F546_04", "I914_07", "G618_15",
+skalen[["Transp.WG"]] = c("G615_12")
+skalen[["Beteil.WG"]] = c("E412_05")
+skalen[["Fallkomm.ext.strukt"]] = c("F508_03","F544_02", "F550_08", "F546_04", "I914_07", "G618_15",
                               "G619_16", "F519_14", "G613_10", "F517_12", "G621_18")
-skalen[["Fallkomm.JA.2"]] = c("F504_01")
-skalen[["Fallkomm.JA.3"]] = c("F545_03")
-skalen[["Fallkomm.KJP.1"]] = c("F551_09", "F552_10", "F553_11", "G623_20", "F554_12")
-skalen[["Fallkomm.KJP.2"]] = c("F555_13","F556_14","H816_13")
-skalen[["Fallkomm.SA"]] = c("F547_05", "F513_08")
-skalen[["Fallkomm.Elt.1"]] = c("D312_07")
-skalen[["Fallkomm.Elt.2"]] = c("F548_06","G624_21")
-skalen[["Fallkomm.Elt.3"]] = c("F557_15")
-skalen[["Komm.andere.1"]] = c("I916_09","I913_06")
-skalen[["Komm.andere.2"]] = c("F549_07","G625_22")
-skalen[["Fallkomm.Int.1"]] = c("D312_01","D312_06","D312_09","D312_10","E411_04","D312_04",
+skalen[["Fallkomm.ext.JA "]] = c("F504_01")
+skalen[["Fallkomm.ext.JA.LJA"]] = c("F545_03")
+skalen[["Fallkomm.ext.strukt.KJP"]] = c("F551_09", "F552_10", "F553_11", "G623_20", "F554_12")
+skalen[["Fallkomm.ext.Dialog.KJP "]] = c("F555_13","F556_14","H816_13")
+skalen[["Fallkomm.ext.Schulamt"]] = c("F547_05", "F513_08")
+skalen[["Komm.Eltern.Ressource"]] = c("D312_07")
+skalen[["Komm.Eltern.Beteil"]] = c("F548_06","G624_21")
+skalen[["Komm.Eltern.Transp"]] = c("F557_15")
+skalen[["Komm.strukt.Soz.Raum"]] = c("I916_09","I913_06")
+skalen[["Komm.Dialog.Soz.Raum"]] = c("F549_07","G625_22")
+skalen[["Fallkomm.int.Setting"]] = c("D312_01","D312_06","D312_09","D312_10","E411_04","D312_04",
                                "D312_05","D312_08","F517_12","F523_18")
-skalen[["Fallkomm.Int.2"]] = c("F520_15","F522_17","F521_16","F507_02","G608_05",
+skalen[["Fallkomm.int.Setting.Änd"]] = c("F520_15","F522_17","F521_16","F507_02","G608_05",
                                "H818_15","G613_10")
-skalen[["Fallkomm.Int.3"]] = c("G609_06","G616_13","F513_08")
-skalen[["Krisenver.1"]] = c("H703_01","H707_03")
-skalen[["Krisenver.2"]] = c("H706_02")
-skalen[["Krisenver.3"]] = c("H708_04")
-skalen[["Krisenver.4"]] = c("H715_11", "H716_12","H717_13","H718_14")
-skalen[["Krisenbew.1"]] = c("H711_07","H712_08","H713_09")
-skalen[["Krisenbew.2"]] = c("H709_05","H714_10")
-skalen[["Krisenauf.1"]] = c("H802_01","H805_02","H806_03","H807_04")
-skalen[["Krisenauf.2"]] = c("H810_07")
-skalen[["Krisenauf.3"]] = c("H811_08","H812_09")
-skalen[["Krisenauf.4"]] = c("H813_10","H817_14","H818_15","I913_06")
-skalen[["Krisenauf.5"]] = c("H815_12","H814_11","H816_13")
-skalen[["Team.1"]] = c("F509_04","F510_05","F522_17","G617_14","G620_17","G622_19",
+skalen[["Fallkomm.int.HZE.SBBZ"]] = c("G609_06","G616_13","F513_08")
+skalen[["Krisen.ver.Reflexion"]] = c("H703_01","H707_03")
+skalen[["Krisen.ver.Deeskalation"]] = c("H706_02")
+skalen[["Krisen.ver.Einbez.amb"]] = c("H708_04")
+skalen[["Krisen.ver.ext.Koop"]] = c("H715_11", "H716_12","H717_13","H718_14")
+skalen[["Krisen.bew.Schutz.WG"]] = c("H711_07","H712_08","H713_09")
+skalen[["Krisen.bew.SBBZ"]] = c("H709_05","H714_10")
+skalen[["Krisen.aufarb.Team"]] = c("H802_01","H805_02","H806_03","H807_04")
+skalen[["Krisen.aufarb.jM"]] = c("H810_07")
+skalen[["Krisen.aufarb.Wiedergut"]] = c("H811_08","H812_09")
+skalen[["Krisen.aufarb.Neuanfang"]] = c("H813_10","H817_14","H818_15","I913_06")
+skalen[["Krisen.aufarb.ext.Koop"]] = c("H815_12","H814_11","H816_13")
+skalen[["Team.strukt.HZE"]] = c("F509_04","F510_05","F522_17","G617_14","G620_17","G622_19",
                        "F523_18","G621_18")
-skalen[["Team.2"]] = c("F511_06","F512_07","F514_09","F515_10","F516_11","F518_13", 
+skalen[["Team.strukt.SBBZ"]] = c("F511_06","F512_07","F514_09","F515_10","F516_11","F518_13", 
                        "G610_07","G611_08")
-skalen[["Team.3"]] = c("H710_06","K222_13","K225_16")
-skalen[["Team.4"]] = c("K226_17")
-skalen[["Team.5"]] = c("K211_02","K212_03","K213_04", "K214_05","K215_06", 
+skalen[["Team.gem.Strategie"]] = c("H710_06","K222_13","K225_16")
+skalen[["Team.interdisz"]] = c("K226_17")
+skalen[["Team.Vertrauen"]] = c("K211_02","K212_03","K213_04", "K214_05","K215_06", 
                        "K216_07","K217_08")
-skalen[["Team.6"]] = c("K223_14","K224_15")
-skalen[["Unterst.1"]] = c("H808_05","H809_06")
-skalen[["Unterst.2"]] = c("E418_11","G612_09")
-skalen[["Unterst.3"]] = c("K219_10","K220_11","K218_09","I910_03")
-skalen[["Unterst.4"]] = c("K202_01","K211_02")
-skalen[["Unterst.5"]] = c("K221_12", create_simple_key("K207_",1:16))
-skalen[["Paed.Halt.1"]] = c("J117_12","J118_13","J116_11","J118_13",
+skalen[["Team.Anerkennung"]] = c("K223_14","K224_15")
+skalen[["MA.Unterst.Belast"]] = c("H808_05","H809_06")
+skalen[["MA.Blick.auf.jM"]] = c("E418_11","G612_09")
+skalen[["MA.Supervis.FD/BL"]] = c("K219_10","K220_11","K218_09","I910_03")
+skalen[["MA.Zusammenhalt"]] = c("K202_01","K211_02")
+skalen[["MA.Fortbildung"]] = c("K221_12", create_simple_key("K207_",1:16))
+skalen[["Haltung.Selbstfürsorge"]] = c("J117_12","J118_13","J116_11","J118_13",
                             "J115_10","J109_04")
-skalen[["Paed.Halt.2"]] = c("J102_01","J107_02","J108_03", "J111_06","J110_05",
+skalen[["Haltung.Fürsorge.jM"]] = c("J102_01","J107_02","J108_03", "J111_06","J110_05",
                             "J112_07","J113_08","J114_09")
 # skalen[["Paed.Part.1"]] = c("Platzhalter für Vetorechte")
-skalen[["Paed.Part.2"]] = c("G615_12","D312_06","D312_09","D312_10",
+skalen[["Beteil.Team.Betreuung"]] = c("G615_12","D312_06","D312_09","D312_10",
                             "E411_04","D312_08","F520_15","G609_06",
                             "G616_13","H817_14")
-skalen[["Paed.Part.3"]] = c("F504_01","F555_13","F556_14")
-skalen[["Paed.Part.4"]] = c("H710_06","K222_13","K225_16", "K215_06",
+skalen[["Beteil.Team.strukt"]] = c("F504_01","F555_13","F556_14")
+skalen[["Beteil.Team.Stärkung"]] = c("H710_06","K222_13","K225_16", "K215_06",
                             "K217_08","H809_06","K220_11","K221_12",
                             "H807_04")
-skalen[["Paed.Part.5"]] = c("H703_01","H706_02","H714_10","H802_01",
+skalen[["Beteil.Team.Umgang.Krise"]] = c("H703_01","H706_02","H714_10","H802_01",
                             "H805_02","H806_03","H810_07","H813_10",
                             "H811_08","H818_15")
-skalen[["Haltekraft"]] = c("L301_01","L302_01","L303_01","L304_01","L305_01")
+skalen[["HK.subj.Einrichtung"]] = c("L301_01","L302_01","L303_01","L304_01","L305_01")
 
 
 skalen_ohne = skalen[-51]

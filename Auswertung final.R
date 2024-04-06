@@ -3,6 +3,7 @@ source("C:/Heroes/keys.R")
 
 
 library(randomForest)
+library(openxlsx)
 
 
 data = import_data_surv(Path="C:/Heroes/Downloads soscisurvey/CSV/data_HerOEs_2023-08-27_16-42.csv")
@@ -11,6 +12,58 @@ data = import_data_surv(Path="C:/Heroes/Downloads soscisurvey/CSV/data_HerOEs_20
 # Leute entfernen die nicht mit jM arbeiten:
 
 data = data[-unique(c(which(data$C207_07 == 2), which(data$B101_04 == 2))), ]
+
+
+#--------------------------------------
+# Stichprobe:
+nrow(data)
+#  -> 397 Versuchspersonen gesamt
+
+
+# SBBZ
+sum(data$B102==2)
+# 74
+
+
+# HZE stationär
+sum(data$B102==3)
+#154
+
+#  -> 228 Versuchspersonen aus SBBZ und HZE stationär
+
+# Demographie ---------------------------
+sum(!is.na(data$B103))
+sum(!is.na(data$B105))
+sum(!is.na(data$B110))
+#  --> alle geben 228 aus: insgesamt 228 Versuchspersonen zu Demographie befragt
+
+# Geschlecht
+table(data$B103)
+# -> 151: w;    75: m;   2: d
+
+# Berufserfahrung:
+table(data$B105)
+#  -> 34: < 3;    99: 4 - 10;     95: > 11
+
+
+# Alter:
+table(data$B110)
+#  -> 61: < 30;    126:  31 - 50;    41: > 51 
+
+
+# Arbeitsbereiche:
+table(data$B102)
+# -> 88: Leitung;    74: SBBZ;    154: HZE.station;     20: HZE.teilst;     61: HZE.ambul
+
+
+
+sum(!is.na(data$B107))
+#  -> Rücklauf sind 397 nach Ausschluss der Personen die nicht mit jM arbeiten
+
+
+write_einrichtungen_sbbz_hze(data, file= "C:/Heroes/Ergebnisse/Excel/Einrichtungen/Sbbz_Hze.xlsx")
+
+
 
 
 
@@ -50,32 +103,7 @@ descriptive_anal_plots(data=data, path="C:/Heroes/Ergebnisse/PDF/aktuell/Deskrip
 
 # Mittelwerte von Items und Umsetzung
 
-res_tmp = data.frame("Gruppe"=character(0), "Item"=character(0), "mean"=numeric(0), "median"=numeric(0), "sd"=numeric(0), "umsetzung"=numeric(0), "Frage"=character(0))
-
-res_tmp_names = names(res_tmp)
-
-i = names(keys)[1]
-
-for(i in names(keys)){
-  
-  for(j in 1:length(keys[[i]])){
-  tmp = c(i, keys[[i]][j], round(mean(data[,keys[[i]][j]], na.rm=T), 2),
-                                                              median(data[,keys[[i]][j]], na.rm=T), round(sd(data[,keys[[i]][j]], na.rm=T), 3))
-  
-  ums_tmp = data[ ,umsetzung$var.Key[umsetzung$var.Umgesetzt == keys[[i]][j]]]
-  tmp = c(tmp, round(mean(ums_tmp - 1, na.rm=T)*100, 0))
-  
-  tmp = c(tmp, codebook$`Variable Label`[codebook$Variable == keys[[i]][j]][1])
-  
-  res_tmp = rbind(res_tmp, tmp,deparse.level = 2)
-  
-  }
-}
-
-names(res_tmp) = res_tmp_names
-
-write.xlsx(res_tmp,file = "C:/Heroes/Ergebnisse/Mittelwerte/Items.xlsx", )
-
+get_item_summary(data, "C:/Heroes/Ergebnisse/Mittelwerte/Items.xlsx")
 
 
 
@@ -94,19 +122,23 @@ skalen_scores = get_skalen_scores(data = data,
 
 # Faktorladungen pro Skala
 
-skalen_loadings = check_loadings(skalen_scores)
+# skalen_loadings = check_loadings(skalen_scores)
 
 
 
 # skalen ordnen -> wichtigste Haltekräfte nach Umfragewert
 
-plot_skalen_imp(create_skalen_imp(score_type = "scores_mean",
-                                  skalen_scores = skalen_scores,
-                                  group_index=get_index_by_group(data,
-                                                                 "B102",
-                                                                 group_keys = c(1:5))),
-                mar=c(8,3,1,1), ylim = c(0,6), main = "")
-
+# plot_skalen_imp(create_skalen_imp(score_type = "scores_mean",
+#                                   skalen_scores = skalen_scores,
+#                                   group_index=get_index_by_group(data,
+#                                                                  "B102",
+#                                                                  group_keys = c(1:5))),
+#                 mar=c(8,3,1,1),
+#                 ylim = c(0,6),
+#                 main = "",
+#                 plot=T,
+#                 file="C:/Heroes/Ergebnisse/PDF/aktuell/Deskriptive Analyse Plots/Wichtigkeit_gesamt.pdf")
+# 
 
 
 
@@ -116,13 +148,31 @@ plot_skalen_imp(create_skalen_imp(score_type = "scores_mean",
 
 # wichtigste Haltekraft nach Abgleich mit tatsächlicher Haltekraft für verschiedene Gruppierungen
 
-group_list = list("Alle" = 1:5, "SBBZ" = 2, "Leitung" = 1, "HZE" = 3:5)
+group_list = list("Gesamt" = 1:5, "SBBZ" = 2, "Leitung" = 1, "HZE" = 3:5)
 
 
 ums_data = create_ums_data(data, umsetzung)
 
-plot_combined_imp(skalen = skalen, data = data, skalen_scores = skalen_scores,
-                  umsetzung = umsetzung, ums_data = ums_data, group_list = group_list)
+
+plot_combined_imp(skalen = skalen,
+                  data = data,
+                  skalen_scores = skalen_scores,
+                  umsetzung = umsetzung,
+                  var_name_group= "B102",
+                  ums_data = ums_data,
+                  group_list = group_list,
+                  path="C:/Heroes/Ergebnisse/PDF/aktuell/Wichtigkeit und Umsetzung/Wichtigkeit", 
+                  combined=FALSE)
+
+plot_combined_imp(skalen = skalen,
+                  data = data,
+                  skalen_scores = skalen_scores,
+                  umsetzung = umsetzung,
+                  var_name_group= "B102",
+                  ums_data = ums_data,
+                  group_list = group_list,
+                  path="C:/Heroes/Ergebnisse/PDF/aktuell/Wichtigkeit und Umsetzung/Wichtigkeit_Umsetzung", 
+                  combined=TRUE)
 
 
 

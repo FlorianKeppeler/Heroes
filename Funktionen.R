@@ -134,10 +134,83 @@ add_missing = function(vec, m){
 }
 
 
-
-get_ranking = function(data, var_name){
+beta_est = function(x, yx){
   
-  df_begr = data.frame("mean"=apply(data[,keys[[var_name]]], 2, mean, na.rm=T), "name"=imp_names[[var_name]])
+  x = x[!is.na(x)]
+  
+  x = (x - 1)/length(yx)
+  
+  x[x == 0] = 0.0000001
+  x[x == length(yx)] = length(yx) - 0.0000001
+  
+  m = betareg(x ~ 1)
+
+  return (c(predict(m, type="response")[1], predict(m, type="quantile", at = c(0.25, 0.75))[1,]) * 6 + 1)
+}
+
+
+binom_est = function(x, yx){
+  
+  x = x[!is.na(x)]
+  
+  x = (x - 1)/length(yx)
+
+  m = glm(x ~ 1, family="binomial")
+  
+  fit = predict(m, type="link", se.fit=T)$fit[1]
+  se = predict(m, type="link", se.fit=T)$se.fit[1]
+  
+  tmp = c(plogis(fit), plogis(fit - 2*se), plogis(fit + 2*se)) * length(yx) + 1
+  
+  if(tmp[3]> length(yx)) tmp[3] = length(yx)
+  
+  return (tmp)
+}
+
+
+norm_est = function(x, yx){
+  
+  x = x[!is.na(x)]
+  
+  m = glm(x ~ 1, family="gaussian")
+  
+  fit = predict(m, type="response", se.fit=T)$fit[1]
+  se = predict(m, type="response", se.fit=T)$se.fit[1]
+  
+  return (c(fit, fit - se, fit + se))
+}
+
+
+
+get_ranking = function(data, var_name, type, yx){
+  
+  if (type == "norm"){
+    tmp = apply(data[,keys[[var_name]]], 2, FUN=norm_est)
+  }
+  
+  # if (type == "beta"){
+  #   tmp = apply(data[,keys[[var_name]]], 2, FUN=beta_est, yx=yx)
+  #   
+  #   for(i in 1:length(tmp)){
+  #     if(tmp[1, i] > tmp[3, i]){
+  #       tmp[3, i] = tmp[1, i]
+  #     }
+  #   }
+    
+    if (type == "binom"){
+      
+      tmp = apply(data[,keys[[var_name]]], 2, FUN=binom_est, yx=yx)
+      
+    }
+  
+    if (type == "mean"){
+      
+      tmp_mean = apply(data[,keys[[var_name]]], 2, mean, na.rm=T) 
+      tmp_sd = apply(data[,keys[[var_name]]], 2, sd, na.rm=T)
+      tmp = rbind(tmp_mean,tmp_mean - tmp_sd, tmp_mean + tmp_sd)
+    }
+  
+  df_begr = data.frame("mean"=tmp[1,], "name"=imp_names[[var_name]], "se.1"=tmp[2,], "se.2"=tmp[3,])
   
   return (df_begr[order(df_begr$mean, decreasing = T),])
 }
@@ -146,11 +219,13 @@ get_ranking = function(data, var_name){
 
 plot_ranked = function(data, var_name, yx, mar, main, file, add=0, label=""){
   
-  ranked = get_ranking(data, var_name)
+  ranked = get_ranking(data, var_name, type="binom", yx)
   
   pdf(file=file, width=14, height = 12, paper = "a4r")
   
-  par(mar=mar)
+  # jpeg(filename=file, width=1200, height = 730, units = "px", pointsize = 20)
+
+  par(mar=mar)  
   
   plot(ranked$mean, xaxt = "n", xlab = "", pch = 20, type = "n",
        ylab="", yaxt="n", main = main, ylim=c(1, length(yx)))
@@ -161,28 +236,41 @@ plot_ranked = function(data, var_name, yx, mar, main, file, add=0, label=""){
   
   if(!typeof(add) == "list"){
     
+    
+    
+    
+    
+    arrows(x0 = (1:nrow(ranked)), y0 = ranked[,"mean"],
+           y1 = ranked[,"se.1"], col="grey30", length = 0.1, lwd=1, angle=90)
+    
+    arrows(x0 = (1:nrow(ranked)), y0 = ranked[,"mean"],
+           y1 = ranked[,"se.2"], col="grey30", length = 0.1, lwd=1, angle=90)
+    
+    
     arrows(x0 = (1:nrow(ranked)), y0 = rep(0, nrow(ranked)),
            y1 = ranked[,1], col="grey50", length = 0, lwd=5)
     
     points(ranked$mean,  pch = 20)
     
+    
   }else{
     
     if(length(add) == 1){
     
-        ranked2 = get_ranking(data = add[[1]], var_name = var_name)
+        ranked = get_ranking(data, var_name, type="binom", yx)
+        ranked2 = get_ranking(data = add[[1]], var_name = var_name, type="binom", yx)
       
         ranked_tmp = merge(ranked, ranked2, by="name", sort = "False")
         
         
         arrows(x0 = (1:nrow(ranked_tmp)) - 0.075, y0 = rep(0, nrow(ranked_tmp)),
-             y1 = ranked_tmp[,2], col="#1b9e77", length = 0, lwd=5)
+             y1 = ranked_tmp[,"mean.x"], col="#1b9e77", length = 0, lwd=5)
       
         arrows(x0 = (1:nrow(ranked_tmp)) + 0.075, y0 = rep(0, nrow(ranked_tmp)),
-             y1 = ranked_tmp[,3], col="#e7298a", length = 0, lwd=5)
+             y1 = ranked_tmp[,"mean.y"], col="#e7298a", length = 0, lwd=5)
         
-        points((1:nrow(ranked_tmp)) - 0.075, ranked_tmp[,2], pch=20)#, col="#1b9e77")
-        points((1:nrow(ranked_tmp)) + 0.075, ranked_tmp[,3], pch=20)#, col="#e7298a")
+        points((1:nrow(ranked_tmp)) - 0.075, ranked_tmp[,"mean.x"], pch=20)#, col="#1b9e77")
+        points((1:nrow(ranked_tmp)) + 0.075, ranked_tmp[,"mean.y"], pch=20)#, col="#e7298a")
         
         legend("topright", bty="n", fill=c("#1b9e77", "#e7298a"),
                legend = label, cex = 1.2)
@@ -191,9 +279,9 @@ plot_ranked = function(data, var_name, yx, mar, main, file, add=0, label=""){
     }
     
     if(length(add) == 2){
-      
-      ranked2 = get_ranking(data = add[[1]], var_name = var_name)
-      ranked3 = get_ranking(data = add[[2]], var_name = var_name)
+      ranked = get_ranking(data, var_name, type="binom", yx)
+      ranked2 = get_ranking(data = add[[1]], var_name = var_name, type="binom", yx)
+      ranked3 = get_ranking(data = add[[2]], var_name = var_name, type="binom", yx)
       
       ranked_tmp = merge(ranked, ranked2, by="name", sort = "False")
       ranked_tmp2 = merge(ranked, ranked3, by="name", sort = "False")
@@ -202,17 +290,17 @@ plot_ranked = function(data, var_name, yx, mar, main, file, add=0, label=""){
       
       
       arrows(x0 = (1:nrow(ranked_tmp)) - 0.15, y0 = rep(0, nrow(ranked_tmp)),
-             y1 = ranked_tmp[,2], col="#1b9e77", length = 0, lwd=5)
+             y1 = ranked_tmp[,"mean.x"], col="#1b9e77", length = 0, lwd=5)
       
       arrows(x0 = (1:nrow(ranked_tmp)) + 0, y0 = rep(0, nrow(ranked_tmp)),
-             y1 = ranked_tmp[,3], col="#e7298a", length = 0, lwd=5)
+             y1 = ranked_tmp[,"mean.y"], col="#e7298a", length = 0, lwd=5)
       
       arrows(x0 = (1:nrow(ranked_tmp)) + 0.15, y0 = rep(0, nrow(ranked_tmp)),
-             y1 = ranked_tmp[,4], col="#7570b3", length = 0, lwd=5)
+             y1 = ranked_tmp[,"mean.z"], col="#7570b3", length = 0, lwd=5)
       
-      points((1:nrow(ranked_tmp)) - 0.15, ranked_tmp[,2], pch=20)#, col="#1b9e77")
-      points((1:nrow(ranked_tmp)) + 0, ranked_tmp[,3], pch=20)#, col="#e7298a")
-      points((1:nrow(ranked_tmp)) + 0.15, ranked_tmp[,4], pch=20)#, col="#7570b3")
+      points((1:nrow(ranked_tmp)) - 0.15, ranked_tmp[,"mean.x"], pch=20)#, col="#1b9e77")
+      points((1:nrow(ranked_tmp)) + 0, ranked_tmp[,"mean.y"], pch=20)#, col="#e7298a")
+      points((1:nrow(ranked_tmp)) + 0.15, ranked_tmp[,"mean.z"], pch=20)#, col="#7570b3")
       
       legend("topright", bty="n", fill=c("#1b9e77", "#e7298a", "#7570b3"),
              legend = label, cex = 1.2)
@@ -221,10 +309,10 @@ plot_ranked = function(data, var_name, yx, mar, main, file, add=0, label=""){
     }
     
     if(length(add) == 3){
-      
-      ranked2 = get_ranking(data = add[[1]], var_name = var_name)
-      ranked3 = get_ranking(data = add[[2]], var_name = var_name)
-      ranked4 = get_ranking(data = add[[3]], var_name = var_name)
+      ranked = get_ranking(data, var_name, type="binom", yx)
+      ranked2 = get_ranking(data = add[[1]], var_name = var_name, type="binom", yx)
+      ranked3 = get_ranking(data = add[[2]], var_name = var_name, type="binom", yx)
+      ranked4 = get_ranking(data = add[[3]], var_name = var_name, type="binom", yx)
       
       ranked_tmp = merge(ranked, ranked2, by="name", sort = "False")
       ranked_tmp2 = merge(ranked, ranked3, by="name", sort = "False")
@@ -235,21 +323,21 @@ plot_ranked = function(data, var_name, yx, mar, main, file, add=0, label=""){
       
       
       arrows(x0 = (1:nrow(ranked_tmp)) - 0.225, y0 = rep(0, nrow(ranked_tmp)),
-             y1 = ranked_tmp[,2], col="#1b9e77", length = 0, lwd=5)
+             y1 = ranked_tmp[,"mean.x"], col="#1b9e77", length = 0, lwd=5)
       
       arrows(x0 = (1:nrow(ranked_tmp)) - 0.075, y0 = rep(0, nrow(ranked_tmp)),
-             y1 = ranked_tmp[,3], col="#e7298a", length = 0, lwd=5)
+             y1 = ranked_tmp[,"mean.y"], col="#e7298a", length = 0, lwd=5)
       
       arrows(x0 = (1:nrow(ranked_tmp)) + 0.075, y0 = rep(0, nrow(ranked_tmp)),
-             y1 = ranked_tmp[,4], col="#7570b3", length = 0, lwd=5)
+             y1 = ranked_tmp[,"mean.z"], col="#7570b3", length = 0, lwd=5)
       
       arrows(x0 = (1:nrow(ranked_tmp)) + 0.225, y0 = rep(0, nrow(ranked_tmp)),
-             y1 = ranked_tmp[,5], col="#e6ab02", length = 0, lwd=5)
+             y1 = ranked_tmp[,"mean.a"], col="#e6ab02", length = 0, lwd=5)
       
-      points((1:nrow(ranked_tmp)) - 0.225, ranked_tmp[,2], pch=20)#, col="#1b9e77")
-      points((1:nrow(ranked_tmp)) - 0.075, ranked_tmp[,3], pch=20)#, col="#e7298a")
-      points((1:nrow(ranked_tmp)) + 0.075, ranked_tmp[,4], pch=20)#, col="#7570b3")
-      points((1:nrow(ranked_tmp)) + 0.225, ranked_tmp[,5], pch=20)#, col="#7570b3")
+      points((1:nrow(ranked_tmp)) - 0.225, ranked_tmp[,"mean.x"], pch=20)#, col="#1b9e77")
+      points((1:nrow(ranked_tmp)) - 0.075, ranked_tmp[,"mean.y"], pch=20)#, col="#e7298a")
+      points((1:nrow(ranked_tmp)) + 0.075, ranked_tmp[,"mean.z"], pch=20)#, col="#7570b3")
+      points((1:nrow(ranked_tmp)) + 0.225, ranked_tmp[,"mean.a"], pch=20)#, col="#7570b3")
       
       legend("topright", bty="n", fill=c("#1b9e77", "#e7298a", "#7570b3","#e6ab02"),
              legend = label, cex = 1.2)
@@ -266,7 +354,7 @@ plot_ranked = function(data, var_name, yx, mar, main, file, add=0, label=""){
 }
 
 
-plot_ranked_all = function(data, var_name, yx, mar, main, file){
+plot_ranked_all = function(data, var_name,yx, mar, main, file){
   
   plot_ranked(data = data, var_name = var_name,
               yx= yx,
@@ -825,9 +913,9 @@ get_skalen_scores = function(data, skalen, skalen_names){
 }
 
 
-get_index_by_group = function(data, var.name, group_keys){
+get_index_by_group = function(data, var_name_group, group_keys){
   
-  return(which(data[,var.name] %in% group_keys))
+  return(which(data[,var_name_group] %in% group_keys))
 }
 
 
@@ -913,29 +1001,64 @@ create_skalen_imp = function(score_type, skalen_scores=skalen_scores, group_inde
   
   tmp_name = c()
   tmp_mean = c()
+  tmp_se.1 = c()
+  tmp_se.2 = c()
   
   for(i in 1:length(skalen_scores)){
     
-    tmp_mean = c(tmp_mean, mean(skalen_scores[[i]][[score_type]][group_index], na.rm = T))
+    # tmp_mean = c(tmp_mean, mean(skalen_scores[[i]][[score_type]][group_index], na.rm = T))
+    tmp_mean = c(tmp_mean, binom_est(skalen_scores[[i]][[score_type]][group_index], yx = 1:6)[1])
     tmp_name = c(tmp_name, names(skalen_scores)[i])
+    tmp_se.1 = c(tmp_se.1, binom_est(skalen_scores[[i]][[score_type]][group_index], yx = 1:6)[2])
+    tmp_se.2 = c(tmp_se.2, binom_est(skalen_scores[[i]][[score_type]][group_index], yx = 1:6)[3])
   }
   
-  most_imp = data.frame("Name" = tmp_name[order(tmp_mean, decreasing = T)], "Wert" = sort(tmp_mean, decreasing = T))
+  most_imp = data.frame("Name" = tmp_name[order(tmp_mean, decreasing = T)],
+                        "se.1"=tmp_se.1[order(tmp_mean, decreasing = T)],
+                        "se.2"=tmp_se.2[order(tmp_mean, decreasing = T)], "mean" = sort(tmp_mean, decreasing = T))
   
   return(most_imp)
   
 }
 
 
-plot_skalen_imp = function(most_imp, mar, ylim, main){
+plot_skalen_imp = function(most_imp, mar, ylim, main, offset, plot=T, file="", se=T){
   
   par(mfrow=c(1,1), mar=mar)
   
-  plot(most_imp[,2], xaxt="n", xlab="", pch=20, ylim=ylim, main=main)
-  axis(side=1, at=1:nrow(most_imp), labels = most_imp[,1], las=2)
-  arrows(x0 = 1:nrow(most_imp), y0 = rep(0, nrow(most_imp)),
-         y1 = most_imp[,2], col="grey50", length = 0)
-  points(1:nrow(most_imp), most_imp[,2], pch = 20)
+  if(plot){
+    
+    pdf(file=file, width=14, height = 12, paper = "a4r")
+  }
+  
+  plot(most_imp[,"mean"], xaxt="n", xlab="", pch=20, ylim=ylim, main=main, type="n", yaxt="n", ylab="")
+  
+  abline(h=c(1,2,3,4,5,6), col="grey70")
+  
+  
+  axis(side = 1, at = 1:nrow(most_imp), labels = most_imp[,1], las=2)
+  
+  axis(side = 2, at = 1:6, labels = c("gar nicht wichtig", "nicht wichtig", "eher nicht wichtig",
+                                      "eher wichtig", "wichtig", "vollkommen wichtig"), las=2)
+  
+  arrows(x0 = 1:nrow(most_imp) + offset, y0 = rep(0, nrow(most_imp)),
+         y1 = most_imp[,"mean"], col="grey50", length = 0, lwd=5)
+  
+  if(se==TRUE){
+    
+    arrows(x0 = (1:nrow(most_imp)) + offset, y0 = most_imp[,"mean"],
+           y1 = most_imp[,"se.1"], col="grey30", length = 0.1, lwd=1, angle=90)
+    
+    arrows(x0 = (1:nrow(most_imp)) + offset, y0 = most_imp[,"mean"],
+           y1 = most_imp[,"se.2"], col="grey30", length = 0.1, lwd=1, angle=90)
+  }
+  
+  points(1:nrow(most_imp) + offset, most_imp[,"mean"], pch = 20)
+  
+  if(plot){
+    
+    dev.off()
+  }
   
 }
 
@@ -957,36 +1080,66 @@ create_ums_data = function(data, umsetzung){
 
 
 plot_combined_imp = function(skalen, data, skalen_scores,
-                             umsetzung, ums_data, group_list){
+                             umsetzung, ums_data, var_name_group, group_list, path, combined=T){
   
   for(i in 1:length(group_list)){
     
     ums_proz = create_ums_proz(data_skalen_ohne, umsetzung, ums_data,
-                               group_index=get_index_by_group(data, group_keys = group_list[[i]]))
+                               group_index=get_index_by_group(data, var_name_group = var_name_group,  group_keys = group_list[[i]]))
     
     skalen_imp = create_skalen_imp(score_type = "scores_mean",
                                    skalen_scores = skalen_scores,
-                                   group_index=get_index_by_group(data, group_keys = group_list[[i]]))
+                                   group_index=get_index_by_group(data, var_name_group = var_name_group, group_keys = group_list[[i]]))
     
     
     merged_imp = merge(skalen_imp, ums_proz, by.x = "Name", by.y="Skalen")
     
-    merged_imp = merged_imp[order(merged_imp[,"Wert"], decreasing = T),]
-    
+    merged_imp = merged_imp[order(merged_imp[,"mean"], decreasing = T),]
     
     
     # Gemeinsame Darstellung: Skalen_scores und Umsetzung
     
-    plot_skalen_imp(merged_imp, mar=c(8,3,3,3), main = names(group_list)[i], ylim=c(1, 6))
+    pdf(file=paste0(path,"_", names(group_list)[i], ".pdf"), width=14, height = 12, paper = "a4r")
     
-    offset = 1
+    if(combined == TRUE){
     
-    arrows(x0 = 1:nrow(merged_imp)+0.05, x1 = 1:nrow(merged_imp)+0.05,
-           y0 = rep(offset, nrow(merged_imp)),  y1 = offset + merged_imp[,3]*max(merged_imp[,2]-offset),
-           length=0, col="grey20", lwd=3)
+    plot_skalen_imp(most_imp = merged_imp,
+                  mar=c(11,9,3,4),
+                  main = names(group_list)[i],
+                  ylim=c(1, 6),
+                  offset = - 0.1,
+                  plot=FALSE,
+                  se=FALSE)
     
-    axis(4, at = c(offset, (max(merged_imp[,2]) + offset)/2, max(merged_imp[,2])), labels = c(0, 0.5, 1))
-    abline(h=offset, lty=2)
+      
+      abline(h=c(3.5), col="red3", lty=2, lwd=1)
+      
+      offset = 1
+      
+      # axis(4, at = c(offset, (max(merged_imp[,2]) + offset)/2, max(merged_imp[,2])), labels = c("0 %", "50 %", "100 %"), las = 2)
+      axis(4, at = c(1, 3.5, 6), labels = c("0 %", "50 %", "100 %"), las = 2)
+      
+      arrows(x0 = 1:nrow(merged_imp) + 0.1, # x1 = 1:nrow(merged_imp),
+             y0 = rep(offset, nrow(merged_imp)),  y1 = offset + merged_imp[,"Prozente"]*max(merged_imp[,"mean"]-offset),
+             length=0, col="red3", lwd=5)
+      
+      points(1:nrow(merged_imp) + 0.1, offset + merged_imp[,"Prozente"]*max(merged_imp[,"mean"]-offset), pch=20)
+      
+      legend("topright", bty="n", col=c("grey50", "red3"), lty=1, lwd=3, legend = c("Wichtigkeit","Umsetzung"))#, cex=1, text.width =5,
+      # seg.len=0.5, y.intersp = 0.2)
+      
+    }else{
+      
+      plot_skalen_imp(most_imp = merged_imp,
+                      mar=c(11,9,3,4),
+                      main = names(group_list)[i],
+                      ylim=c(1, 6),
+                      offset = 0,
+                      plot=FALSE,
+                      se=T)
+    }
+    
+    dev.off()
   }
 }
 
@@ -1302,7 +1455,7 @@ get_ums_scores = function(ums_data, skalen, skalen_names){
 }
 
 
-descriptive_anal_plots = function(data, path){
+descriptive_anal_plots = function(data, type, path){
   
   
   #  Begriffe:
@@ -1317,7 +1470,7 @@ descriptive_anal_plots = function(data, path){
   
   # Verhaltensweisen
   
-  plot_ranked_all(data, "Verhaltensweisen",
+  plot_ranked_all(data, var_name = "Verhaltensweisen",
                   yx = c("gar nicht kennzeichnend", "eher nicht kennzeichnend",
                          "eher kennzeichnend", "vollkommen kennzeichnend"),
                   mar=c(18,12,3,3),
@@ -1328,7 +1481,7 @@ descriptive_anal_plots = function(data, path){
   # Informationen
   
   plot_ranked_all(data, "Informationen", 
-                  yx=c("unwichtig","eher unwichtig","eher wichtig","wichtig"), 
+                  yx=c("unwichtig","eher unwichtig","eher wichtig","wichtig"),
                   mar=c(18,7,3,3),
                   main="Informationen",
                   file= paste0(path,"/Informationen"))
@@ -1463,4 +1616,58 @@ descriptive_anal_plots = function(data, path){
                   ylab="Prozent der Mitarbeitenden",
                   file=paste0(path,"/Entscheidung Entlassung"),
                   ranked = T)
+}
+
+
+
+get_item_summary = function(data, file){
+  
+  res_tmp = data.frame("Gruppe"=character(0),
+                       "Item"=character(0),
+                       "mean"=numeric(0),
+                       "median"=numeric(0),
+                       "sd"=numeric(0),
+                       "umsetzung"=numeric(0),
+                       "Frage"=character(0))
+  
+  res_tmp_names = names(res_tmp)
+  
+  i = names(keys)[1]
+  
+  for(i in names(keys)){
+    
+    for(j in 1:length(keys[[i]])){
+      tmp = c(i, keys[[i]][j], round(mean(data[,keys[[i]][j]], na.rm=T), 2),
+              median(data[,keys[[i]][j]], na.rm=T), round(sd(data[,keys[[i]][j]], na.rm=T), 3))
+      
+      ums_tmp = data[ ,umsetzung$var.Key[umsetzung$var.Umgesetzt == keys[[i]][j]]]
+      tmp = c(tmp, round(mean(ums_tmp - 1, na.rm=T)*100, 0))
+      
+      tmp = c(tmp, codebook$`Variable Label`[codebook$Variable == keys[[i]][j]][1])
+      
+      res_tmp = rbind(res_tmp, tmp,deparse.level = 2)
+      
+    }
+  }
+  
+  names(res_tmp) = res_tmp_names
+  
+  write.xlsx(res_tmp,file = file)
+}
+
+
+write_einrichtungen_sbbz_hze = function(data, file){
+  
+  res = data.frame("Einrichtung"=character(0), "SBBZ"=numeric(0), "HZE"=numeric(0))
+  res_names = names(res)
+  
+  for(i in unique(data$B107)){
+    
+    tmp = c(imp_names[["B107"]][i], sum(data[data$B107 == i, "B102"] == 2, na.rm=T), sum(data[data$B107 == i, "B102"] > 2, na.rm=T)) 
+    res = rbind(res, tmp)
+  }
+  
+  names(res) = res_names
+  
+  write.xlsx(res, file = file)
 }
