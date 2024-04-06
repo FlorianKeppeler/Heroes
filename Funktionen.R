@@ -138,14 +138,14 @@ beta_est = function(x, yx){
   
   x = x[!is.na(x)]
   
-  x = (x - 1)/length(yx)
+  x = (x - 1)/(length(yx) - 1)
   
   x[x == 0] = 0.0000001
-  x[x == length(yx)] = length(yx) - 0.0000001
+  x[x == 1] = 1 - 0.0000001
   
   m = betareg(x ~ 1)
 
-  return (c(predict(m, type="response")[1], predict(m, type="quantile", at = c(0.25, 0.75))[1,]) * 6 + 1)
+  return (c(predict(m, type="response")[1], predict(m, type="quantile", at = c(0.25, 0.75))[1,]) * (length(yx) - 1) + 1)
 }
 
 
@@ -153,14 +153,14 @@ binom_est = function(x, yx){
   
   x = x[!is.na(x)]
   
-  x = (x - 1)/length(yx)
+  x = (x - 1)/(length(yx) - 1)
 
   m = glm(x ~ 1, family="binomial")
   
   fit = predict(m, type="link", se.fit=T)$fit[1]
   se = predict(m, type="link", se.fit=T)$se.fit[1]
   
-  tmp = c(plogis(fit), plogis(fit - 2*se), plogis(fit + 2*se)) * length(yx) + 1
+  tmp = c(plogis(fit), plogis(fit - 2*se), plogis(fit + 2*se)) * (length(yx) - 1) + 1
   
   if(tmp[3]> length(yx)) tmp[3] = length(yx)
   
@@ -188,14 +188,15 @@ get_ranking = function(data, var_name, type, yx){
     tmp = apply(data[,keys[[var_name]]], 2, FUN=norm_est)
   }
   
-  # if (type == "beta"){
-  #   tmp = apply(data[,keys[[var_name]]], 2, FUN=beta_est, yx=yx)
-  #   
-  #   for(i in 1:length(tmp)){
-  #     if(tmp[1, i] > tmp[3, i]){
-  #       tmp[3, i] = tmp[1, i]
-  #     }
-  #   }
+  if (type == "beta"){
+    tmp = apply(data[,keys[[var_name]]], 2, FUN=beta_est, yx=yx)
+
+    # for(i in 1:length(tmp)){
+    #   if(tmp[1, i] > tmp[3, i]){
+    #     tmp[3, i] = tmp[1, i]
+    #   }
+    # }
+  }
     
     if (type == "binom"){
       
@@ -217,9 +218,9 @@ get_ranking = function(data, var_name, type, yx){
 
 
 
-plot_ranked = function(data, var_name, yx, mar, main, file, add=0, label=""){
+plot_ranked = function(data, var_name, yx, mar, main, type, file, add=0, label=""){
   
-  ranked = get_ranking(data, var_name, type="binom", yx)
+  ranked = get_ranking(data, var_name, type=type, yx)
   
   pdf(file=file, width=14, height = 12, paper = "a4r")
   
@@ -235,9 +236,6 @@ plot_ranked = function(data, var_name, yx, mar, main, file, add=0, label=""){
   axis(2, las=2, at = 1:length(yx), labels=yx)
   
   if(!typeof(add) == "list"){
-    
-    
-    
     
     
     arrows(x0 = (1:nrow(ranked)), y0 = ranked[,"mean"],
@@ -257,8 +255,8 @@ plot_ranked = function(data, var_name, yx, mar, main, file, add=0, label=""){
     
     if(length(add) == 1){
     
-        ranked = get_ranking(data, var_name, type="binom", yx)
-        ranked2 = get_ranking(data = add[[1]], var_name = var_name, type="binom", yx)
+        ranked = get_ranking(data, var_name, type=type, yx)
+        ranked2 = get_ranking(data = add[[1]], var_name = var_name, type=type, yx)
       
         ranked_tmp = merge(ranked, ranked2, by="name", sort = "False")
         
@@ -279,9 +277,9 @@ plot_ranked = function(data, var_name, yx, mar, main, file, add=0, label=""){
     }
     
     if(length(add) == 2){
-      ranked = get_ranking(data, var_name, type="binom", yx)
-      ranked2 = get_ranking(data = add[[1]], var_name = var_name, type="binom", yx)
-      ranked3 = get_ranking(data = add[[2]], var_name = var_name, type="binom", yx)
+      ranked = get_ranking(data, var_name, type=type, yx)
+      ranked2 = get_ranking(data = add[[1]], var_name = var_name, type=type, yx)
+      ranked3 = get_ranking(data = add[[2]], var_name = var_name, type=type, yx)
       
       ranked_tmp = merge(ranked, ranked2, by="name", sort = "False")
       ranked_tmp2 = merge(ranked, ranked3, by="name", sort = "False")
@@ -309,10 +307,10 @@ plot_ranked = function(data, var_name, yx, mar, main, file, add=0, label=""){
     }
     
     if(length(add) == 3){
-      ranked = get_ranking(data, var_name, type="binom", yx)
-      ranked2 = get_ranking(data = add[[1]], var_name = var_name, type="binom", yx)
-      ranked3 = get_ranking(data = add[[2]], var_name = var_name, type="binom", yx)
-      ranked4 = get_ranking(data = add[[3]], var_name = var_name, type="binom", yx)
+      ranked = get_ranking(data, var_name, type=type, yx)
+      ranked2 = get_ranking(data = add[[1]], var_name = var_name, type=type, yx)
+      ranked3 = get_ranking(data = add[[2]], var_name = var_name, type=type, yx)
+      ranked4 = get_ranking(data = add[[3]], var_name = var_name, type=type, yx)
       
       ranked_tmp = merge(ranked, ranked2, by="name", sort = "False")
       ranked_tmp2 = merge(ranked, ranked3, by="name", sort = "False")
@@ -354,10 +352,11 @@ plot_ranked = function(data, var_name, yx, mar, main, file, add=0, label=""){
 }
 
 
-plot_ranked_all = function(data, var_name,yx, mar, main, file){
+plot_ranked_all = function(data, var_name, yx, type, mar, main, file){
   
   plot_ranked(data = data, var_name = var_name,
               yx= yx,
+              type=type,
               mar=mar,
               main=main,
               file=paste0(file,"_gesamt.pdf"))
@@ -365,6 +364,7 @@ plot_ranked_all = function(data, var_name,yx, mar, main, file){
   
   plot_ranked(data = data[data$B102 > 2,], var_name = var_name,
               yx= yx,
+              type=type,
               mar=mar,
               main=paste(main, "HZE/SBBZ"),
               file=paste0(file,"_HZE_SBBZ.pdf"),
@@ -374,6 +374,7 @@ plot_ranked_all = function(data, var_name,yx, mar, main, file){
   
   plot_ranked(data = data[data$B103 == 1,], var_name = var_name,
               yx= yx,
+              type=type,
               mar=mar,
               main=paste(main, "Mitarbeiterinnen/Mitarbeiter"),
               file=paste0(file,"_Geschlecht.pdf"),
@@ -383,6 +384,7 @@ plot_ranked_all = function(data, var_name,yx, mar, main, file){
   
   plot_ranked(data = data[data$B105 == 1,], var_name = var_name,
               yx= yx,
+              type=type,
               mar=mar,
               main=paste(main, "nach Berufserfahrung"),
               file=paste0(file,"_Berufserfahrung.pdf"),
@@ -392,6 +394,7 @@ plot_ranked_all = function(data, var_name,yx, mar, main, file){
   
   plot_ranked(data = data[data$B110 == 1,], var_name = var_name,
               yx= yx,
+              type=type,
               mar=mar,
               main=paste(main, "nach Alter Mitarbeitetende"),
               file=paste0(file,"_AlterMit.pdf"),
@@ -401,6 +404,7 @@ plot_ranked_all = function(data, var_name,yx, mar, main, file){
   
   plot_ranked(data = data[data$C207_02 == 2,], var_name = var_name,
               yx= yx,
+              type=type,
               mar=mar,
               main=paste(main, "nach Alter jM"),
               file=paste0(file,"_AlterJM.pdf"),
@@ -1463,6 +1467,7 @@ descriptive_anal_plots = function(data, type, path){
   plot_ranked_all(data=data,
                   var_name = "Begriffe",
                   yx = c("nie", "selten", "häufig", "immer"),
+                  type=type,
                   mar=c(18,5,3,3),
                   main="Begriffe",
                   file=paste0(path,"/Begriffe"))
@@ -1473,6 +1478,7 @@ descriptive_anal_plots = function(data, type, path){
   plot_ranked_all(data, var_name = "Verhaltensweisen",
                   yx = c("gar nicht kennzeichnend", "eher nicht kennzeichnend",
                          "eher kennzeichnend", "vollkommen kennzeichnend"),
+                  type=type,
                   mar=c(18,12,3,3),
                   main="Verhaltensweisen",
                   file=paste0(path,"/Verhaltenweisen"))
@@ -1482,6 +1488,7 @@ descriptive_anal_plots = function(data, type, path){
   
   plot_ranked_all(data, "Informationen", 
                   yx=c("unwichtig","eher unwichtig","eher wichtig","wichtig"),
+                  type=type,
                   mar=c(18,7,3,3),
                   main="Informationen",
                   file= paste0(path,"/Informationen"))
@@ -1491,6 +1498,7 @@ descriptive_anal_plots = function(data, type, path){
   
   plot_ranked_all(data = data,
                   yx=c("nie", "selten", "häufig", "immer"),
+                  type=type,
                   var_name = "Dokumente",
                   mar=c(18,5,3,3),
                   main="Dokumente",
@@ -1501,6 +1509,7 @@ descriptive_anal_plots = function(data, type, path){
   plot_ranked_all(data,
                   yx=c("gar nicht wichtig", "nicht wichtig", "eher nicht wichtig",
                        "eher wichtig", "wichtig", "vollkommen wichtig"),
+                  type=type,
                   var_name = "Interdisz",
                   mar=c(14,9,3,3),
                   main="Interdisziplinäres Team",
@@ -1512,6 +1521,7 @@ descriptive_anal_plots = function(data, type, path){
   plot_ranked_all(data,
                   yx=c("gar nicht wichtig", "nicht wichtig", "eher nicht wichtig",
                        "eher wichtig", "wichtig", "vollkommen wichtig"),
+                  type=type,
                   var_name = "Kompetenzen",
                   mar=c(24,9,3,3),
                   main="Kompetenzen",
@@ -1522,6 +1532,7 @@ descriptive_anal_plots = function(data, type, path){
   plot_ranked_all(data,
                   yx=c("gar nicht wichtig", "nicht wichtig", "eher nicht wichtig",
                        "eher wichtig", "wichtig", "vollkommen wichtig"),
+                  type=type,
                   var_name = "Fortbildung",
                   mar=c(18,9,3,3),
                   main="Fortbildungen",
