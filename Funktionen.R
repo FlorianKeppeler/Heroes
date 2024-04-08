@@ -1064,6 +1064,7 @@ plot_skalen_imp = function(most_imp, mar, ylim, main, offset, plot=T, file="", s
     dev.off()
   }
   
+  return(most_imp)
 }
 
 
@@ -1083,7 +1084,7 @@ create_ums_data = function(data, umsetzung){
 
 
 
-plot_combined_imp = function(skalen, data, skalen_scores,
+plot_combined_imp = function(skalen, data, mar, skalen_scores,
                              umsetzung, ums_data, var_name_group, group_list, path, combined=T){
   
   for(i in 1:length(group_list)){
@@ -1105,10 +1106,11 @@ plot_combined_imp = function(skalen, data, skalen_scores,
     
     pdf(file=paste0(path,"_", names(group_list)[i], ".pdf"), width=14, height = 12, paper = "a4r")
     
+    
     if(combined == TRUE){
     
     plot_skalen_imp(most_imp = merged_imp,
-                  mar=c(11,9,3,4),
+                  mar=mar,
                   main = names(group_list)[i],
                   ylim=c(1, 6),
                   offset = - 0.1,
@@ -1135,7 +1137,7 @@ plot_combined_imp = function(skalen, data, skalen_scores,
     }else{
       
       plot_skalen_imp(most_imp = merged_imp,
-                      mar=c(11,9,3,4),
+                      mar=mar,
                       main = names(group_list)[i],
                       ylim=c(1, 6),
                       offset = 0,
@@ -1333,7 +1335,7 @@ check_loadings = function(skalen_scores){
 }
 
 
-plot_group_diff = function(skalen, umsetzung, ums_data, group_list, path){
+plot_group_diff = function(skalen, umsetzung, ums_data, mar, group_list, path){
   
   tmp = list()
   
@@ -1366,7 +1368,7 @@ plot_group_diff = function(skalen, umsetzung, ums_data, group_list, path){
   pdf(file=paste0(path, "Vergleich_Bewertung_", paste(names(group_list), collapse = "_"), ".pdf"),
       width=14, height = 12, paper = "a4r")
   
-  par(mar=c(12, 6, 3,3))
+  par(mar=mar)
   
   plot(tmp_Wert$Diff.Wert,
        xaxt="n",
@@ -1412,7 +1414,7 @@ plot_group_diff = function(skalen, umsetzung, ums_data, group_list, path){
       width=14, height = 12, paper = "a4r")
   
   
-  par(mar=c(12, 6, 3,3))
+  par(mar=mar)
   
   plot(tmp_Proz$Diff.Proz, xaxt="n",
        xlab="",

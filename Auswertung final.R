@@ -150,56 +150,7 @@ ums_data = create_ums_data(data, umsetzung)
 
 
 
-
 # wichtigste Haltekraft nach Abgleich mit tatsächlicher Haltekraft für verschiedene Gruppierungen
-
-
-# Berechnung der Skalen
-
-data_skalen = skalen
-data_skalen_ohne = skalen_ohne
-
-
-skalen_scores = get_skalen_scores(data = data,
-                                  skalen = data_skalen_ohne,
-                                  skalen_names =  names(data_skalen_ohne))
-
-plot_combined_imp(skalen = skalen,
-                  data = data,
-                  skalen_scores = skalen_scores,
-                  umsetzung = umsetzung,
-                  var_name_group= "B102",
-                  ums_data = ums_data,
-                  group_list = group_list,
-                  path="C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Wichtigkeit", 
-                  combined=FALSE)
-
-plot_combined_imp(skalen = skalen,
-                  data = data,
-                  skalen_scores = skalen_scores,
-                  umsetzung = umsetzung,
-                  var_name_group= "B102",
-                  ums_data = ums_data,
-                  group_list = group_list,
-                  path="C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Wichtigkeit_Umsetzung", 
-                  combined=TRUE)
-
-
-
-# Vergleiche der Skalen unter den Gruppen:
-
-plot_group_diff(skalen=skalen,
-                umsetzung=umsetzung,
-                ums_data=ums_data,
-                group_list = list("SBBZ" = 2,"HZE" = 3:5),
-                path = "C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/")
-
-plot_group_diff(skalen,
-                umsetzung,
-                ums_data,
-                group_list = list("Leitung" = 1,"Mitarbeitende" = 2:5),
-                path = "C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/")
-
 
 
 
@@ -222,6 +173,7 @@ plot_combined_imp(skalen = skalen2,
                   skalen_scores = skalen_scores,
                   umsetzung = umsetzung,
                   var_name_group= "B102",
+                  mar=c(11, 9, 3,3),
                   ums_data = ums_data,
                   group_list = group_list,
                   path="C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Oberskala_Wichtigkeit", 
@@ -232,11 +184,11 @@ plot_combined_imp(skalen = skalen2,
                   skalen_scores = skalen_scores,
                   umsetzung = umsetzung,
                   var_name_group= "B102",
+                  mar=c(11, 9, 3,3),
                   ums_data = ums_data,
                   group_list = group_list,
                   path="C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Oberskala_Wichtigkeit_Umsetzung", 
                   combined=TRUE)
-
 
 
 # Vergleiche der Skalen unter den Gruppen:
@@ -244,14 +196,194 @@ plot_combined_imp(skalen = skalen2,
 plot_group_diff(skalen=skalen2,
                 umsetzung=umsetzung,
                 ums_data=ums_data,
+                mar=c(11, 6, 3,3),
                 group_list = list("SBBZ" = 2,"HZE" = 3:5),
                 path = "C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Oberskala_")
 
 plot_group_diff(skalen2,
                 umsetzung,
                 ums_data,
+                mar=c(11, 6, 3,3),
                 group_list = list("Leitung" = 1,"Mitarbeitende" = 2:5),
                 path = "C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Oberskala_")
+
+
+
+
+# wichtigste Haltekraft nach Oberskala -------------------------------------------------
+
+
+# Berechnung der Skalen
+
+data_skalen = skalen3
+data_skalen_ohne = skalen3_ohne
+
+
+skalen_scores = get_skalen_scores(data = data,
+                                  skalen = data_skalen_ohne,
+                                  skalen_names =  names(data_skalen_ohne))
+
+plot_combined_imp(skalen = skalen3,
+                  data = data,
+                  skalen_scores = skalen_scores,
+                  umsetzung = umsetzung,
+                  var_name_group= "B102",
+                  mar=c(16, 9, 3,3),
+                  ums_data = ums_data,
+                  group_list = group_list,
+                  path="C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Haltekraft_Wichtigkeit", 
+                  combined=FALSE)
+
+plot_combined_imp(skalen = skalen3,
+                  data = data,
+                  skalen_scores = skalen_scores,
+                  umsetzung = umsetzung,
+                  var_name_group= "B102",
+                  mar=c(16, 9, 3,3),
+                  ums_data = ums_data,
+                  group_list = group_list,
+                  path="C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Haltekraft_Wichtigkeit_Umsetzung", 
+                  combined=TRUE)
+
+
+
+# Vergleiche der Skalen unter den Gruppen:
+
+plot_group_diff(skalen=skalen3,
+                umsetzung=umsetzung,
+                ums_data=ums_data,
+                mar=c(16, 6, 3,3),
+                group_list = list("SBBZ" = 2,"HZE" = 3:5),
+                path = "C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Haltekraft_")
+
+plot_group_diff(skalen = skalen3,
+                umsetzung=umsetzung,
+                ums_data=ums_data,
+                mar=c(16, 6, 3,3),
+                group_list = list("Leitung" = 1,"Mitarbeitende" = 2:5),
+                path = "C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Haltekraft_")
+
+
+
+
+
+
+# nach Skalen
+
+data_skalen = skalen
+data_skalen_ohne = skalen_ohne
+
+
+skalen_scores = get_skalen_scores(data = data,
+                                  skalen = data_skalen_ohne,
+                                  skalen_names =  names(data_skalen_ohne))
+
+
+
+
+tmp_mean = numeric(length(skalen_scores))
+tmp_name = names(skalen_scores)
+
+
+for(i in 1:length(skalen_scores)){
+  tmp_mean[i] = binom_est(skalen_scores[[i]]$scores_mean, yx=1:6)[1]
+
+}
+
+
+tmp_imp_names = tmp_name[order(tmp_mean, decreasing = T)][1:13]
+
+
+res_tmp = matrix(nrow=length(unique(data$B107)), ncol=14)
+
+res_tmp = as.data.frame(res_tmp)
+
+
+names(res_tmp) = c("Einrichtung", tmp_imp_names)
+
+n = 1
+
+for(i in unique(data$B107)){
+  
+  for(j in tmp_imp_names){
+    ums_var = umsetzung$var.Key[umsetzung$var.Umgesetzt %in% skalen[[j]]]
+    
+    res_tmp[n,j] = mean(unlist(data[data$B107 == i, ums_var])) - 1
+    res_tmp[n, "Einrichtung"] = imp_names[["B107"]][i]
+  }
+  
+  n = n + 1
+}
+
+
+res_tmp[,"Einrichtung"][order(apply(res_tmp[,-1], 1, mean), decreasing = T)]
+
+
+# par(mar=c(16,4,3,3))
+# 
+# plot(sort(apply(res_tmp[,-1], 1, mean), decreasing = T), xaxt="n", xlab="", ylab="")
+# axis(side = 1, at= 1:length(unique(data$B107)), labels = res_tmp[,"Einrichtung"][order(apply(res_tmp[,-1], 1, mean), decreasing = T)], las=2)
+
+best = tmp_imp_names
+
+for(i in best){
+  
+  agg_ums = create_agg_ums(skalen_tmp=data_skalen, umsetzung = umsetzung, skala=i)
+  
+  plot_agg_ums(agg_ums = agg_ums, skala=i)
+}
+
+
+# Für die Einrichtungen aufschlüsseln
+
+agg_df = create_agg_df(skalen_tmp = data_skalen, umsetzung = umsetzung, variables = best)
+
+par(mfrow=c(2,2))
+plot_einrichtungen(agg_df)
+
+
+
+
+plot_combined_imp(skalen = skalen,
+                  data = data,
+                  skalen_scores = skalen_scores,
+                  umsetzung = umsetzung,
+                  var_name_group= "B102",
+                  mar=c(11, 9, 3,3),
+                  ums_data = ums_data,
+                  group_list = group_list,
+                  path="C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Wichtigkeit", 
+                  combined=FALSE)
+
+plot_combined_imp(skalen = skalen,
+                  data = data,
+                  skalen_scores = skalen_scores,
+                  umsetzung = umsetzung,
+                  var_name_group= "B102",
+                  mar=c(11, 9, 3,3),
+                  ums_data = ums_data,
+                  group_list = group_list,
+                  path="C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Wichtigkeit_Umsetzung", 
+                  combined=TRUE)
+
+
+
+# Vergleiche der Skalen unter den Gruppen:
+
+plot_group_diff(skalen=skalen,
+                umsetzung=umsetzung,
+                ums_data=ums_data,
+                mar=c(11, 6, 3,3),
+                group_list = list("SBBZ" = 2,"HZE" = 3:5),
+                path = "C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/")
+
+plot_group_diff(skalen,
+                umsetzung,
+                mar=c(11, 6, 3,3),
+                ums_data,
+                group_list = list("Leitung" = 1,"Mitarbeitende" = 2:5),
+                path = "C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/")
+
 
 
 
@@ -266,6 +398,8 @@ m = fit_randomForest(data = data,
                      file="C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Wichtigkeit nach Modell.pdf")
 
 
+
+most_imp_model = dimnames(importance(m))[[1]][order(importance(m), decreasing = T)][13]
 
 
 
