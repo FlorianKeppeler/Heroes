@@ -107,21 +107,12 @@ descriptive_anal_plots(data=data, type="binom", path="C:/Heroes/Ergebnisse/Grafi
 
 get_item_summary(data,
                  file.excel = "C:/Heroes/Ergebnisse/Excel/Mittelwerte/Items.xlsx",
-                 path.plot="C:/Heroes/Ergebnisse/Grafiken/Items nach Skala/Skala")
+                 path.plot="C:/Heroes/Ergebnisse/Grafiken/Items nach Skala")
 
 
 
 
-# Berechnung der Skalen
 
-
-data_skalen = skalen
-data_skalen_ohne = skalen_ohne
-
-
-skalen_scores = get_skalen_scores(data = data,
-                                  skalen = data_skalen_ohne,
-                                  skalen_names =  names(data_skalen_ohne))
 
 
 # Faktorladungen pro Skala
@@ -158,6 +149,21 @@ group_list = list("Gesamt" = 1:5, "SBBZ" = 2, "Leitung" = 1, "HZE" = 3:5)
 ums_data = create_ums_data(data, umsetzung)
 
 
+
+
+# wichtigste Haltekraft nach Abgleich mit tatsächlicher Haltekraft für verschiedene Gruppierungen
+
+
+# Berechnung der Skalen
+
+data_skalen = skalen
+data_skalen_ohne = skalen_ohne
+
+
+skalen_scores = get_skalen_scores(data = data,
+                                  skalen = data_skalen_ohne,
+                                  skalen_names =  names(data_skalen_ohne))
+
 plot_combined_imp(skalen = skalen,
                   data = data,
                   skalen_scores = skalen_scores,
@@ -193,6 +199,59 @@ plot_group_diff(skalen,
                 ums_data,
                 group_list = list("Leitung" = 1,"Mitarbeitende" = 2:5),
                 path = "C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/")
+
+
+
+
+
+# wichtigste Haltekraft nach Oberskala -------------------------------------------------
+
+
+# Berechnung der Skalen
+
+data_skalen = skalen2
+data_skalen_ohne = skalen2_ohne
+
+
+skalen_scores = get_skalen_scores(data = data,
+                                  skalen = data_skalen_ohne,
+                                  skalen_names =  names(data_skalen_ohne))
+
+plot_combined_imp(skalen = skalen2,
+                  data = data,
+                  skalen_scores = skalen_scores,
+                  umsetzung = umsetzung,
+                  var_name_group= "B102",
+                  ums_data = ums_data,
+                  group_list = group_list,
+                  path="C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Oberskala_Wichtigkeit", 
+                  combined=FALSE)
+
+plot_combined_imp(skalen = skalen2,
+                  data = data,
+                  skalen_scores = skalen_scores,
+                  umsetzung = umsetzung,
+                  var_name_group= "B102",
+                  ums_data = ums_data,
+                  group_list = group_list,
+                  path="C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Oberskala_Wichtigkeit_Umsetzung", 
+                  combined=TRUE)
+
+
+
+# Vergleiche der Skalen unter den Gruppen:
+
+plot_group_diff(skalen=skalen2,
+                umsetzung=umsetzung,
+                ums_data=ums_data,
+                group_list = list("SBBZ" = 2,"HZE" = 3:5),
+                path = "C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Oberskala_")
+
+plot_group_diff(skalen2,
+                umsetzung,
+                ums_data,
+                group_list = list("Leitung" = 1,"Mitarbeitende" = 2:5),
+                path = "C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Oberskala_")
 
 
 

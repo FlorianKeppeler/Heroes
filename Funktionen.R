@@ -1745,19 +1745,44 @@ get_item_summary = function(data, file, file.excel, path.plot){
       #         median(data[,keys[[i]][j]], na.rm=T),
       #         round(sd(data[,keys[[i]][j]], na.rm=T), 3))
       
-      tmp = c(i,
-              ifelse(length(tmp_skale) == 0, NA, tmp_skale),
-              keys[[i]][j],
-              round(tmp_fit[1], 2),
-              round(tmp_fit[2], 3),
-              round(tmp_fit[3], 3))
-
-      ums_tmp = data[ ,umsetzung$var.Key[umsetzung$var.Umgesetzt == keys[[i]][j]]]
-      tmp = c(tmp, round(mean(ums_tmp - 1, na.rm=T)*100, 0))
-
-      tmp = c(tmp, codebook$`Variable Label`[codebook$Variable == keys[[i]][j]][1])
-
-      res_tmp = rbind(res_tmp, tmp,deparse.level = 2)
+      if(length(tmp_skale > 0)){
+        
+        for(n in 1:length(tmp_skale)){
+          
+          tmp = c(i,
+                  tmp_skale[n],
+                  keys[[i]][j],
+                  round(tmp_fit[1], 2),
+                  round(tmp_fit[2], 3),
+                  round(tmp_fit[3], 3))
+          
+          ums_tmp = data[ ,umsetzung$var.Key[umsetzung$var.Umgesetzt == keys[[i]][j]]]
+          
+          tmp = c(tmp, round(mean(ums_tmp - 1, na.rm=T)*100, 0))
+          
+          tmp = c(tmp, codebook$`Variable Label`[codebook$Variable == keys[[i]][j]][1])
+        
+          res_tmp = rbind(res_tmp, tmp,deparse.level = 2)  
+        }
+        
+        
+      }else{  
+        
+        tmp = c(i,
+                NA,
+                keys[[i]][j],
+                round(tmp_fit[1], 2),
+                round(tmp_fit[2], 3),
+                round(tmp_fit[3], 3))
+        
+        ums_tmp = data[ ,umsetzung$var.Key[umsetzung$var.Umgesetzt == keys[[i]][j]]]
+        
+        tmp = c(tmp, round(mean(ums_tmp - 1, na.rm=T)*100, 0))
+        
+        tmp = c(tmp, codebook$`Variable Label`[codebook$Variable == keys[[i]][j]][1])
+        
+        res_tmp = rbind(res_tmp, tmp,deparse.level = 2)
+      }
 
     }
   }
@@ -1769,6 +1794,10 @@ get_item_summary = function(data, file, file.excel, path.plot){
   
   write.xlsx(res_tmp,file = file.excel, overwrite = T)
   
+  
+  unlink(path.plot, recursive = T)
+  
+  dir.create(path.plot)
   
   for(i in 1:length(skalen)){
   
@@ -1783,7 +1812,7 @@ get_item_summary = function(data, file, file.excel, path.plot){
   
   if(length(fit) > 0){
     
-    jpeg(filename = paste0(path.plot, "_", i, ".jpg"), width=1000, height=570, pointsize = 20)
+    jpeg(filename = paste0(path.plot, "/Skala_", i, ".jpg"), width=1000, height=570, pointsize = 20)
     
     par(mar=c(10, 5, 3, 3))
     
