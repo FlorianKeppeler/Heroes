@@ -182,25 +182,39 @@ plot_combined_imp(skalen = skalen,
 
 # Vergleiche der Skalen unter den Gruppen:
 
-plot_group_diff(skalen, umsetzung, ums_data, group_list = list("SBBZ" = 2,"HZE" = 3:5))
+plot_group_diff(skalen=skalen,
+                umsetzung=umsetzung,
+                ums_data=ums_data,
+                group_list = list("SBBZ" = 2,"HZE" = 3:5),
+                path = "C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/")
 
-plot_group_diff(skalen, umsetzung, ums_data, group_list = list("Leitung" = 1,"Mitarbeiter" = 2:5))
-
-
-
-# Umsetzungsscores für RF generieren:
-
-ums_scores = get_ums_scores(ums_data, skalen = data_skalen, names(data_skalen))
-
-
-
-
-Halte_scores = get_skalen_scores(data = data,
-                                 skalen = data_skalen,
-                                 skalen_names = "Haltekraft")
+plot_group_diff(skalen,
+                umsetzung,
+                ums_data,
+                group_list = list("Leitung" = 1,"Mitarbeitende" = 2:5),
+                path = "C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/")
 
 
-ums_scores[["Haltekraft"]] = Halte_scores[["Haltekraft"]]
+
+
+# RandomForest Modell ------------------------------------------------------
+
+m = fit_randomForest(data = data,
+                     ums_data = ums_data,
+                     skalen = data_skalen,
+                     skalen_names = names(data_skalen),
+                     main="Potentielle Stellschrauben um Haltekraft zu erhöhen",
+                     file="C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Wichtigkeit nach Modell.pdf")
+
+
+
+
+
+
+
+
+
+
 
 # Was ist mit der Transparenz.jM los?
 
