@@ -53,6 +53,17 @@ table(data$B110)
 #  -> 61: < 30;    126:  31 - 50;    41: > 51 
 
 
+# Alter der jM in den Gruppen:
+tmp = data[,keys[["AlterGruppen"]]]
+tmp = tmp[complete.cases(tmp),]
+
+tmp = tmp - 1
+
+apply(tmp, 2, sum)/nrow(tmp)
+# < 6-Jährige   6 bis 10-Jährige   11 bis 14-Jährige   15 bis 17-Jährige   18 bis 21-Jährige   > 21-Jährige
+# -> 3.6%           36.3%             63.1%                65.7%                34.3%               2.9%;
+
+
 # Arbeitsbereiche:
 table(data$B102)
 # -> 88: Leitung;    74: SBBZ;    154: HZE.station;     20: HZE.teilst;     61: HZE.ambul
@@ -61,6 +72,10 @@ table(data$B102)
 
 sum(!is.na(data$B107))
 #  -> Rücklauf sind 397 nach Ausschluss der Personen die nicht mit jM arbeiten
+
+
+
+
 
 
 write_einrichtungen_sbbz_hze(data, file= "C:/Heroes/Ergebnisse/Excel/Einrichtungen/Sbbz_Hze.xlsx")
@@ -102,8 +117,12 @@ write_einrichtungen_sbbz_hze(data, file= "C:/Heroes/Ergebnisse/Excel/Einrichtung
 
 descriptive_anal_plots(data=data,
                        type="binom",
-                       path="C:/Heroes/Ergebnisse/Grafiken/Deskriptive Analyse Plots",
-                       se= "all")
+                       path="C:/Heroes/Ergebnisse/Grafiken/Deskriptive Analyse Plots")
+
+descriptive_anal_plots(data=data,
+                       type="binom",
+                       path="C:/Heroes/Ergebnisse/Grafiken/Deskriptive Analyse Plots/mitFehler",
+                       se= T)
 
 
 # Mittelwerte von Items und Umsetzung
