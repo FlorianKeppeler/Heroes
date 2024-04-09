@@ -348,6 +348,11 @@ res_tmp[,"Einrichtung"][order(apply(res_tmp[,-1], 1, mean), decreasing = T)]
 
 best = tmp_imp_names
 
+
+
+
+
+
 for(i in best){
   
   agg_ums = create_agg_ums(skalen_tmp=data_skalen, umsetzung = umsetzung, skala=i)
@@ -362,8 +367,6 @@ agg_df = create_agg_df(skalen_tmp = data_skalen, umsetzung = umsetzung, variable
 
 par(mfrow=c(2,2))
 plot_einrichtungen(agg_df)
-
-
 
 
 plot_combined_imp(skalen = skalen,
