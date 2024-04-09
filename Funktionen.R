@@ -218,7 +218,7 @@ get_ranking = function(data, var_name, type, yx){
 
 
 
-plot_ranked = function(data, var_name, yx, mar, main, type, file, add=0, label=""){
+plot_ranked = function(data, var_name, yx, mar, main, type, file, add=0, label="", se="reduced"){
   
   ranked = get_ranking(data, var_name, type=type, yx)
   
@@ -237,13 +237,15 @@ plot_ranked = function(data, var_name, yx, mar, main, type, file, add=0, label="
   
   if(!typeof(add) == "list"){
     
-    
-    arrows(x0 = (1:nrow(ranked)), y0 = ranked[,"mean"],
-           y1 = ranked[,"se.1"], col="grey30", length = 0.1, lwd=1, angle=90)
-    
-    arrows(x0 = (1:nrow(ranked)), y0 = ranked[,"mean"],
-           y1 = ranked[,"se.2"], col="grey30", length = 0.1, lwd=1, angle=90)
-    
+    if(se == T){
+      
+      arrows(x0 = (1:nrow(ranked)), y0 = ranked[,"mean"],
+             y1 = ranked[,"se.1"], col="grey30", length = 0.1, lwd=1, angle=90)
+      
+      arrows(x0 = (1:nrow(ranked)), y0 = ranked[,"mean"],
+             y1 = ranked[,"se.2"], col="grey30", length = 0.1, lwd=1, angle=90)
+      
+    }
     
     arrows(x0 = (1:nrow(ranked)), y0 = rep(0, nrow(ranked)),
            y1 = ranked[,1], col="grey50", length = 0, lwd=5)
@@ -261,11 +263,30 @@ plot_ranked = function(data, var_name, yx, mar, main, type, file, add=0, label="
         ranked_tmp = merge(ranked, ranked2, by="name", sort = "False")
         
         
+        if(se== T){
+          
+          arrows(x0 = (1:nrow(ranked_tmp)) - 0.075, y0 = ranked_tmp[,"mean.x"],
+                 y1 = ranked_tmp[,"se.1.x"], col="#1b9e77", length = 0.1, lwd=1, angle=90)
+          
+          arrows(x0 = (1:nrow(ranked_tmp)) - 0.075, y0 = ranked_tmp[,"mean.x"],
+                 y1 = ranked_tmp[,"se.2.x"], col="#1b9e77", length = 0.1, lwd=1, angle=90)
+          
+          
+          arrows(x0 = (1:nrow(ranked_tmp)) + 0.075, y0 = ranked_tmp[,"mean.y"],
+                 y1 = ranked_tmp[,"se.1.y"], col="#e7298a", length = 0.1, lwd=1, angle=90)
+          
+          arrows(x0 = (1:nrow(ranked_tmp)) + 0.075, y0 = ranked_tmp[,"mean.y"],
+                 y1 = ranked_tmp[,"se.2.y"], col="#e7298a", length = 0.1, lwd=1, angle=90)
+        }
+        
+        
         arrows(x0 = (1:nrow(ranked_tmp)) - 0.075, y0 = rep(0, nrow(ranked_tmp)),
              y1 = ranked_tmp[,"mean.x"], col="#1b9e77", length = 0, lwd=5)
       
         arrows(x0 = (1:nrow(ranked_tmp)) + 0.075, y0 = rep(0, nrow(ranked_tmp)),
              y1 = ranked_tmp[,"mean.y"], col="#e7298a", length = 0, lwd=5)
+        
+        
         
         points((1:nrow(ranked_tmp)) - 0.075, ranked_tmp[,"mean.x"], pch=20)#, col="#1b9e77")
         points((1:nrow(ranked_tmp)) + 0.075, ranked_tmp[,"mean.y"], pch=20)#, col="#e7298a")
@@ -277,6 +298,7 @@ plot_ranked = function(data, var_name, yx, mar, main, type, file, add=0, label="
     }
     
     if(length(add) == 2){
+      
       ranked = get_ranking(data, var_name, type=type, yx)
       ranked2 = get_ranking(data = add[[1]], var_name = var_name, type=type, yx)
       ranked3 = get_ranking(data = add[[2]], var_name = var_name, type=type, yx)
@@ -285,6 +307,34 @@ plot_ranked = function(data, var_name, yx, mar, main, type, file, add=0, label="
       ranked_tmp2 = merge(ranked, ranked3, by="name", sort = "False")
       
       ranked_tmp$mean.z = ranked_tmp2$mean.y
+      ranked_tmp$se.1.z = ranked_tmp2$se.1.y
+      ranked_tmp$se.2.z = ranked_tmp2$se.2.y
+      
+      
+      if(se== T){
+        
+        arrows(x0 = (1:nrow(ranked_tmp)) - 0.15, y0 = ranked_tmp[,"mean.x"],
+               y1 = ranked_tmp[,"se.1.x"], col="#1b9e77", length = 0.1, lwd=1, angle=90)
+        
+        arrows(x0 = (1:nrow(ranked_tmp)) - 0.15, y0 = ranked_tmp[,"mean.x"],
+               y1 = ranked_tmp[,"se.2.x"], col="#1b9e77", length = 0.1, lwd=1, angle=90)
+        
+        
+        
+        arrows(x0 = (1:nrow(ranked_tmp)) + 0, y0 = ranked_tmp[,"mean.y"],
+               y1 = ranked_tmp[,"se.1.y"], col="#e7298a", length = 0.1, lwd=1, angle=90)
+        
+        arrows(x0 = (1:nrow(ranked_tmp)) + 0, y0 = ranked_tmp[,"mean.y"],
+               y1 = ranked_tmp[,"se.2.y"], col="#e7298a", length = 0.1, lwd=1, angle=90)
+        
+        
+        
+        arrows(x0 = (1:nrow(ranked_tmp)) + 0.15, y0 = ranked_tmp[,"mean.z"],
+               y1 = ranked_tmp[,"se.1.z"], col="#7570b3", length = 0.1, lwd=1, angle=90)
+        
+        arrows(x0 = (1:nrow(ranked_tmp)) + 0.15, y0 = ranked_tmp[,"mean.z"],
+               y1 = ranked_tmp[,"se.2.z"], col="#7570b3", length = 0.1, lwd=1, angle=90)
+      }
       
       
       arrows(x0 = (1:nrow(ranked_tmp)) - 0.15, y0 = rep(0, nrow(ranked_tmp)),
@@ -316,8 +366,51 @@ plot_ranked = function(data, var_name, yx, mar, main, type, file, add=0, label="
       ranked_tmp2 = merge(ranked, ranked3, by="name", sort = "False")
       ranked_tmp3 = merge(ranked, ranked4, by="name", sort = "False")
       
+      
       ranked_tmp$mean.z = ranked_tmp2$mean.y
+      ranked_tmp$se.1.z = ranked_tmp2$se.1.y
+      ranked_tmp$se.2.z = ranked_tmp2$se.2.y
+      
       ranked_tmp$mean.a = ranked_tmp3$mean.y
+      ranked_tmp$se.1.a = ranked_tmp3$se.1.y
+      ranked_tmp$se.2.a = ranked_tmp3$se.2.y
+      
+      # ranked_tmp$mean.z = ranked_tmp2$mean.y
+      # ranked_tmp$mean.a = ranked_tmp3$mean.y
+      
+      
+      if(se== T){
+        
+        arrows(x0 = (1:nrow(ranked_tmp)) - 0.225, y0 = ranked_tmp[,"mean.x"],
+               y1 = ranked_tmp[,"se.1.x"], col="#1b9e77", length = 0.1, lwd=1, angle=90)
+        
+        arrows(x0 = (1:nrow(ranked_tmp)) - 0.225, y0 = ranked_tmp[,"mean.x"],
+               y1 = ranked_tmp[,"se.2.x"], col="#1b9e77", length = 0.1, lwd=1, angle=90)
+        
+        
+        
+        arrows(x0 = (1:nrow(ranked_tmp)) - 0.075, y0 = ranked_tmp[,"mean.y"],
+               y1 = ranked_tmp[,"se.1.y"], col="#e7298a", length = 0.1, lwd=1, angle=90)
+        
+        arrows(x0 = (1:nrow(ranked_tmp)) - 0.075, y0 = ranked_tmp[,"mean.y"],
+               y1 = ranked_tmp[,"se.2.y"], col="#e7298a", length = 0.1, lwd=1, angle=90)
+        
+        
+        
+        arrows(x0 = (1:nrow(ranked_tmp)) + 0.075, y0 = ranked_tmp[,"mean.z"],
+               y1 = ranked_tmp[,"se.1.z"], col="#7570b3", length = 0.1, lwd=1, angle=90)
+        
+        arrows(x0 = (1:nrow(ranked_tmp)) + 0.075, y0 = ranked_tmp[,"mean.z"],
+               y1 = ranked_tmp[,"se.2.z"], col="#7570b3", length = 0.1, lwd=1, angle=90)
+        
+        
+        
+        arrows(x0 = (1:nrow(ranked_tmp)) + 0.225, y0 = ranked_tmp[,"mean.a"],
+               y1 = ranked_tmp[,"se.1.a"], col="#e6ab02", length = 0.1, lwd=1, angle=90)
+        
+        arrows(x0 = (1:nrow(ranked_tmp)) + 0.225, y0 = ranked_tmp[,"mean.a"],
+               y1 = ranked_tmp[,"se.2.a"], col="#e6ab02", length = 0.1, lwd=1, angle=90)
+      }
       
       
       arrows(x0 = (1:nrow(ranked_tmp)) - 0.225, y0 = rep(0, nrow(ranked_tmp)),
@@ -352,14 +445,15 @@ plot_ranked = function(data, var_name, yx, mar, main, type, file, add=0, label="
 }
 
 
-plot_ranked_all = function(data, var_name, yx, type, mar, main, file){
+plot_ranked_all = function(data, var_name, yx, type, mar, main, file, se="reduced"){
   
   plot_ranked(data = data, var_name = var_name,
               yx= yx,
               type=type,
               mar=mar,
               main=main,
-              file=paste0(file,"_gesamt.pdf"))
+              file=paste0(file,"_gesamt.pdf"),
+              se=se)
   
   
   plot_ranked(data = data[data$B102 > 2,], var_name = var_name,
@@ -369,7 +463,8 @@ plot_ranked_all = function(data, var_name, yx, type, mar, main, file){
               main=paste(main, "HZE/SBBZ"),
               file=paste0(file,"_HZE_SBBZ.pdf"),
               add = list(data[data$B102 == 2, ]),
-              label = c("HZE", "SBBZ"))
+              label = c("HZE", "SBBZ"),
+              se=se)
   
   
   plot_ranked(data = data[data$B103 == 1,], var_name = var_name,
@@ -379,7 +474,8 @@ plot_ranked_all = function(data, var_name, yx, type, mar, main, file){
               main=paste(main, "Mitarbeiterinnen/Mitarbeiter"),
               file=paste0(file,"_Geschlecht.pdf"),
               add = list(data[data$B103 == 2, ]),
-              label = c("Mitarbeiterinnen", "Mitarbeiter"))
+              label = c("Mitarbeiterinnen", "Mitarbeiter"),
+              se=se)
   
   
   plot_ranked(data = data[data$B105 == 1,], var_name = var_name,
@@ -389,7 +485,8 @@ plot_ranked_all = function(data, var_name, yx, type, mar, main, file){
               main=paste(main, "nach Berufserfahrung"),
               file=paste0(file,"_Berufserfahrung.pdf"),
               add = list(data[data$B105 == 2, ], data[data$B105 == 3, ]),
-              label = imp_names[["B105"]][c(1,2,3)])
+              label = imp_names[["B105"]][c(1,2,3)],
+              se=se)
   
   
   plot_ranked(data = data[data$B110 == 1,], var_name = var_name,
@@ -399,7 +496,8 @@ plot_ranked_all = function(data, var_name, yx, type, mar, main, file){
               main=paste(main, "nach Alter Mitarbeitetende"),
               file=paste0(file,"_AlterMit.pdf"),
               add = list(data[data$B110 == 2, ], data[data$B110 == 3, ]),
-              label = imp_names[["B110"]][c(1,2,3)])
+              label = imp_names[["B110"]][c(1,2,3)],
+              se=se)
   
   
   plot_ranked(data = data[data$C207_02 == 2,], var_name = var_name,
@@ -409,7 +507,8 @@ plot_ranked_all = function(data, var_name, yx, type, mar, main, file){
               main=paste(main, "nach Alter jM"),
               file=paste0(file,"_AlterJM.pdf"),
               add = list(data[data$C207_03 == 2, ], data[data$C207_04 == 2, ], data[data$C207_05 == 2, ]),
-              label = c("6 - 10", "11 - 14", "15 - 17", "18 - 21"))
+              label = c("6 - 10", "11 - 14", "15 - 17", "18 - 21"),
+              se=se)
   
 }
 
@@ -1528,7 +1627,7 @@ get_ums_scores = function(ums_data, skalen, skalen_names){
 }
 
 
-descriptive_anal_plots = function(data, type, path){
+descriptive_anal_plots = function(data, type, path, se=F){
   
   
   #  Begriffe:
@@ -1539,7 +1638,8 @@ descriptive_anal_plots = function(data, type, path){
                   type=type,
                   mar=c(18,5,3,3),
                   main="Begriffe",
-                  file=paste0(path,"/Begriffe"))
+                  file=paste0(path,"/Begriffe"),
+                  se=se)
   
   
   # Verhaltensweisen
@@ -1550,7 +1650,8 @@ descriptive_anal_plots = function(data, type, path){
                   type=type,
                   mar=c(18,12,3,3),
                   main="Verhaltensweisen",
-                  file=paste0(path,"/Verhaltenweisen"))
+                  file=paste0(path,"/Verhaltenweisen"),
+                  se=se)
   
   
   # Informationen
@@ -1560,7 +1661,8 @@ descriptive_anal_plots = function(data, type, path){
                   type=type,
                   mar=c(18,7,3,3),
                   main="Informationen",
-                  file= paste0(path,"/Informationen"))
+                  file= paste0(path,"/Informationen"),
+                  se=se)
   
   
   # Dokumente
@@ -1571,7 +1673,8 @@ descriptive_anal_plots = function(data, type, path){
                   var_name = "Dokumente",
                   mar=c(18,5,3,3),
                   main="Dokumente",
-                  file=paste0(path,"/Dokumente"))
+                  file=paste0(path,"/Dokumente"),
+                  se=se)
   
   # interdiszTeam
   
@@ -1582,7 +1685,8 @@ descriptive_anal_plots = function(data, type, path){
                   var_name = "Interdisz",
                   mar=c(14,9,3,3),
                   main="Interdisziplinäres Team",
-                  file = paste0(path,"/Interdisz_Team"))
+                  file = paste0(path,"/Interdisz_Team"),
+                  se=se)
   
   
   # Kompetenzen
@@ -1594,7 +1698,8 @@ descriptive_anal_plots = function(data, type, path){
                   var_name = "Kompetenzen",
                   mar=c(24,9,3,3),
                   main="Kompetenzen",
-                  file = paste0(path,"/Kompetenzen"))
+                  file = paste0(path,"/Kompetenzen"),
+                  se=se)
   
   # Fortbildung
   
@@ -1605,7 +1710,8 @@ descriptive_anal_plots = function(data, type, path){
                   var_name = "Fortbildung",
                   mar=c(18,9,3,3),
                   main="Fortbildungen",
-                  file = paste0(path,"/Fortbildungen"))
+                  file = paste0(path,"/Fortbildungen"),
+                  se=se)
   
   
   

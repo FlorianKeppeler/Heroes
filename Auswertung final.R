@@ -100,7 +100,10 @@ write_einrichtungen_sbbz_hze(data, file= "C:/Heroes/Ergebnisse/Excel/Einrichtung
 
 # Plots
 
-descriptive_anal_plots(data=data, type="binom", path="C:/Heroes/Ergebnisse/Grafiken/Deskriptive Analyse Plots")
+descriptive_anal_plots(data=data,
+                       type="binom",
+                       path="C:/Heroes/Ergebnisse/Grafiken/Deskriptive Analyse Plots",
+                       se= "all")
 
 
 # Mittelwerte von Items und Umsetzung
