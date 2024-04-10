@@ -686,7 +686,7 @@ plot_binary = function(data, var_name, main, mar, ylab, file, ranked=FALSE, add 
 
 
 
-plot_veto = function(data, var_name, main, mar, ylab, file, ranked=FALSE){
+plot_veto = function(data, var_name, main, mar, ylab, file, ranked=FALSE, labels){
   
   
   tmp = apply(data[,keys[[var_name[1]]]] - 1, 2, sum, na.rm=T)
@@ -1889,7 +1889,8 @@ descriptive_anal_plots = function(data, type, path, se=F){
             mar=c(12,6,3,3),
             ylab="Prozent der Mitarbeitenden",
             file=paste0(path,"/Aufnahme_gesamt.pdf"),
-            ranked = T, labels=)
+            ranked = T,
+            labels=c("Entscheidung", "Vetorecht", "Vetoempfehlung"))
   
   plot_veto(data=data,
             var_name=c("Entscheidung.Ent","Vetor.Ent","Vetoem.Ent"),
@@ -1897,7 +1898,8 @@ descriptive_anal_plots = function(data, type, path, se=F){
             mar=c(12,6,3,3),
             ylab="Prozent der Mitarbeitenden",
             file=paste0(path,"/Entlassung_gesamt.pdf"),
-            ranked = T, labels=)
+            ranked = T,
+            labels=c("Entscheidung", "Vetorecht", "Vetoempfehlung"))
 }
 
 

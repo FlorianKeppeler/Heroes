@@ -120,15 +120,6 @@ descriptive_anal_plots(data=data,
                        path="C:/Heroes/Ergebnisse/Grafiken/Deskriptive Analyse Plots")
 
 
-plot_veto(data=data,
-            var_name=c("Entscheidung.Auf","Vetor.Auf","Vetoem.Auf"),
-            main="Aufnahme",
-            mar=c(12,6,3,3),
-            ylab="Prozent der Mitarbeitenden",
-            file="C:/Heroes/Ergebnisse/Grafiken/Deskriptive Analyse Plots/Aufnahme_gesamt.pdf",
-            ranked = T)
-
-
 descriptive_anal_plots(data=data,
                        type="binom",
                        path="C:/Heroes/Ergebnisse/Grafiken/Deskriptive Analyse Plots/mitFehler",
@@ -298,8 +289,6 @@ plot_group_diff(skalen = skalen3,
 
 
 
-
-
 # nach Skalen
 
 data_skalen = skalen
@@ -309,8 +298,6 @@ data_skalen_ohne = skalen_ohne
 skalen_scores = get_skalen_scores(data = data,
                                   skalen = data_skalen_ohne,
                                   skalen_names =  names(data_skalen_ohne))
-
-
 
 
 
@@ -402,9 +389,6 @@ plot_rel_density(data=data,
   
   
 
-
-
-
 # Dichteplots für Einrichtungen
 
 for(i in unique(ums_df_agg$Einrichtung)){
@@ -462,7 +446,9 @@ for(i in unique(ums_df_agg$Einrichtung)){
 
 
 
-
+#----------------------------------------------------------------------------
+# Bis hierher
+#---------------------------------------------------------------------------
 
 
 
