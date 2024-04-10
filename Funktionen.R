@@ -685,6 +685,86 @@ plot_binary = function(data, var_name, main, mar, ylab, file, ranked=FALSE, add 
 }
 
 
+
+plot_veto = function(data, var_name, main, mar, ylab, file, ranked=FALSE){
+  
+  
+  tmp = apply(data[,keys[[var_name[1]]]] - 1, 2, sum, na.rm=T)
+  
+  # % Ausrechnen
+  
+  tmp = 100 * tmp / sum(complete.cases(data[,keys[[var_name[1]]]]))
+  
+  if(ranked == TRUE){
+    
+    index = order(tmp, decreasing = T)
+    
+    tmp_labels = imp_names[[var_name[1]]][index]
+    
+    tmp = sort(tmp, decreasing = T)
+    
+  }
+  
+  pdf(file=file, width=14, height = 12, paper = "a4r")
+  
+  par(mar=mar)
+  
+  # plot(tmp, xlab="", xaxt="n", ylab=ylab, main = main, type="n", ylim=c(0,max(tmp)))
+  
+      
+      tmp2 = apply(data[,keys[[var_name[2]]]] - 1, 2, sum, na.rm=T)
+      tmp3 = apply(data[,keys[[var_name[3]]]] - 1, 2, sum, na.rm=T)
+      
+      
+      tmp2 = 100 * tmp2 / sum(complete.cases(data[,keys[[var_name[2]]]]))
+      tmp3 = 100 * tmp3 / sum(complete.cases(data[,keys[[var_name[3]]]]))
+      
+      if(ranked == TRUE){
+        
+        tmp2 = tmp2[index]
+        tmp3 = tmp3[index]
+        
+      }
+      
+      
+      plot(tmp, xlab="", xaxt="n", ylab=ylab, main = main, type="n", ylim=c(0,max(tmp, tmp2, tmp3)))
+      
+      abline(h=c(0, 50, 100), lwd=0.5, col="grey60")
+      
+      arrows(x0 = 1:length(tmp) - 0.15, y0 = rep(0, length(tmp)),
+             y1 = tmp, col="#1b9e77", length = 0, lwd=5)
+      
+      arrows(x0 = 1:length(tmp) + 0.0, y0 = rep(0, length(tmp)),
+             y1 = tmp2, col="#e7298a", length = 0, lwd=5)
+      
+      arrows(x0 = 1:length(tmp) + 0.15, y0 = rep(0, length(tmp)),
+             y1 = tmp3, col="#7570b3", length = 0, lwd=5)
+      
+      points(1:length(tmp) - 0.15, tmp, pch = 20)
+      
+      points(1:length(tmp2) + 0.0, tmp2, pch = 20)
+      
+      points(1:length(tmp3) + 0.15, tmp3, pch = 20)
+      
+      legend("topright", bty="n", fill=c("#1b9e77", "#e7298a", "#7570b3"),
+             legend = labels, cex = 1.2)
+  
+  
+  
+  if(ranked == TRUE){
+    
+    axis(side=1, at=1:length(tmp), labels = tmp_labels, las=2)
+  }else{
+    
+    axis(side=1, at=1:length(tmp), labels = imp_names[[var_name[1]]], las=2)
+  }
+  
+  dev.off()
+}
+
+
+
+
 plot_binary_all = function(data, var_name, main, mar, ylab, file, ranked=FALSE){
   
   
@@ -1802,6 +1882,22 @@ descriptive_anal_plots = function(data, type, path, se=F){
                   ylab="Prozent der Mitarbeitenden",
                   file=paste0(path,"/Entscheidung Entlassung"),
                   ranked = T)
+  
+  plot_veto(data=data,
+            var_name=c("Entscheidung.Auf","Vetor.Auf","Vetoem.Auf"),
+            main="Aufnahme: Entscheidung und Veto",
+            mar=c(12,6,3,3),
+            ylab="Prozent der Mitarbeitenden",
+            file=paste0(path,"/Aufnahme_gesamt.pdf"),
+            ranked = T, labels=)
+  
+  plot_veto(data=data,
+            var_name=c("Entscheidung.Ent","Vetor.Ent","Vetoem.Ent"),
+            main="Entlassung: Entscheidung und Veto",
+            mar=c(12,6,3,3),
+            ylab="Prozent der Mitarbeitenden",
+            file=paste0(path,"/Entlassung_gesamt.pdf"),
+            ranked = T, labels=)
 }
 
 
