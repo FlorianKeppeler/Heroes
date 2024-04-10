@@ -2029,3 +2029,112 @@ fit_randomForest = function(data,
   
   return (rfm)
 }
+
+
+
+plot_most_important = function(data,
+                               skalen_scores,
+                               mar=c(12,4,5,3),
+                               main,
+                               file, best_var=0){
+  
+  if(best_var==0){
+  
+    tmp_mean = numeric(length(skalen_scores))
+    tmp_name = names(skalen_scores)
+    
+    
+    for(i in 1:length(skalen_scores)){
+      tmp_mean[i] = binom_est(skalen_scores[[i]]$scores_mean, yx=1:6)[1]
+      
+    }
+    
+    tmp_imp_names = tmp_name[order(tmp_mean, decreasing = T)][1:13]
+    
+  }else{
+    
+    tmp_imp_names = best_var
+    
+  }
+  
+  
+  res_tmp = matrix(nrow=length(unique(data$B107)), ncol=length(tmp_imp_names)+1)
+  
+  res_tmp = as.data.frame(res_tmp)
+  
+  
+  names(res_tmp) = c("Einrichtung", tmp_imp_names)
+  
+  n = 1
+  
+  for(i in unique(data$B107)){
+    
+    for(j in tmp_imp_names){
+      ums_var = umsetzung$var.Key[umsetzung$var.Umgesetzt %in% skalen[[j]]]
+      
+      res_tmp[n,j] = mean(unlist(data[data$B107 == i, ums_var])) - 1
+      # res_tmp[n, "Einrichtung"] = imp_names[["B107"]][i]
+      res_tmp[n, "Einrichtung"] = i
+    }
+    
+    n = n + 1
+  }
+  
+  
+  res_tmp[,"Einrichtung"][order(apply(res_tmp[,-1], 1, mean), decreasing = T)]
+  
+  
+  best = tmp_imp_names
+  
+  
+  # Einrichtungen mit weniger als 5 
+  
+  best_einr = res_tmp[order(apply(res_tmp[,-1], 1, mean), decreasing = T), ]
+  
+  
+  
+  tmp_table = table(data$B107)
+  
+  table_names = as.numeric(dimnames(tmp_table)[[1]])
+  
+  selected_einrichtung = table_names[table(data$B107) > 3]
+  
+  
+  best_einr = best_einr[best_einr[,"Einrichtung"] %in% selected_einrichtung,]
+  
+  
+  
+  pdf(file=file, width=14, height = 12, paper = "a4r")
+  
+  par(mar=mar, xpd = T)
+  
+  plot(1:ncol(best_einr[,-1]), best_einr[1,-1], type="n", ylim=c(0,1), xlab="", xaxt="n", ylab="Umsetzung")
+  
+  title(main = main, adj=0)
+  
+  arrows(x0 = (1:ncol(best_einr[,-1]) - 0.15),
+         y0=0,
+         y1=as.numeric(best_einr[1,-1]), length=0, lwd= 5, col="#1b9e77")
+  
+  
+  arrows(x0 = (1:ncol(best_einr[,-1])),
+         y0=0,
+         y1=as.numeric(best_einr[2,-1]), length=0, lwd= 5, col= "#e7298a")
+  
+  
+  arrows(x0 = (1:ncol(best_einr[,-1]) + 0.15),
+         y0=0,
+         y1=as.numeric(best_einr[3,-1]), length=0, lwd= 5, col = "#7570b3")
+  
+  
+  axis(side=1, at= 1:ncol(best_einr[,-1]), labels=best, las=2)
+  
+  
+  legend("topright", inset = c(0,-0.25), bty="n", fill=c("#1b9e77", "#e7298a", "#7570b3"),
+         legend = imp_names[["B107"]][best_einr[1:3,"Einrichtung"]], cex = 1.2)
+  
+  dev.off()
+  
+  
+}
+
