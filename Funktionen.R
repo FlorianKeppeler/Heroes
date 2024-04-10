@@ -2156,7 +2156,7 @@ plot_most_important = function(data,
 
 
 
-plot_rel_density = function(data, ums_scores, main, file){
+plot_rel_density = function(data, ums_scores, mar, main, file){
   
   ums_tmp = create_model_df(ums_scores = ums_scores, score_type = "scores_mean")
   
@@ -2185,7 +2185,7 @@ plot_rel_density = function(data, ums_scores, main, file){
   
   pdf(file=file, width=14, height = 12, paper = "a4r")
   
-  par(mar=c(9,4,4,3))
+  par(mar=mar)
   
   plot(density((data_slice$HK.subj.Einrichtung[get_index_by_group(data_slice, "Gruppe", c(3:5))])),
        col="#1b9e77", 
@@ -2223,8 +2223,8 @@ plot_rel_density = function(data, ums_scores, main, file){
                     ifelse(data_slice$Gruppe == 2, "#e6ab02", "#1b9e77")),
          cex=2)
   
-  axis(1, at=1:6, labels = c("gar nicht wichtig", "nicht wichtig", "eher nicht wichtig",
-                             "eher wichtig", "wichtig", "vollkommen wichtig"), las=2)
+  axis(1, at=1:6, labels = c("stimme gar nicht zu", "stimme nicht zu", "stimme eher nicht zu",
+                             "stimme eher zu", "stimme zu", "stimme vollkommen zu"), las=2)
   
   legend("topleft", fill = c("#1b9e77", "#e6ab02", "#e7298a"),
          legend = c("HZE","SBBZ","Leitung"), bty="n")

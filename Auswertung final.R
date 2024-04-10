@@ -386,6 +386,7 @@ ums_scores = get_ums_scores(ums_data = ums_data, skalen = skalen, skalen_names =
 
 plot_rel_density(data=data,
                  ums_scores=ums_scores,
+                 mar=c(11,4,4,3),
                  main = "subjektive Haltekraft der Einrichtung",
                  file="C:/Heroes/Ergebnisse/Grafiken/Dichte/Haltekraft_gesamt.pdf")
   
@@ -393,36 +394,8 @@ plot_rel_density(data=data,
 
 
 
-# Was ist mit der Transparenz.jM los?
 
-hist(ums_scores[["Transparenz.jM"]]$scores_mean)
-hist(skalen_scores[["Transparenz.jM"]]$scores_mean)
-
-plot(ums_scores[["Haltekraft"]]$scores_mean ~ jitter(skalen_scores[["Transparenz.jM"]]$scores_mean),
-     ylab="Haltekraft", xlab ="Transparenz.jM")
-
-plot(ums_scores[["Haltekraft"]]$scores_mean ~ jitter(ums_scores[["Transparenz.jM"]]$scores_mean),
-     ylab="Haltekraft", xlab ="Transparenz.jM")
-
-# -> wahrscheinlich finden das eben alle wichtig und bereits gut umgesetzt
-
-
-skalen_imp = create_skalen_imp(score_type = "scores_mean", skalen_scores = ums_scores,
-                               group_index = get_index_by_group(data, "B102", c(1:5)))
-
-skalen_imp = skalen_imp[-1,]
-
-plot_skalen_imp(skalen_imp,
-                mar=c(8,3,4,1),
-                ylim=c(0,1),
-                main="bereits umgesetzt")
-
-# jap! Transparenz.jM ist die die Variable die bereits am meisten in den Einrichtungen umgesetzt wird.
-
-
-
-
-
+# Dichteplots für Einrichtungen
 
 for(i in unique(ums_df_agg$Einrichtung)){
   
@@ -476,6 +449,40 @@ for(i in unique(ums_df_agg$Einrichtung)){
   
   dev.off()
 }
+
+
+
+
+
+
+
+
+
+# Was ist mit der Transparenz.jM los?
+
+hist(ums_scores[["Transparenz.jM"]]$scores_mean)
+hist(skalen_scores[["Transparenz.jM"]]$scores_mean)
+
+plot(ums_scores[["Haltekraft"]]$scores_mean ~ jitter(skalen_scores[["Transparenz.jM"]]$scores_mean),
+     ylab="Haltekraft", xlab ="Transparenz.jM")
+
+plot(ums_scores[["Haltekraft"]]$scores_mean ~ jitter(ums_scores[["Transparenz.jM"]]$scores_mean),
+     ylab="Haltekraft", xlab ="Transparenz.jM")
+
+# -> wahrscheinlich finden das eben alle wichtig und bereits gut umgesetzt
+
+
+skalen_imp = create_skalen_imp(score_type = "scores_mean", skalen_scores = ums_scores,
+                               group_index = get_index_by_group(data, "B102", c(1:5)))
+
+skalen_imp = skalen_imp[-1,]
+
+plot_skalen_imp(skalen_imp,
+                mar=c(8,3,4,1),
+                ylim=c(0,1),
+                main="bereits umgesetzt")
+
+# jap! Transparenz.jM ist die die Variable die bereits am meisten in den Einrichtungen umgesetzt wird.
 
 
 
