@@ -303,71 +303,6 @@ skalen_scores = get_skalen_scores(data = data,
 
 
 
-tmp_mean = numeric(length(skalen_scores))
-tmp_name = names(skalen_scores)
-
-
-for(i in 1:length(skalen_scores)){
-  tmp_mean[i] = binom_est(skalen_scores[[i]]$scores_mean, yx=1:6)[1]
-
-}
-
-
-tmp_imp_names = tmp_name[order(tmp_mean, decreasing = T)][1:13]
-
-
-res_tmp = matrix(nrow=length(unique(data$B107)), ncol=14)
-
-res_tmp = as.data.frame(res_tmp)
-
-
-names(res_tmp) = c("Einrichtung", tmp_imp_names)
-
-n = 1
-
-for(i in unique(data$B107)){
-  
-  for(j in tmp_imp_names){
-    ums_var = umsetzung$var.Key[umsetzung$var.Umgesetzt %in% skalen[[j]]]
-    
-    res_tmp[n,j] = mean(unlist(data[data$B107 == i, ums_var])) - 1
-    res_tmp[n, "Einrichtung"] = imp_names[["B107"]][i]
-  }
-  
-  n = n + 1
-}
-
-
-res_tmp[,"Einrichtung"][order(apply(res_tmp[,-1], 1, mean), decreasing = T)]
-
-
-# par(mar=c(16,4,3,3))
-# 
-# plot(sort(apply(res_tmp[,-1], 1, mean), decreasing = T), xaxt="n", xlab="", ylab="")
-# axis(side = 1, at= 1:length(unique(data$B107)), labels = res_tmp[,"Einrichtung"][order(apply(res_tmp[,-1], 1, mean), decreasing = T)], las=2)
-
-best = tmp_imp_names
-
-
-
-
-
-
-for(i in best){
-  
-  agg_ums = create_agg_ums(skalen_tmp=data_skalen, umsetzung = umsetzung, skala=i)
-  
-  plot_agg_ums(agg_ums = agg_ums, skala=i)
-}
-
-
-# Für die Einrichtungen aufschlüsseln
-
-agg_df = create_agg_df(skalen_tmp = data_skalen, umsetzung = umsetzung, variables = best)
-
-par(mfrow=c(2,2))
-plot_einrichtungen(agg_df)
-
 
 plot_combined_imp(skalen = skalen,
                   data = data,
@@ -412,6 +347,15 @@ plot_group_diff(skalen,
 
 
 
+plot_most_important(data,
+                    skalen_scores,
+                    mar=c(12,4,5,3),
+                    main="Wichtigste nach MA",
+                    file="C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Wichtigste_nachMA_Einrichtungen.pdf",
+                    best_var = 0)
+
+
+
 
 # RandomForest Modell ------------------------------------------------------
 
@@ -424,10 +368,15 @@ m = fit_randomForest(data = data,
 
 
 
-most_imp_model = dimnames(importance(m))[[1]][order(importance(m), decreasing = T)][13]
+most_imp_model = dimnames(importance(m))[[1]][order(importance(m), decreasing = T)][1:13]
 
 
-
+plot_most_important(data,
+                    skalen_scores,
+                    mar=c(12,4,5,3),
+                    main="Wichtigste nach Modell",
+                    file="C:/Heroes/Ergebnisse/Grafiken/Wichtigkeit und Umsetzung/Wichtigste_nachModell_Einrichtungen.pdf",
+                    best_var = most_imp_model)
 
 
 

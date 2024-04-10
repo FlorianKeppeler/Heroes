@@ -2110,7 +2110,7 @@ plot_most_important = function(data,
   
   plot(1:ncol(best_einr[,-1]), best_einr[1,-1], type="n", ylim=c(0,1), xlab="", xaxt="n", ylab="Umsetzung")
   
-  title(main = main, adj=0)
+  title(main = main, adj=0.2)
   
   arrows(x0 = (1:ncol(best_einr[,-1]) - 0.15),
          y0=0,
