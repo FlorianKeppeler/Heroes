@@ -2154,3 +2154,82 @@ plot_most_important = function(data,
   
 }
 
+
+
+plot_rel_density = function(data, ums_scores, main, file){
+  
+  ums_tmp = create_model_df(ums_scores = ums_scores, score_type = "scores_mean")
+  
+  Halte_scores = get_skalen_scores(data = data,
+                                   skalen = data_skalen,
+                                   skalen_names = "HK.subj.Einrichtung")
+  
+  
+  ums_scores[["HK.subj.Einrichtung"]] = Halte_scores[["HK.subj.Einrichtung"]]
+  
+  
+  ums_tmp = create_model_df(ums_scores = ums_scores, score_type = "scores_mean")
+  
+  ums_df = ums_tmp[[1]]
+  
+  
+  
+  ums_df_agg = ums_df
+  
+  ums_df_agg$Einrichtung = data$B107
+  ums_df_agg$Gruppe = data$B102
+  
+  
+  data_slice = ums_df_agg
+  
+  
+  pdf(file=file, width=14, height = 12, paper = "a4r")
+  
+  par(mar=c(9,4,4,3))
+  
+  plot(density((data_slice$HK.subj.Einrichtung[get_index_by_group(data_slice, "Gruppe", c(3:5))])),
+       col="#1b9e77", 
+       main="subjektive Haltekraft der Einrichtung",
+       xlim=c(1, 6),
+       ylim=c(0, 0.65),
+       lwd=2,
+       xlab="",
+       ylab="relative Häufigkeitsdichte", xaxt="n", type="n")
+  
+  abline(v=c(1:6), col="grey70")
+  
+  
+  if(length(get_index_by_group(data_slice, "Gruppe", c(3:5))) > 2){
+    lines(density((data_slice$HK.subj.Einrichtung[get_index_by_group(data_slice, "Gruppe", c(3:5))]), from=1, to=6),
+          col="#1b9e77", lwd=3)
+  }
+  
+  
+  if(length(get_index_by_group(data_slice, "Gruppe", 2)) > 2){
+    lines(density((data_slice$HK.subj.Einrichtung[get_index_by_group(data_slice, "Gruppe", 2)]), from=1, to=6),
+          col="#e6ab02", lwd=3)
+  }
+  
+  
+  if(length(get_index_by_group(data_slice, "Gruppe", 1)) > 2){
+    lines(density((data_slice$HK.subj.Einrichtung[get_index_by_group(data_slice, "Gruppe", 1)]), from=1, to=6),
+          col="#e7298a", lwd=3)
+  }
+  
+  points(jitter(data_slice$HK.subj.Einrichtung, 3),
+         rep(0, nrow(data_slice)),
+         pch="|",
+         col=ifelse(data_slice$Gruppe == 1, "#e7298a",
+                    ifelse(data_slice$Gruppe == 2, "#e6ab02", "#1b9e77")),
+         cex=2)
+  
+  axis(1, at=1:6, labels = c("gar nicht wichtig", "nicht wichtig", "eher nicht wichtig",
+                             "eher wichtig", "wichtig", "vollkommen wichtig"), las=2)
+  
+  legend("topleft", fill = c("#1b9e77", "#e6ab02", "#e7298a"),
+         legend = c("HZE","SBBZ","Leitung"), bty="n")
+  
+  dev.off()
+  
+}
+

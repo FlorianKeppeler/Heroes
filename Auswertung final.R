@@ -379,7 +379,17 @@ plot_most_important(data,
                     best_var = most_imp_model)
 
 
+# Density Diagramm subjektive Haltekrafte
 
+
+ums_scores = get_ums_scores(ums_data = ums_data, skalen = skalen, skalen_names = names(skalen))
+
+plot_rel_density(data=data,
+                 ums_scores=ums_scores,
+                 main = "subjektive Haltekraft der Einrichtung",
+                 file="C:/Heroes/Ergebnisse/Grafiken/Dichte/Haltekraft_gesamt.pdf")
+  
+  
 
 
 
@@ -411,73 +421,68 @@ plot_skalen_imp(skalen_imp,
 
 
 
-ums_tmp = create_model_df(ums_scores = ums_scores, score_type = "scores_mean")
 
-ums_df = ums_tmp[[1]]
-
-
-ums_df_agg = ums_df
-
-ums_df_agg$Einrichtung = data$B107
-ums_df_agg$Gruppe = data$B102
 
 
 for(i in unique(ums_df_agg$Einrichtung)){
   
   if(i == 11 | i == 40) next
   
-  data_slice = ums_df_agg[get_index_by_group(data, "B107", i), ]
+  data_slice = ums_df_agg[get_index_by_group(data = data, var_name_group = "B107",group_keys = i), ]
   
-  plot(density((data_slice$Haltekraft[get_index_by_group(data_slice, "Gruppe", c(3:5))])),
-       col="#e7298a", 
+  a = length(get_index_by_group(data_slice, "Gruppe", 1)) == 1
+  b = length(get_index_by_group(data_slice, "Gruppe", 2)) == 1
+  c = length(get_index_by_group(data_slice, "Gruppe", c(3:5))) == 1
+  
+  if(a) next
+  if(b) next
+  if(c) next
+  
+  lim_y = max(max(density((data_slice$HK.subj.Einrichtung[get_index_by_group(data_slice, "Gruppe", c(3:5))]))$y),
+              max(density((data_slice$HK.subj.Einrichtung[get_index_by_group(data_slice, "Gruppe", 2)]))$y),
+              max(density((data_slice$HK.subj.Einrichtung[get_index_by_group(data_slice, "Gruppe", 1)]))$y))
+  
+  pdf(file=paste("C:/Heroes/Test_", i,".pdf"), width=14, height = 12, paper = "a4r")
+  
+  par(xpd=F, mar=c(5,4.5,3,2))
+  
+  plot(density((data_slice$HK.subj.Einrichtung[get_index_by_group(data_slice, "Gruppe", c(3:5))])),
+       col="#1b9e77", 
        main=imp_names[["B107"]][i],
        xlim=c(1, 6),
-       ylim=c(0, 1), lwd=2, xlab="Haltekraft")
+       ylim=c(0, lim_y), lwd=2, xlab="geschätzte Haltekraft")
   
   if(length(get_index_by_group(data_slice, "Gruppe", 2)) > 2){
-    lines(density((data_slice$Haltekraft[get_index_by_group(data_slice, "Gruppe", 2)])),
+    lines(density((data_slice$HK.subj.Einrichtung[get_index_by_group(data_slice, "Gruppe", 2)])),
           col="#e6ab02", lwd=2)
   }
   if(length(get_index_by_group(data_slice, "Gruppe", 1)) > 2){
-    lines(density((data_slice$Haltekraft[get_index_by_group(data_slice, "Gruppe", 1)])),
-          col="#1b9e77", lwd=2)
+    lines(density((data_slice$HK.subj.Einrichtung[get_index_by_group(data_slice, "Gruppe", 1)])),
+          col="#e7298a", lwd=2)
   }
   
-  points(jitter(data_slice$Haltekraft, 3), rep(0, nrow(data_slice)),
+  points(jitter(data_slice$HK.subj.Einrichtung, 3), rep(0, nrow(data_slice)),
          pch="|", col=ifelse(data_slice$Gruppe == 1, "#1b9e77",
                              ifelse(data_slice$Gruppe == 2, "#e6ab02", "#e7298a")),
          cex=2)
   
-  legend("topleft", fill = c("#1b9e77", "#e6ab02", "#e7298a"),
-         legend = c("Leitung","SBBZ","HZE"), bty="n")
+  # c("#e7298a", "#e6ab02", "#1b9e77")
   
+  # legend("topleft", fill = c("#1b9e77", "#e6ab02", "#e7298a"),
+  #        legend = c("Leitung","SBBZ","HZE"), bty="n")
+  
+  legend("topleft", fill = c( "#1b9e77", "#e6ab02", "#e7298a"),
+         legend = c("HZE","SBBZ","Leitung"), bty="n")
+  
+  dev.off()
 }
 
 
-data_slice = ums_df_agg
 
-plot(density((data_slice$Haltekraft[get_index_by_group(data_slice, "Gruppe", c(3:5))])),
-     col="#e7298a", 
-     main="Alle Einrichtungen",
-     xlim=c(1, 6),
-     ylim=c(0, 0.7), lwd=2, xlab="Haltekraft")
 
-if(length(get_index_by_group(data_slice, "Gruppe", 2)) > 2){
-  lines(density((data_slice$Haltekraft[get_index_by_group(data_slice, "Gruppe", 2)])),
-        col="#e6ab02", lwd=2)
-}
-if(length(get_index_by_group(data_slice, "Gruppe", 1)) > 2){
-  lines(density((data_slice$Haltekraft[get_index_by_group(data_slice, "Gruppe", 1)])),
-        col="#1b9e77", lwd=2)
-}
 
-points(jitter(data_slice$Haltekraft, 3), rep(0, nrow(data_slice)),
-       pch="|", col=ifelse(data_slice$Gruppe == 1, "#1b9e77",
-                           ifelse(data_slice$Gruppe == 2, "#e6ab02", "#e7298a")),
-       cex=2)
 
-legend("topleft", fill = c("#1b9e77", "#e6ab02", "#e7298a"),
-       legend = c("Leitung","SBBZ","HZE"), bty="n")
+
 
 
 nrow(data_slice)
