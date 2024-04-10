@@ -2106,11 +2106,21 @@ plot_most_important = function(data,
   
   pdf(file=file, width=14, height = 12, paper = "a4r")
   
-  par(mar=mar, xpd = T)
+  par(mar=mar, xpd = F)
   
-  plot(1:ncol(best_einr[,-1]), best_einr[1,-1], type="n", ylim=c(0,1), xlab="", xaxt="n", ylab="Umsetzung")
+  plot(1:ncol(best_einr[,-1]),
+       best_einr[1,-1],
+       type="n",
+       ylim=c(0,1),
+       xlab="",
+       xaxt="n",
+       ylab="Umsetzung in %",
+       yaxt="n")
+  
   
   title(main = main, adj=0.2)
+  
+  abline(h=c(0, 0.25, 0.5, 0.75, 1), col="grey70")
   
   arrows(x0 = (1:ncol(best_einr[,-1]) - 0.15),
          y0=0,
@@ -2127,8 +2137,14 @@ plot_most_important = function(data,
          y1=as.numeric(best_einr[3,-1]), length=0, lwd= 5, col = "#7570b3")
   
   
+  
   axis(side=1, at= 1:ncol(best_einr[,-1]), labels=best, las=2)
   
+  
+  axis(side=2, at= c(0, 0.25, 0.5, 0.75, 1), labels=c(0, 25, 50, 75, 100), las=2)
+  
+  
+  par(xpd = T)
   
   legend("topright", inset = c(0,-0.25), bty="n", fill=c("#1b9e77", "#e7298a", "#7570b3"),
          legend = imp_names[["B107"]][best_einr[1:3,"Einrichtung"]], cex = 1.2)
