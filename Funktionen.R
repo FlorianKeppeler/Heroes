@@ -1883,21 +1883,43 @@ descriptive_anal_plots = function(data, type, path, se=F){
                   file=paste0(path,"/Entscheidung Entlassung"),
                   ranked = T)
   
-  plot_veto(data=data,
+  
+  plot_veto(data=data[data$B102 == 2,],
             var_name=c("Entscheidung.Auf","Vetor.Auf","Vetoem.Auf"),
-            main="Aufnahme: Entscheidung und Veto",
+            main="SBBZ - Aufnahme: Entscheidung und Veto",
             mar=c(12,6,3,3),
             ylab="Prozent der Mitarbeitenden",
-            file=paste0(path,"/Aufnahme_gesamt.pdf"),
+            file=paste0(path,"/Aufnahme_SBBZ_gesamt.pdf"),
             ranked = T,
             labels=c("Entscheidung", "Vetorecht", "Vetoempfehlung"))
   
-  plot_veto(data=data,
-            var_name=c("Entscheidung.Ent","Vetor.Ent","Vetoem.Ent"),
-            main="Entlassung: Entscheidung und Veto",
+  
+  plot_veto(data=data[data$B102 %in% c(3:5),],
+            var_name=c("Entscheidung.Auf","Vetor.Auf","Vetoem.Auf"),
+            main="HZE - Aufnahme: Entscheidung und Veto",
             mar=c(12,6,3,3),
             ylab="Prozent der Mitarbeitenden",
-            file=paste0(path,"/Entlassung_gesamt.pdf"),
+            file=paste0(path,"/Aufnahme_HZE_gesamt.pdf"),
+            ranked = T,
+            labels=c("Entscheidung", "Vetorecht", "Vetoempfehlung"))
+  
+  
+  plot_veto(data=data[data$B102 == 2,],
+            var_name=c("Entscheidung.Ent","Vetor.Ent","Vetoem.Ent"),
+            main="SBBZ - Entlassung: Entscheidung und Veto",
+            mar=c(12,6,3,3),
+            ylab="Prozent der Mitarbeitenden",
+            file=paste0(path,"/Entlassung_SBBZ_gesamt.pdf"),
+            ranked = T,
+            labels=c("Entscheidung", "Vetorecht", "Vetoempfehlung"))
+  
+  
+  plot_veto(data=data[data$B102 %in% c(3:5),],
+            var_name=c("Entscheidung.Ent","Vetor.Ent","Vetoem.Ent"),
+            main="HZE - Entlassung: Entscheidung und Veto",
+            mar=c(12,6,3,3),
+            ylab="Prozent der Mitarbeitenden",
+            file=paste0(path,"/Entlassung_HZE_gesamt.pdf"),
             ranked = T,
             labels=c("Entscheidung", "Vetorecht", "Vetoempfehlung"))
 }
