@@ -2353,3 +2353,17 @@ plot_rel_density = function(data, ums_scores, mar, main, file){
   
 }
 
+
+# get Item keys from skalen names 
+getItemsFromSkalen = function(target_skalen, skalen_names) {
+  
+  tmp = character(0)
+  
+  for (skalen_name in skalen_names) {
+    tmp = c(tmp, target_skalen[[skalen_name]])
+    
+  }
+  
+  return (tmp)
+}
+

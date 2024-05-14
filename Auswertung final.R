@@ -387,7 +387,13 @@ plot_rel_density(data=data,
                  main = "subjektive Haltekraft der Einrichtung",
                  file="C:/Heroes/Ergebnisse/Grafiken/Dichte/Haltekraft_gesamt.pdf")
   
-  
+
+
+
+#----------------------------------------------------------------------------
+# Bis hierher
+#---------------------------------------------------------------------------
+
 
 # Dichteplots für Einrichtungen
 
@@ -446,9 +452,8 @@ for(i in unique(ums_df_agg$Einrichtung)){
 
 
 
-#----------------------------------------------------------------------------
-# Bis hierher
-#---------------------------------------------------------------------------
+
+
 
 
 
