@@ -2093,6 +2093,10 @@ write_einrichtungen_sbbz_hze = function(data, file){
   
   names(res) = res_names
   
+  res$SBBZ = as.numeric(res$SBBZ)
+  res$HZE = as.numeric(res$HZE)
+  
+  
   write.xlsx(res, file = file)
 }
 

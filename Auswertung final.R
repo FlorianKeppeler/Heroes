@@ -16,6 +16,13 @@ nrow(data)
 data = data[-unique(c(which(data$C207_07 == 2), which(data$B101_04 == 2))), ]
 
 
+
+# Stiftung Jugendhilfe aktiv zusammenfassen:
+
+data$B107[data$B107 %in% c(34, 35, 36)] = 50
+
+
+
 #--------------------------------------
 # Stichprobe:
 nrow(data)
