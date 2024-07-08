@@ -2082,17 +2082,21 @@ get_item_summary = function(data, file, file.excel, path.plot){
 
 write_einrichtungen_sbbz_hze = function(data, file){
   
-  res = data.frame("Einrichtung"=character(0), "SBBZ"=numeric(0), "HZE"=numeric(0))
+  res = data.frame("Einrichtung"=character(0), "Leitung"=numeric(0), "SBBZ"=numeric(0), "HZE"=numeric(0))
   res_names = names(res)
   
   for(i in unique(data$B107)){
     
-    tmp = c(imp_names[["B107"]][i], sum(data[data$B107 == i, "B102"] == 2, na.rm=T), sum(data[data$B107 == i, "B102"] > 2, na.rm=T)) 
+    tmp = c(imp_names[["B107"]][i],
+            sum(data[data$B107 == i, "B102"] == 1, na.rm=T),
+            sum(data[data$B107 == i, "B102"] == 2, na.rm=T),
+            sum(data[data$B107 == i, "B102"] > 2, na.rm=T)) 
     res = rbind(res, tmp)
   }
   
   names(res) = res_names
   
+  res$Leitung = as.numeric(res$Leitung)
   res$SBBZ = as.numeric(res$SBBZ)
   res$HZE = as.numeric(res$HZE)
   
