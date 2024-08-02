@@ -47,10 +47,10 @@ descriptive_anal_plots(data=data, path="C:/Heroes/Ergebnisse/PDF/aktuell/Deskrip
 
 
 
-check_items_by_group(data = data,
-                     variables = "Begriffe",
-                     group_index = list(1,2,c(3,4,5),3,c(4,5)),
-                     group_names = imp_names[["B102_edit"]][1:5])
+# check_items_by_group(data = data,
+#                      variables = "Begriffe",
+#                      group_index = list(1,2,c(3,4,5),3,c(4,5)),
+#                      group_names = imp_names[["B102_edit"]][1:5])
 
 
 
