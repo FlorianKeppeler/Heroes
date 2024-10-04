@@ -1,5 +1,5 @@
-source("C:/Heroes/Funktionen.R")
-source("C:/Heroes/keys.R")
+source("C:/Heroes/Funktionen_nachEinrichtungen.R")
+source("C:/Heroes/keys_nachEinrichtungen.R")
 
 
 library(randomForest)
@@ -19,7 +19,9 @@ sub_data = data[data$B107 == i, ]
 
 meta_path = paste0("C:/Heroes/Ergebnisse/nachEinrichtungen/",Einrichtung)
 
-descriptive_anal_plots(data=sub_data,
+
+descriptive_anal_plots(plot_data = sub_data,
+                       data = data,
                        type="binom",
                        path=paste0(meta_path,"/Grafiken/Deskriptive Analyse Plots/mitFehler"),
                        se= T)

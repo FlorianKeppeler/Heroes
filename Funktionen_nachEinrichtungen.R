@@ -46,7 +46,7 @@ import_data_surv <- function(Path){
   # Eva Stuttgart rausnehmen -> Einrichtung hat nur einen einzigen Fragebogen
   # mit gesammelten Antworten der Mitarbeiter abgeben
   data_compl <- data_compl[-which(data_compl$CASE==1164), ]
-
+  
   # Umkodieren Soziale Erwünschtheit
   data_compl$M401_01 <- 5 - as.numeric(data_compl$M401_01)
   
@@ -155,7 +155,7 @@ beta_est = function(x, yx){
   x[x == 1] = 1 - 0.0000001
   
   m = betareg(x ~ 1)
-
+  
   return (c(predict(m, type="response")[1], predict(m, type="quantile", at = c(0.25, 0.75))[1,]) * (length(yx) - 1) + 1)
 }
 
@@ -165,7 +165,7 @@ binom_est = function(x, yx){
   x = x[!is.na(x)]
   
   x = (x - 1)/(length(yx) - 1)
-
+  
   m = glm(x ~ 1, family="binomial")
   
   fit = predict(m, type="link", se.fit=T)$fit[1]
@@ -201,29 +201,29 @@ get_ranking = function(data, var_name, type, yx){
   
   if (type == "beta"){
     tmp = apply(data[complete.cases(data[,keys[[var_name]]]),keys[[var_name]]], 2, FUN=beta_est, yx=yx)
-
+    
     # for(i in 1:length(tmp)){
     #   if(tmp[1, i] > tmp[3, i]){
     #     tmp[3, i] = tmp[1, i]
     #   }
     # }
   }
-    
-    if (type == "binom"){
-      
-      tmp = apply(data[complete.cases(data[,keys[[var_name]]]), keys[[var_name]]],
-                  MARGIN = 2,
-                  FUN=binom_est,
-                  yx=yx)
-      
-    }
   
-    if (type == "mean"){
-      
-      tmp_mean = apply(data[complete.cases(data[,keys[[var_name]]]),keys[[var_name]]], 2, mean, na.rm=T) 
-      tmp_sd = apply(data[complete.cases(data[,keys[[var_name]]]),keys[[var_name]]], 2, sd, na.rm=T)
-      tmp = rbind(tmp_mean,tmp_mean - tmp_sd, tmp_mean + tmp_sd)
-    }
+  if (type == "binom"){
+    
+    tmp = apply(data[complete.cases(data[,keys[[var_name]]]), keys[[var_name]]],
+                MARGIN = 2,
+                FUN=binom_est,
+                yx=yx)
+    
+  }
+  
+  if (type == "mean"){
+    
+    tmp_mean = apply(data[complete.cases(data[,keys[[var_name]]]),keys[[var_name]]], 2, mean, na.rm=T) 
+    tmp_sd = apply(data[complete.cases(data[,keys[[var_name]]]),keys[[var_name]]], 2, sd, na.rm=T)
+    tmp = rbind(tmp_mean,tmp_mean - tmp_sd, tmp_mean + tmp_sd)
+  }
   
   df_begr = data.frame("mean"=tmp[1,], "name"=imp_names[[var_name]], "se.1"=tmp[2,], "se.2"=tmp[3,])
   
@@ -248,7 +248,7 @@ plot_ranked = function(plot_data,
   pdf(file=file, width=14, height = 12, paper = "a4r")
   
   # jpeg(filename=file, width=1200, height = 730, units = "px", pointsize = 20)
-
+  
   par(mar=mar)  
   
   plot(ranked$mean, xaxt = "n", xlab = "", pch = 20, type = "n",
@@ -279,51 +279,51 @@ plot_ranked = function(plot_data,
   }else{
     
     if(length(add) == 1){
-    
-        if(nrow(add[[1]]) == 0){
-          dev.off()
-          return("nicht genügend Kategorien für Plot")
-        }
-        
       
-        ranked = get_ranking(plot_data, var_name, type=type, yx)
-        ranked2 = get_ranking(add[[1]], var_name = var_name, type=type, yx)
+      if(nrow(add[[1]]) == 0){
+        dev.off()
+        return("nicht genügend Kategorien für Plot")
+      }
       
-        ranked_tmp = merge(ranked, ranked2, by="name", sort = "False")
+      
+      ranked = get_ranking(plot_data, var_name, type=type, yx)
+      ranked2 = get_ranking(add[[1]], var_name = var_name, type=type, yx)
+      
+      ranked_tmp = merge(ranked, ranked2, by="name", sort = "False")
+      
+      
+      if(se== T){
+        
+        arrows(x0 = (1:nrow(ranked_tmp)) - 0.075, y0 = ranked_tmp[,"mean.x"],
+               y1 = ranked_tmp[,"se.1.x"], col="#1b9e77", length = 0.1, lwd=1, angle=90)
+        
+        arrows(x0 = (1:nrow(ranked_tmp)) - 0.075, y0 = ranked_tmp[,"mean.x"],
+               y1 = ranked_tmp[,"se.2.x"], col="#1b9e77", length = 0.1, lwd=1, angle=90)
         
         
-        if(se== T){
-          
-          arrows(x0 = (1:nrow(ranked_tmp)) - 0.075, y0 = ranked_tmp[,"mean.x"],
-                 y1 = ranked_tmp[,"se.1.x"], col="#1b9e77", length = 0.1, lwd=1, angle=90)
-          
-          arrows(x0 = (1:nrow(ranked_tmp)) - 0.075, y0 = ranked_tmp[,"mean.x"],
-                 y1 = ranked_tmp[,"se.2.x"], col="#1b9e77", length = 0.1, lwd=1, angle=90)
-          
-          
-          arrows(x0 = (1:nrow(ranked_tmp)) + 0.075, y0 = ranked_tmp[,"mean.y"],
-                 y1 = ranked_tmp[,"se.1.y"], col="#e7298a", length = 0.1, lwd=1, angle=90)
-          
-          arrows(x0 = (1:nrow(ranked_tmp)) + 0.075, y0 = ranked_tmp[,"mean.y"],
-                 y1 = ranked_tmp[,"se.2.y"], col="#e7298a", length = 0.1, lwd=1, angle=90)
-        }
+        arrows(x0 = (1:nrow(ranked_tmp)) + 0.075, y0 = ranked_tmp[,"mean.y"],
+               y1 = ranked_tmp[,"se.1.y"], col="#e7298a", length = 0.1, lwd=1, angle=90)
         
-        
-        arrows(x0 = (1:nrow(ranked_tmp)) - 0.075, y0 = rep(0, nrow(ranked_tmp)),
+        arrows(x0 = (1:nrow(ranked_tmp)) + 0.075, y0 = ranked_tmp[,"mean.y"],
+               y1 = ranked_tmp[,"se.2.y"], col="#e7298a", length = 0.1, lwd=1, angle=90)
+      }
+      
+      
+      arrows(x0 = (1:nrow(ranked_tmp)) - 0.075, y0 = rep(0, nrow(ranked_tmp)),
              y1 = ranked_tmp[,"mean.x"], col="#1b9e77", length = 0, lwd=5)
       
-        arrows(x0 = (1:nrow(ranked_tmp)) + 0.075, y0 = rep(0, nrow(ranked_tmp)),
+      arrows(x0 = (1:nrow(ranked_tmp)) + 0.075, y0 = rep(0, nrow(ranked_tmp)),
              y1 = ranked_tmp[,"mean.y"], col="#e7298a", length = 0, lwd=5)
-        
-        
-        
-        points((1:nrow(ranked_tmp)) - 0.075, ranked_tmp[,"mean.x"], pch=20)#, col="#1b9e77")
-        points((1:nrow(ranked_tmp)) + 0.075, ranked_tmp[,"mean.y"], pch=20)#, col="#e7298a")
-        
-        legend("topright", bty="n", fill=c("#1b9e77", "#e7298a"),
-               legend = label, cex = 1.2)
-        
-        # c("#1b9e77", "#e7298a","#7570b3","#66a61e", "#e6ab02")
+      
+      
+      
+      points((1:nrow(ranked_tmp)) - 0.075, ranked_tmp[,"mean.x"], pch=20)#, col="#1b9e77")
+      points((1:nrow(ranked_tmp)) + 0.075, ranked_tmp[,"mean.y"], pch=20)#, col="#e7298a")
+      
+      legend("topright", bty="n", fill=c("#1b9e77", "#e7298a"),
+             legend = label, cex = 1.2)
+      
+      # c("#1b9e77", "#e7298a","#7570b3","#66a61e", "#e6ab02")
     }
     
     if(length(add) == 2){
@@ -485,10 +485,19 @@ plot_ranked = function(plot_data,
 }
 
 
-plot_ranked_all = function(data, var_name, yx, type, mar, main, file, se="reduced"){
+plot_ranked_all = function(plot_data,
+                           data,
+                           var_name,
+                           yx,
+                           type,
+                           mar,
+                           main,
+                           file,
+                           se="reduced"){
   
   # Alle Mitarbeiter
-  plot_ranked(plot_data = data, var_name = var_name,
+  plot_ranked(plot_data = plot_data,
+              var_name = var_name,
               yx= yx,
               type=type,
               mar=mar,
@@ -496,65 +505,77 @@ plot_ranked_all = function(data, var_name, yx, type, mar, main, file, se="reduce
               file=paste0(file,"_gesamt.pdf"),
               se=se)
   
-  # Nach HZE und SBBZ getrennt
-  plot_ranked(plot_data = data[data$B102 > 2,],
+  # Alle Mitarbeiter
+  plot_ranked(plot_data = plot_data,
               var_name = var_name,
               yx= yx,
               type=type,
               mar=mar,
-              main=paste(main, "HZE/SBBZ"),
-              file=paste0(file,"_HZE_SBBZ.pdf"),
-              add = list(data[data$B102 == 2, ]),
-              label = c("HZE", "SBBZ"),
+              main=main,
+              add = list(data[data$B107 != i]),  # alle anderen Einrichtungen
+              file=paste0(file,"_gesamt_Vergleich.pdf"),
+              label = c(Einrichtung, "Andere"),
               se=se)
   
-  # Nach Geschlecht getrennt
-  plot_ranked(plot_data = data[data$B103 == 1,],
-              var_name = var_name,
-              yx= yx,
-              type=type,
-              mar=mar,
-              main=paste(main, "Mitarbeiterinnen/Mitarbeiter"),
-              file=paste0(file,"_Geschlecht.pdf"),
-              add = list(data[data$B103 == 2, ]),
-              label = c("Mitarbeiterinnen", "Mitarbeiter"),
-              se=se)
-  
-  # nach Berufserfahrung
-  plot_ranked(plot_data = data[data$B105 == 1,],
-              var_name = var_name,
-              yx= yx,
-              type=type,
-              mar=mar,
-              main=paste(main, "nach Berufserfahrung"),
-              file=paste0(file,"_Berufserfahrung.pdf"),
-              add = list(data[data$B105 == 2, ], data[data$B105 == 3, ]),
-              label = imp_names[["B105"]][c(1,2,3)],
-              se=se)
-  
-  # nach Alter
-  plot_ranked(plot_data = data[data$B110 == 1,],
-              var_name = var_name,
-              yx= yx,
-              type=type,
-              mar=mar,
-              main=paste(main, "nach Alter Mitarbeitetende"),
-              file=paste0(file,"_AlterMit.pdf"),
-              add = list(data[data$B110 == 2, ], data[data$B110 == 3, ]),
-              label = imp_names[["B110"]][c(1,2,3)],
-              se=se)
-  
-  # nach Alter der jM
-  plot_ranked(plot_data = data[data$C207_02 == 2,],
-              var_name = var_name,
-              yx= yx,
-              type=type,
-              mar=mar,
-              main=paste(main, "nach Alter jM"),
-              file=paste0(file,"_AlterJM.pdf"),
-              add = list(data[data$C207_03 == 2, ], data[data$C207_04 == 2, ], data[data$C207_05 == 2, ]),
-              label = c("6 - 10", "11 - 14", "15 - 17", "18 - 21"),
-              se=se)
+  # # Nach HZE und SBBZ getrennt
+  # plot_ranked(plot_data = data[data$B102 > 2,],
+  #             var_name = var_name,
+  #             yx= yx,
+  #             type=type,
+  #             mar=mar,
+  #             main=paste(main, "HZE/SBBZ"),
+  #             file=paste0(file,"_HZE_SBBZ.pdf"),
+  #             add = list(data[data$B102 == 2, ]),
+  #             label = c("HZE", "SBBZ"),
+  #             se=se)
+  # 
+  # # Nach Geschlecht getrennt
+  # plot_ranked(plot_data = data[data$B103 == 1,],
+  #             var_name = var_name,
+  #             yx= yx,
+  #             type=type,
+  #             mar=mar,
+  #             main=paste(main, "Mitarbeiterinnen/Mitarbeiter"),
+  #             file=paste0(file,"_Geschlecht.pdf"),
+  #             add = list(data[data$B103 == 2, ]),
+  #             label = c("Mitarbeiterinnen", "Mitarbeiter"),
+  #             se=se)
+  # 
+  # # nach Berufserfahrung
+  # plot_ranked(plot_data = data[data$B105 == 1,],
+  #             var_name = var_name,
+  #             yx= yx,
+  #             type=type,
+  #             mar=mar,
+  #             main=paste(main, "nach Berufserfahrung"),
+  #             file=paste0(file,"_Berufserfahrung.pdf"),
+  #             add = list(data[data$B105 == 2, ], data[data$B105 == 3, ]),
+  #             label = imp_names[["B105"]][c(1,2,3)],
+  #             se=se)
+  # 
+  # # nach Alter
+  # plot_ranked(plot_data = data[data$B110 == 1,],
+  #             var_name = var_name,
+  #             yx= yx,
+  #             type=type,
+  #             mar=mar,
+  #             main=paste(main, "nach Alter Mitarbeitetende"),
+  #             file=paste0(file,"_AlterMit.pdf"),
+  #             add = list(data[data$B110 == 2, ], data[data$B110 == 3, ]),
+  #             label = imp_names[["B110"]][c(1,2,3)],
+  #             se=se)
+  # 
+  # # nach Alter der jM
+  # plot_ranked(plot_data = data[data$C207_02 == 2,],
+  #             var_name = var_name,
+  #             yx= yx,
+  #             type=type,
+  #             mar=mar,
+  #             main=paste(main, "nach Alter jM"),
+  #             file=paste0(file,"_AlterJM.pdf"),
+  #             add = list(data[data$C207_03 == 2, ], data[data$C207_04 == 2, ], data[data$C207_05 == 2, ]),
+  #             label = c("6 - 10", "11 - 14", "15 - 17", "18 - 21"),
+  #             se=se)
   
 }
 
@@ -580,152 +601,152 @@ plot_binary = function(data, var_name, main, mar, ylab, file, ranked=FALSE, add 
   
   pdf(file=file, width=14, height = 12, paper = "a4r")
   
-    par(mar=mar)
-    
-    # plot(tmp, xlab="", xaxt="n", ylab=ylab, main = main, type="n", ylim=c(0,max(tmp)))
-    
-    
-    if(typeof(add) == "list"){
-      if(length(add) == 1){
-        
-        tmp2 = apply(add[[1]][,keys[[var_name]]] - 1, 2, sum, na.rm=T)
-        
-        tmp2 = 100 * tmp2 / sum(complete.cases(add[[1]][,keys[[var_name]]]))
-        
-        if(ranked == TRUE){
-          
-          tmp2 = tmp2[index]
-          
-        }
-        
-        plot(tmp, xlab="", xaxt="n", ylab=ylab, main = main, type="n", ylim=c(0,max(tmp, tmp2)))
-        
-        abline(h=c(0, 50, 100), lwd=0.5, col="grey60")
-        
-        c("#1b9e77", "#e7298a", "#7570b3")
-        
-        arrows(x0 = 1:length(tmp) - 0.075, y0 = rep(0, length(tmp)),
-               y1 = tmp, col="#1b9e77", length = 0, lwd=5)
-        
-        arrows(x0 = 1:length(tmp) + 0.075, y0 = rep(0, length(tmp)),
-               y1 = tmp2, col="#e7298a", length = 0, lwd=5)
-        
-        points(1:length(tmp) - 0.075, tmp, pch = 20)
-        
-        points(1:length(tmp2) + 0.075, tmp2, pch = 20)
-        
-        legend("topright", bty="n", fill=c("#1b9e77", "#e7298a"),
-               legend = label, cex = 1.2)
-        
-      }
-      if(length(add) == 2){
-        
-        tmp2 = apply(add[[1]][,keys[[var_name]]] - 1, 2, sum, na.rm=T)
-        tmp3 = apply(add[[2]][,keys[[var_name]]] - 1, 2, sum, na.rm=T)
-        
-        
-        tmp2 = 100 * tmp2 / sum(complete.cases(add[[1]][,keys[[var_name]]]))
-        tmp3 = 100 * tmp3 / sum(complete.cases(add[[2]][,keys[[var_name]]]))
-        
-        if(ranked == TRUE){
-          
-          tmp2 = tmp2[index]
-          tmp3 = tmp3[index]
-          
-        }
-        
-        
-        plot(tmp, xlab="", xaxt="n", ylab=ylab, main = main, type="n", ylim=c(0,max(tmp, tmp2, tmp3)))
-        
-        abline(h=c(0, 50, 100), lwd=0.5, col="grey60")
-        
-        arrows(x0 = 1:length(tmp) - 0.15, y0 = rep(0, length(tmp)),
-               y1 = tmp, col="#1b9e77", length = 0, lwd=5)
-        
-        arrows(x0 = 1:length(tmp) + 0.0, y0 = rep(0, length(tmp)),
-               y1 = tmp2, col="#e7298a", length = 0, lwd=5)
-        
-        arrows(x0 = 1:length(tmp) + 0.15, y0 = rep(0, length(tmp)),
-               y1 = tmp3, col="#7570b3", length = 0, lwd=5)
-        
-        points(1:length(tmp) - 0.15, tmp, pch = 20)
-        
-        points(1:length(tmp2) + 0.0, tmp2, pch = 20)
-        
-        points(1:length(tmp3) + 0.15, tmp3, pch = 20)
-        
-        legend("topright", bty="n", fill=c("#1b9e77", "#e7298a", "#7570b3"),
-               legend = label, cex = 1.2)
-        
-      }
-      if(length(add) == 3){
-        
-        tmp2 = apply(add[[1]][,keys[[var_name]]] - 1, 2, sum, na.rm=T)
-        tmp3 = apply(add[[2]][,keys[[var_name]]] - 1, 2, sum, na.rm=T)
-        tmp4 = apply(add[[3]][,keys[[var_name]]] - 1, 2, sum, na.rm=T)
-        
-        
-        tmp2 = 100 * tmp2 / sum(complete.cases(add[[1]][,keys[[var_name]]]))
-        tmp3 = 100 * tmp3 / sum(complete.cases(add[[2]][,keys[[var_name]]]))
-        tmp4 = 100 * tmp4 / sum(complete.cases(add[[3]][,keys[[var_name]]]))
-        
-        if(ranked == TRUE){
-          
-          tmp2 = tmp2[index]
-          tmp3 = tmp3[index]
-          tmp4 = tmp4[index]
-          
-        }
-        
-        
-        plot(tmp, xlab="", xaxt="n", ylab=ylab, main = main, type="n", ylim=c(0,max(tmp, tmp2, tmp3, tmp4)))
-        
-        abline(h=c(0, 50, 100), lwd=0.5, col="grey60")
-        
-        arrows(x0 = 1:length(tmp) - 0.225, y0 = rep(0, length(tmp)),
-               y1 = tmp, col="#1b9e77", length = 0, lwd=5)
-        
-        arrows(x0 = 1:length(tmp) - 0.075, y0 = rep(0, length(tmp)),
-               y1 = tmp2, col="#e7298a", length = 0, lwd=5)
-        
-        arrows(x0 = 1:length(tmp) + 0.075, y0 = rep(0, length(tmp)),
-               y1 = tmp3, col="#7570b3", length = 0, lwd=5)
-        
-        arrows(x0 = 1:length(tmp) + 0.225, y0 = rep(0, length(tmp)),
-               y1 = tmp4, col="#e6ab02", length = 0, lwd=5)
-        
-        
-        points(1:length(tmp) - 0.225, tmp, pch = 20)
-        
-        points(1:length(tmp2) - 0.075, tmp2, pch = 20)
-        
-        points(1:length(tmp3) + 0.075, tmp3, pch = 20)
-        
-        points(1:length(tmp4) + 0.225, tmp4, pch = 20)
-        
-        legend("topright", bty="n", fill=c("#1b9e77", "#e7298a", "#7570b3","#e6ab02"),
-               legend = label, cex = 1.2)
-      }
-    }else{
+  par(mar=mar)
+  
+  # plot(tmp, xlab="", xaxt="n", ylab=ylab, main = main, type="n", ylim=c(0,max(tmp)))
+  
+  
+  if(typeof(add) == "list"){
+    if(length(add) == 1){
       
-      plot(tmp, xlab="", xaxt="n", ylab=ylab, main = main, type="n", ylim=c(0,max(tmp)))
+      tmp2 = apply(add[[1]][,keys[[var_name]]] - 1, 2, sum, na.rm=T)
+      
+      tmp2 = 100 * tmp2 / sum(complete.cases(add[[1]][,keys[[var_name]]]))
+      
+      if(ranked == TRUE){
+        
+        tmp2 = tmp2[index]
+        
+      }
+      
+      plot(tmp, xlab="", xaxt="n", ylab=ylab, main = main, type="n", ylim=c(0,max(tmp, tmp2)))
       
       abline(h=c(0, 50, 100), lwd=0.5, col="grey60")
       
-      arrows(x0 = 1:length(tmp), y0 = rep(0, length(tmp)),
-             y1 = tmp, col="grey50", length = 0, lwd=5)
-      points(1:length(tmp), tmp, pch = 20)
-    }
-    
-
-    
-    if(ranked == TRUE){
+      c("#1b9e77", "#e7298a", "#7570b3")
       
-      axis(side=1, at=1:length(tmp), labels = tmp_labels, las=2)
-    }else{
-    
-      axis(side=1, at=1:length(tmp), labels = imp_names[[var_name]], las=2)
+      arrows(x0 = 1:length(tmp) - 0.075, y0 = rep(0, length(tmp)),
+             y1 = tmp, col="#1b9e77", length = 0, lwd=5)
+      
+      arrows(x0 = 1:length(tmp) + 0.075, y0 = rep(0, length(tmp)),
+             y1 = tmp2, col="#e7298a", length = 0, lwd=5)
+      
+      points(1:length(tmp) - 0.075, tmp, pch = 20)
+      
+      points(1:length(tmp2) + 0.075, tmp2, pch = 20)
+      
+      legend("topright", bty="n", fill=c("#1b9e77", "#e7298a"),
+             legend = label, cex = 1.2)
+      
     }
+    if(length(add) == 2){
+      
+      tmp2 = apply(add[[1]][,keys[[var_name]]] - 1, 2, sum, na.rm=T)
+      tmp3 = apply(add[[2]][,keys[[var_name]]] - 1, 2, sum, na.rm=T)
+      
+      
+      tmp2 = 100 * tmp2 / sum(complete.cases(add[[1]][,keys[[var_name]]]))
+      tmp3 = 100 * tmp3 / sum(complete.cases(add[[2]][,keys[[var_name]]]))
+      
+      if(ranked == TRUE){
+        
+        tmp2 = tmp2[index]
+        tmp3 = tmp3[index]
+        
+      }
+      
+      
+      plot(tmp, xlab="", xaxt="n", ylab=ylab, main = main, type="n", ylim=c(0,max(tmp, tmp2, tmp3)))
+      
+      abline(h=c(0, 50, 100), lwd=0.5, col="grey60")
+      
+      arrows(x0 = 1:length(tmp) - 0.15, y0 = rep(0, length(tmp)),
+             y1 = tmp, col="#1b9e77", length = 0, lwd=5)
+      
+      arrows(x0 = 1:length(tmp) + 0.0, y0 = rep(0, length(tmp)),
+             y1 = tmp2, col="#e7298a", length = 0, lwd=5)
+      
+      arrows(x0 = 1:length(tmp) + 0.15, y0 = rep(0, length(tmp)),
+             y1 = tmp3, col="#7570b3", length = 0, lwd=5)
+      
+      points(1:length(tmp) - 0.15, tmp, pch = 20)
+      
+      points(1:length(tmp2) + 0.0, tmp2, pch = 20)
+      
+      points(1:length(tmp3) + 0.15, tmp3, pch = 20)
+      
+      legend("topright", bty="n", fill=c("#1b9e77", "#e7298a", "#7570b3"),
+             legend = label, cex = 1.2)
+      
+    }
+    if(length(add) == 3){
+      
+      tmp2 = apply(add[[1]][,keys[[var_name]]] - 1, 2, sum, na.rm=T)
+      tmp3 = apply(add[[2]][,keys[[var_name]]] - 1, 2, sum, na.rm=T)
+      tmp4 = apply(add[[3]][,keys[[var_name]]] - 1, 2, sum, na.rm=T)
+      
+      
+      tmp2 = 100 * tmp2 / sum(complete.cases(add[[1]][,keys[[var_name]]]))
+      tmp3 = 100 * tmp3 / sum(complete.cases(add[[2]][,keys[[var_name]]]))
+      tmp4 = 100 * tmp4 / sum(complete.cases(add[[3]][,keys[[var_name]]]))
+      
+      if(ranked == TRUE){
+        
+        tmp2 = tmp2[index]
+        tmp3 = tmp3[index]
+        tmp4 = tmp4[index]
+        
+      }
+      
+      
+      plot(tmp, xlab="", xaxt="n", ylab=ylab, main = main, type="n", ylim=c(0,max(tmp, tmp2, tmp3, tmp4)))
+      
+      abline(h=c(0, 50, 100), lwd=0.5, col="grey60")
+      
+      arrows(x0 = 1:length(tmp) - 0.225, y0 = rep(0, length(tmp)),
+             y1 = tmp, col="#1b9e77", length = 0, lwd=5)
+      
+      arrows(x0 = 1:length(tmp) - 0.075, y0 = rep(0, length(tmp)),
+             y1 = tmp2, col="#e7298a", length = 0, lwd=5)
+      
+      arrows(x0 = 1:length(tmp) + 0.075, y0 = rep(0, length(tmp)),
+             y1 = tmp3, col="#7570b3", length = 0, lwd=5)
+      
+      arrows(x0 = 1:length(tmp) + 0.225, y0 = rep(0, length(tmp)),
+             y1 = tmp4, col="#e6ab02", length = 0, lwd=5)
+      
+      
+      points(1:length(tmp) - 0.225, tmp, pch = 20)
+      
+      points(1:length(tmp2) - 0.075, tmp2, pch = 20)
+      
+      points(1:length(tmp3) + 0.075, tmp3, pch = 20)
+      
+      points(1:length(tmp4) + 0.225, tmp4, pch = 20)
+      
+      legend("topright", bty="n", fill=c("#1b9e77", "#e7298a", "#7570b3","#e6ab02"),
+             legend = label, cex = 1.2)
+    }
+  }else{
+    
+    plot(tmp, xlab="", xaxt="n", ylab=ylab, main = main, type="n", ylim=c(0,max(tmp)))
+    
+    abline(h=c(0, 50, 100), lwd=0.5, col="grey60")
+    
+    arrows(x0 = 1:length(tmp), y0 = rep(0, length(tmp)),
+           y1 = tmp, col="grey50", length = 0, lwd=5)
+    points(1:length(tmp), tmp, pch = 20)
+  }
+  
+  
+  
+  if(ranked == TRUE){
+    
+    axis(side=1, at=1:length(tmp), labels = tmp_labels, las=2)
+  }else{
+    
+    axis(side=1, at=1:length(tmp), labels = imp_names[[var_name]], las=2)
+  }
   
   dev.off()
 }
@@ -757,43 +778,43 @@ plot_veto = function(data, var_name, main, mar, ylab, file, ranked=FALSE, labels
   
   # plot(tmp, xlab="", xaxt="n", ylab=ylab, main = main, type="n", ylim=c(0,max(tmp)))
   
-      
-      tmp2 = apply(data[,keys[[var_name[2]]]] - 1, 2, sum, na.rm=T)
-      tmp3 = apply(data[,keys[[var_name[3]]]] - 1, 2, sum, na.rm=T)
-      
-      
-      tmp2 = 100 * tmp2 / sum(complete.cases(data[,keys[[var_name[2]]]]))
-      tmp3 = 100 * tmp3 / sum(complete.cases(data[,keys[[var_name[3]]]]))
-      
-      if(ranked == TRUE){
-        
-        tmp2 = tmp2[index]
-        tmp3 = tmp3[index]
-        
-      }
-      
-      
-      plot(tmp, xlab="", xaxt="n", ylab=ylab, main = main, type="n", ylim=c(0,max(tmp, tmp2, tmp3)))
-      
-      abline(h=c(0, 50, 100), lwd=0.5, col="grey60")
-      
-      arrows(x0 = 1:length(tmp) - 0.15, y0 = rep(0, length(tmp)),
-             y1 = tmp, col="#1b9e77", length = 0, lwd=5)
-      
-      arrows(x0 = 1:length(tmp) + 0.0, y0 = rep(0, length(tmp)),
-             y1 = tmp2, col="#e7298a", length = 0, lwd=5)
-      
-      arrows(x0 = 1:length(tmp) + 0.15, y0 = rep(0, length(tmp)),
-             y1 = tmp3, col="#7570b3", length = 0, lwd=5)
-      
-      points(1:length(tmp) - 0.15, tmp, pch = 20)
-      
-      points(1:length(tmp2) + 0.0, tmp2, pch = 20)
-      
-      points(1:length(tmp3) + 0.15, tmp3, pch = 20)
-      
-      legend("topright", bty="n", fill=c("#1b9e77", "#e7298a", "#7570b3"),
-             legend = labels, cex = 1.2)
+  
+  tmp2 = apply(data[,keys[[var_name[2]]]] - 1, 2, sum, na.rm=T)
+  tmp3 = apply(data[,keys[[var_name[3]]]] - 1, 2, sum, na.rm=T)
+  
+  
+  tmp2 = 100 * tmp2 / sum(complete.cases(data[,keys[[var_name[2]]]]))
+  tmp3 = 100 * tmp3 / sum(complete.cases(data[,keys[[var_name[3]]]]))
+  
+  if(ranked == TRUE){
+    
+    tmp2 = tmp2[index]
+    tmp3 = tmp3[index]
+    
+  }
+  
+  
+  plot(tmp, xlab="", xaxt="n", ylab=ylab, main = main, type="n", ylim=c(0,max(tmp, tmp2, tmp3)))
+  
+  abline(h=c(0, 50, 100), lwd=0.5, col="grey60")
+  
+  arrows(x0 = 1:length(tmp) - 0.15, y0 = rep(0, length(tmp)),
+         y1 = tmp, col="#1b9e77", length = 0, lwd=5)
+  
+  arrows(x0 = 1:length(tmp) + 0.0, y0 = rep(0, length(tmp)),
+         y1 = tmp2, col="#e7298a", length = 0, lwd=5)
+  
+  arrows(x0 = 1:length(tmp) + 0.15, y0 = rep(0, length(tmp)),
+         y1 = tmp3, col="#7570b3", length = 0, lwd=5)
+  
+  points(1:length(tmp) - 0.15, tmp, pch = 20)
+  
+  points(1:length(tmp2) + 0.0, tmp2, pch = 20)
+  
+  points(1:length(tmp3) + 0.15, tmp3, pch = 20)
+  
+  legend("topright", bty="n", fill=c("#1b9e77", "#e7298a", "#7570b3"),
+         legend = labels, cex = 1.2)
   
   
   
@@ -811,72 +832,79 @@ plot_veto = function(data, var_name, main, mar, ylab, file, ranked=FALSE, labels
 
 
 
-plot_binary_all = function(data, var_name, main, mar, ylab, file, ranked=FALSE){
+plot_binary_all = function(plot_data,
+                           data,
+                           var_name,
+                           main,
+                           mar,
+                           ylab,
+                           file,
+                           ranked=FALSE){
   
   
   # bei D303 Auf welche Weise Infos: Unklar was tun da binäre Daten
-  plot_binary(data,
+  plot_binary(plot_data,
               var_name=var_name,
               main=main,
               mar=mar,
               ylab=ylab,
               file=paste0(file,"_gesamt.pdf"),
-              ranked = ranked,)
+              ranked = ranked)
   
   
-  plot_binary(data= data[data$B102 > 2, ],
+  plot_binary(plot_data,
               var_name=var_name,
-              main=paste(main, "HZE/SBBZ"),
+              main=paste(main),
               mar=mar,
               ylab=ylab,
-              file=paste0(file,"_HZE_SBBZ.pdf"),
+              file=paste0(file,"_gesamt_Vergleich.pdf"),
               ranked = ranked,
-              add = list(data[data$B102 == 2, ]),
-              label = c("HZE", "SBBZ"))
+              add = list(data[data$B107 != i, ]),
+              label = c(Einrichtung, "Andere"))
   
   
-  plot_binary(data= data[data$B103 == 1, ],
-              var_name=var_name,
-              main=paste(main, "Mitarbeiterinnen/Mitarbeiter"),
-              mar=mar,
-              ylab=ylab,
-              file=paste0(file,"_Geschlecht.pdf"),
-              ranked = ranked,
-              add = list(data[data$B103 == 2, ]),
-              label = c("Mitarbeiterinnen", "Mitarbeiter"))
-  
-  
-  plot_binary(data= data[data$B105 == 1, ],
-              var_name=var_name,
-              main=paste(main, "nach Berufserfahrung"),
-              mar=mar,
-              ylab=ylab,
-              file=paste0(file,"_Berufserfahrung.pdf"),
-              ranked = ranked,
-              add = list(data[data$B105 == 2, ], data[data$B105 == 3, ]),
-              label = imp_names[["B105"]][c(1,2,3)])
-  
-  
-  plot_binary(data= data[data$B110 == 1, ],
-              var_name=var_name,
-              main=paste(main, "nach Alter Mitarbeitetende"),
-              mar=mar,
-              ylab=ylab,
-              file=paste0(file,"_AlterMit.pdf"),
-              ranked = ranked,
-              add = list(data[data$B110 == 2, ], data[data$B110 == 3, ]),
-              label = imp_names[["B110"]][c(1,2,3)])
-  
-  
-  plot_binary(data= data[data$C207_03 == 1, ],
-              var_name=var_name,
-              main=paste(main, "nach Alter jM"),
-              mar=mar,
-              ylab=ylab,
-              file=paste0(file,"_AlterJM.pdf"),
-              ranked = ranked,
-              add = list(data[data$C207_03 == 2, ], data[data$C207_04 == 2, ], data[data$C207_05 == 2, ]),
-              label = c("6 - 10", "11 - 14", "15 - 17", "18 - 21"))
+  # plot_binary(data= data[data$B103 == 1, ],
+  #             var_name=var_name,
+  #             main=paste(main, "Mitarbeiterinnen/Mitarbeiter"),
+  #             mar=mar,
+  #             ylab=ylab,
+  #             file=paste0(file,"_Geschlecht.pdf"),
+  #             ranked = ranked,
+  #             add = list(data[data$B103 == 2, ]),
+  #             label = c("Mitarbeiterinnen", "Mitarbeiter"))
+  # 
+  # 
+  # plot_binary(data= data[data$B105 == 1, ],
+  #             var_name=var_name,
+  #             main=paste(main, "nach Berufserfahrung"),
+  #             mar=mar,
+  #             ylab=ylab,
+  #             file=paste0(file,"_Berufserfahrung.pdf"),
+  #             ranked = ranked,
+  #             add = list(data[data$B105 == 2, ], data[data$B105 == 3, ]),
+  #             label = imp_names[["B105"]][c(1,2,3)])
+  # 
+  # 
+  # plot_binary(data= data[data$B110 == 1, ],
+  #             var_name=var_name,
+  #             main=paste(main, "nach Alter Mitarbeitetende"),
+  #             mar=mar,
+  #             ylab=ylab,
+  #             file=paste0(file,"_AlterMit.pdf"),
+  #             ranked = ranked,
+  #             add = list(data[data$B110 == 2, ], data[data$B110 == 3, ]),
+  #             label = imp_names[["B110"]][c(1,2,3)])
+  # 
+  # 
+  # plot_binary(data= data[data$C207_03 == 1, ],
+  #             var_name=var_name,
+  #             main=paste(main, "nach Alter jM"),
+  #             mar=mar,
+  #             ylab=ylab,
+  #             file=paste0(file,"_AlterJM.pdf"),
+  #             ranked = ranked,
+  #             add = list(data[data$C207_03 == 2, ], data[data$C207_04 == 2, ], data[data$C207_05 == 2, ]),
+  #             label = c("6 - 10", "11 - 14", "15 - 17", "18 - 21"))
   
 }
 
@@ -1333,15 +1361,15 @@ plot_combined_imp = function(skalen, data, mar, skalen_scores,
     
     
     if(combined == TRUE){
-    
-    plot_skalen_imp(most_imp = merged_imp,
-                  mar=mar,
-                  main = names(group_list)[i],
-                  ylim=c(1, 6),
-                  offset = - 0.1,
-                  plot=FALSE,
-                  se=FALSE)
-    
+      
+      plot_skalen_imp(most_imp = merged_imp,
+                      mar=mar,
+                      main = names(group_list)[i],
+                      ylim=c(1, 6),
+                      offset = - 0.1,
+                      plot=FALSE,
+                      se=FALSE)
+      
       
       abline(h=c(3.5), col="red3", lty=2, lwd=1)
       
@@ -1405,7 +1433,7 @@ create_ums_proz = function(skalen, umsetzung, ums_data, group_index){
     tmp = ums_data[group_index, umsetzung[umsetzung[, 2] %in% skalen[[i]], 1]]
     
     if(is.null(dim(tmp))){
-
+      
       tmp_proz = c(tmp_proz, mean(tmp, na.rm = T))
       
     }else{
@@ -1759,7 +1787,7 @@ get_ums_scores = function(ums_data, skalen, skalen_names){
 #'
 #'
 #'
-descriptive_anal_plots = function(data, type, path, se=F){
+descriptive_anal_plots = function(plot_data, data, type, path, se=F){
   
   
   if(!dir.exists(path)) {
@@ -1769,7 +1797,8 @@ descriptive_anal_plots = function(data, type, path, se=F){
   
   #  Begriffe:
   
-  plot_ranked_all(data=data,
+  plot_ranked_all(plot_data,
+                  data,
                   var_name = "Begriffe",
                   yx = c("nie", "selten", "häufig", "immer"),
                   type=type,
@@ -1781,7 +1810,9 @@ descriptive_anal_plots = function(data, type, path, se=F){
   
   # Verhaltensweisen
   
-  plot_ranked_all(data, var_name = "Verhaltensweisen",
+  plot_ranked_all(plot_data,
+                  data,
+                  var_name = "Verhaltensweisen",
                   yx = c("gar nicht kennzeichnend", "eher nicht kennzeichnend",
                          "eher kennzeichnend", "vollkommen kennzeichnend"),
                   type=type,
@@ -1793,7 +1824,9 @@ descriptive_anal_plots = function(data, type, path, se=F){
   
   # Informationen
   
-  plot_ranked_all(data, "Informationen", 
+  plot_ranked_all(plot_data,
+                  data,
+                  var_name = "Informationen", 
                   yx=c("unwichtig","eher unwichtig","eher wichtig","wichtig"),
                   type=type,
                   mar=c(18,7,3,3),
@@ -1804,7 +1837,8 @@ descriptive_anal_plots = function(data, type, path, se=F){
   
   # Dokumente
   
-  plot_ranked_all(data = data,
+  plot_ranked_all(plot_data, 
+                  data,
                   yx=c("nie", "selten", "häufig", "immer"),
                   type=type,
                   var_name = "Dokumente",
@@ -1815,7 +1849,8 @@ descriptive_anal_plots = function(data, type, path, se=F){
   
   # interdiszTeam
   
-  plot_ranked_all(data,
+  plot_ranked_all(plot_data,
+                  data,
                   yx=c("gar nicht wichtig", "nicht wichtig", "eher nicht wichtig",
                        "eher wichtig", "wichtig", "vollkommen wichtig"),
                   type=type,
@@ -1828,7 +1863,8 @@ descriptive_anal_plots = function(data, type, path, se=F){
   
   # Kompetenzen
   
-  plot_ranked_all(data,
+  plot_ranked_all(plot_data,
+                  data,
                   yx=c("gar nicht wichtig", "nicht wichtig", "eher nicht wichtig",
                        "eher wichtig", "wichtig", "vollkommen wichtig"),
                   type=type,
@@ -1840,7 +1876,8 @@ descriptive_anal_plots = function(data, type, path, se=F){
   
   # Fortbildung
   
-  plot_ranked_all(data,
+  plot_ranked_all(plot_data,
+                  data = data,
                   yx=c("gar nicht wichtig", "nicht wichtig", "eher nicht wichtig",
                        "eher wichtig", "wichtig", "vollkommen wichtig"),
                   type=type,
@@ -1854,40 +1891,77 @@ descriptive_anal_plots = function(data, type, path, se=F){
   
   # Altersgruppen jM
   
+  # plot_binary(plot_data,
+  #             var_name="AlterGruppen",
+  #             main="Altersgruppen",
+  #             mar=c(12,5,3,3),
+  #             ylab="Prozent der Mitarbeitenden",
+  #             file=paste0(path,"/Altersgruppen.pdf"))
   
-  plot_binary(data,
-              var_name="AlterGruppen",
-              main="Altersgruppen",
-              mar=c(12,5,3,3),
-              ylab="Prozent der Mitarbeitenden",
-              file=paste0(path,"/Altersgruppen.pdf"))
+  
+  plot_binary_all(plot_data,
+                  data,
+                  var_name="AlterGruppen",
+                  main="Altersgruppen",
+                  mar=c(12,5,3,3),
+                  ylab="Prozent der Mitarbeitenden",
+                  file=paste0(path,"/Altersgruppen"),
+                  ranked = F)
+  
+  # plot_binary(plot_data,
+  #             var_name=var_name,
+  #             main=paste(main),
+  #             mar=c(12, 5, 3, 3),
+  #             ylab="Prozent der Mitarbeitenden",
+  #             file=paste0(path,"/Altersgruppen_Vergleich.pdf"),
+  #             ranked = ranked,
+  #             add = list(data[data$B107 != i, ]),
+  #             label = c(Einrichtung, "Andere"))
   
   
   # Informationsart
   
-  plot_binary(data,
-              var_name="Informationsart",
-              main="Art der Information",
-              mar=c(12,5,3,3),
-              ylab="Prozent der Mitarbeitenden",
-              file=paste0(path,"/Informationsart.pdf"),
-              ranked = T)
+  # plot_binary(plot_data,
+  #             var_name="Informationsart",
+  #             main="Art der Information",
+  #             mar=c(12,5,3,3),
+  #             ylab="Prozent der Mitarbeitenden",
+  #             file=paste0(path,"/Informationsart.pdf"),
+  #             ranked = T)
   
+  
+  plot_binary_all(plot_data,
+                  data,
+                  var_name="Informationsart",
+                  main="Art der Information",
+                  mar=c(12,5,3,3),
+                  ylab="Prozent der Mitarbeitenden",
+                  file=paste0(path,"/Informationsart"),
+                  ranked = T)
   
   # Informationsbedarf
   
-  plot_binary(data,
-              var_name="Informationsbedarf",
-              main="Informationsbedarf",
-              mar=c(18,5,3,3),
-              ylab="Prozent der Mitarbeitenden",
-              file=paste0(path,"/Informationsbedarf.pdf"),
-              ranked = T)
+  # plot_binary(plot_data,
+  #             var_name="Informationsbedarf",
+  #             main="Informationsbedarf",
+  #             mar=c(18,5,3,3),
+  #             ylab="Prozent der Mitarbeitenden",
+  #             file=paste0(path,"/Informationsbedarf.pdf"),
+  #             ranked = T)
   
+  plot_binary_all(plot_data,
+                  data,
+                  var_name="Informationsbedarf",
+                  main="Informationsbedarf",
+                  mar=c(18,5,3,3),
+                  ylab="Prozent der Mitarbeitenden",
+                  file=paste0(path,"/Informationsbedarf"),
+                  ranked = T)
   
   # Vetorecht Aufnahme
   
-  plot_binary_all(data,
+  plot_binary_all(plot_data,
+                  data,
                   var_name="Vetor.Auf",
                   main="Vetorecht Aufnahme",
                   mar=c(15,5,3,3),
@@ -1896,7 +1970,8 @@ descriptive_anal_plots = function(data, type, path, se=F){
                   ranked = T)
   
   
-  plot_binary_all(data,
+  plot_binary_all(plot_data,
+                  data,
                   var_name="Vetoem.Auf",
                   main="Vetoempfehlung Aufnahme",
                   mar=c(15,5,3,3),
@@ -1905,7 +1980,8 @@ descriptive_anal_plots = function(data, type, path, se=F){
                   ranked = T)
   
   
-  plot_binary_all(data,
+  plot_binary_all(plot_data,
+                  data,
                   var_name="Entscheidung.Auf",
                   main="Entscheidung Aufnahme",
                   mar=c(15,5,3,3),
@@ -1914,7 +1990,8 @@ descriptive_anal_plots = function(data, type, path, se=F){
                   ranked = T)
   
   
-  plot_binary_all(data,
+  plot_binary_all(plot_data,
+                  data,
                   var_name="Vetor.Ent",
                   main="Vetorecht Entlassung",
                   mar=c(15,5,3,3),
@@ -1923,7 +2000,8 @@ descriptive_anal_plots = function(data, type, path, se=F){
                   ranked = T)
   
   
-  plot_binary_all(data,
+  plot_binary_all(plot_data,
+                  data,
                   var_name="Vetoem.Ent",
                   main="Vetoempfehlung Entlassung",
                   mar=c(15,5,3,3),
@@ -1932,7 +2010,8 @@ descriptive_anal_plots = function(data, type, path, se=F){
                   ranked = T)
   
   
-  plot_binary_all(data,
+  plot_binary_all(plot_data,
+                  data,
                   var_name="Entscheidung.Ent",
                   main="Entscheidung Entlassung",
                   mar=c(15,5,3,3),
@@ -1941,42 +2020,42 @@ descriptive_anal_plots = function(data, type, path, se=F){
                   ranked = T)
   
   
-  plot_veto(data=data[data$B102 == 2,],
+  plot_veto(data=plot_data,
             var_name=c("Entscheidung.Auf","Vetor.Auf","Vetoem.Auf"),
-            main="SBBZ - Aufnahme: Entscheidung und Veto",
+            main="Aufnahme: Entscheidung und Veto",
             mar=c(12,6,3,3),
             ylab="Prozent der Mitarbeitenden",
-            file=paste0(path,"/Aufnahme_SBBZ_gesamt.pdf"),
+            file=paste0(path,"/Aufnahme_Einrichtung_gesamt.pdf"),
             ranked = T,
             labels=c("Entscheidung", "Vetorecht", "Vetoempfehlung"))
   
   
-  plot_veto(data=data[data$B102 %in% c(3:5),],
+  plot_veto(data=data[data$B107 != i,],
             var_name=c("Entscheidung.Auf","Vetor.Auf","Vetoem.Auf"),
-            main="HZE - Aufnahme: Entscheidung und Veto",
+            main="Aufnahme: Entscheidung und Veto",
             mar=c(12,6,3,3),
             ylab="Prozent der Mitarbeitenden",
-            file=paste0(path,"/Aufnahme_HZE_gesamt.pdf"),
+            file=paste0(path,"/Aufnahme_Andere_gesamt.pdf"),
             ranked = T,
             labels=c("Entscheidung", "Vetorecht", "Vetoempfehlung"))
   
   
-  plot_veto(data=data[data$B102 == 2,],
+  plot_veto(data=plot_data,
             var_name=c("Entscheidung.Ent","Vetor.Ent","Vetoem.Ent"),
-            main="SBBZ - Entlassung: Entscheidung und Veto",
+            main="Entlassung: Entscheidung und Veto",
             mar=c(12,6,3,3),
             ylab="Prozent der Mitarbeitenden",
-            file=paste0(path,"/Entlassung_SBBZ_gesamt.pdf"),
+            file=paste0(path,"/Entlassung_gesamt.pdf"),
             ranked = T,
             labels=c("Entscheidung", "Vetorecht", "Vetoempfehlung"))
   
   
-  plot_veto(data=data[data$B102 %in% c(3:5),],
+  plot_veto(data=data[data$B107 != i,],
             var_name=c("Entscheidung.Ent","Vetor.Ent","Vetoem.Ent"),
-            main="HZE - Entlassung: Entscheidung und Veto",
+            main="Entlassung: Entscheidung und Veto",
             mar=c(12,6,3,3),
             ylab="Prozent der Mitarbeitenden",
-            file=paste0(path,"/Entlassung_HZE_gesamt.pdf"),
+            file=paste0(path,"/Entlassung_Andere_gesamt.pdf"),
             ranked = T,
             labels=c("Entscheidung", "Vetorecht", "Vetoempfehlung"))
 }
@@ -1995,7 +2074,7 @@ get_item_summary = function(data, file, file.excel, path.plot){
                        "Frage"=character(0))
   
   res_tmp_names = names(res_tmp)
-
+  
   skalen_df = data.frame("Skale"=character(0), "Item"=character(0))
   
   names_skalen_df = names(skalen_df)
@@ -2016,7 +2095,7 @@ get_item_summary = function(data, file, file.excel, path.plot){
   
   
   for(i in names(keys)){
-
+    
     for(j in 1:length(keys[[i]])){
       
       tmp_skale = skalen_df$Skale[skalen_df$Item == keys[[i]][j]]
@@ -2046,7 +2125,7 @@ get_item_summary = function(data, file, file.excel, path.plot){
           tmp = c(tmp, round(mean(ums_tmp - 1, na.rm=T)*100, 0))
           
           tmp = c(tmp, codebook$`Variable Label`[codebook$Variable == keys[[i]][j]][1])
-        
+          
           res_tmp = rbind(res_tmp, tmp,deparse.level = 2)  
         }
         
@@ -2068,7 +2147,7 @@ get_item_summary = function(data, file, file.excel, path.plot){
         
         res_tmp = rbind(res_tmp, tmp,deparse.level = 2)
       }
-
+      
     }
   }
   
@@ -2085,53 +2164,53 @@ get_item_summary = function(data, file, file.excel, path.plot){
   dir.create(path.plot)
   
   for(i in 1:length(skalen)){
-  
-  fit = as.numeric(res_tmp[res_tmp$Skale == names(skalen)[i],"mean"])
-  se1 = as.numeric(res_tmp[res_tmp$Skale == names(skalen)[i],"se.1"])
-  se2 = as.numeric(res_tmp[res_tmp$Skale == names(skalen)[i],"se.2"])
-  
-  
-  fit = fit[!is.na(fit)]
-  se1 = se1[!is.na(se1)]
-  se2 = se2[!is.na(se2)]
-  
-  if(length(fit) > 0){
     
-    jpeg(filename = paste0(path.plot, "/Skala_", i, ".jpg"), width=1000, height=570, pointsize = 20)
+    fit = as.numeric(res_tmp[res_tmp$Skale == names(skalen)[i],"mean"])
+    se1 = as.numeric(res_tmp[res_tmp$Skale == names(skalen)[i],"se.1"])
+    se2 = as.numeric(res_tmp[res_tmp$Skale == names(skalen)[i],"se.2"])
     
-    par(mar=c(10, 5, 3, 3))
     
-    plot(fit, 1:length(fit),
-         xlim=c(1,6),
-         xaxt="n",
-         xlab="",
-         yaxt="n",
-         ylab="",
-         type="n",
-         main=names(skalen)[i],
-         ylim=c(0.5, length(fit)+0.5))
+    fit = fit[!is.na(fit)]
+    se1 = se1[!is.na(se1)]
+    se2 = se2[!is.na(se2)]
     
-    abline(v=c(1:6), col="grey80")
-    
-    arrows(x0 = rep(0, length(fit)), x1 = fit, y0 = 1:length(fit), lty=2, length = 0, lwd=1, col="grey50")
-    
-    arrows(x0 = fit, x1 = se1, y0 = 1:length(fit), length = 0.1, lwd=2, col="grey40", angle = 90)
-    arrows(x0 = fit, x1 = se2, y0 = 1:length(fit), length = 0.1, lwd=2, col="grey40", angle = 90)
-    
-     points(fit, 1:length(fit), pch=20, cex=1.3)
-    
-    labels = res_tmp$Item[res_tmp$Skale == names(skalen)[i]]
-    
-    labels = labels[!is.na(labels)]
-    
-    axis(side=2, at = 1:length(fit), labels = labels, las=2)
-    axis(side=1,
-         at = 1:6,
-         labels = c("stimme gar nicht zu", "stimme nicht zu", "stimme eher nicht zu",
-                    "stimme eher zu", "stimme zu", "stimme vollkommen zu"),
-         las=2)
-    
-    dev.off()
+    if(length(fit) > 0){
+      
+      jpeg(filename = paste0(path.plot, "/Skala_", i, ".jpg"), width=1000, height=570, pointsize = 20)
+      
+      par(mar=c(10, 5, 3, 3))
+      
+      plot(fit, 1:length(fit),
+           xlim=c(1,6),
+           xaxt="n",
+           xlab="",
+           yaxt="n",
+           ylab="",
+           type="n",
+           main=names(skalen)[i],
+           ylim=c(0.5, length(fit)+0.5))
+      
+      abline(v=c(1:6), col="grey80")
+      
+      arrows(x0 = rep(0, length(fit)), x1 = fit, y0 = 1:length(fit), lty=2, length = 0, lwd=1, col="grey50")
+      
+      arrows(x0 = fit, x1 = se1, y0 = 1:length(fit), length = 0.1, lwd=2, col="grey40", angle = 90)
+      arrows(x0 = fit, x1 = se2, y0 = 1:length(fit), length = 0.1, lwd=2, col="grey40", angle = 90)
+      
+      points(fit, 1:length(fit), pch=20, cex=1.3)
+      
+      labels = res_tmp$Item[res_tmp$Skale == names(skalen)[i]]
+      
+      labels = labels[!is.na(labels)]
+      
+      axis(side=2, at = 1:length(fit), labels = labels, las=2)
+      axis(side=1,
+           at = 1:6,
+           labels = c("stimme gar nicht zu", "stimme nicht zu", "stimme eher nicht zu",
+                      "stimme eher zu", "stimme zu", "stimme vollkommen zu"),
+           las=2)
+      
+      dev.off()
     }
   }
 }
@@ -2224,7 +2303,7 @@ plot_most_important = function(data,
                                file, best_var=0){
   
   if(best_var==0){
-  
+    
     tmp_mean = numeric(length(skalen_scores))
     tmp_name = names(skalen_scores)
     
