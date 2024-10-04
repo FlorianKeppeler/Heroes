@@ -9,18 +9,6 @@ library(betareg)
 
 data = import_data_surv(Path="C:/Heroes/Downloads soscisurvey/CSV/data_HerOEs_2023-08-27_16-42.csv")
 
-nrow(data)
-
-# Leute entfernen die nicht mit jM arbeiten:
-
-data = data[-unique(c(which(data$C207_07 == 2), which(data$B101_04 == 2))), ]
-
-
-
-# Stiftung Jugendhilfe aktiv zusammenfassen:
-
-data$B107[data$B107 %in% c(34, 35, 36)] = 50
-
 
 
 #--------------------------------------
@@ -79,9 +67,6 @@ table(data$B102)
 
 sum(!is.na(data$B107))
 #  -> Rücklauf sind 397 nach Ausschluss der Personen die nicht mit jM arbeiten
-
-
-
 
 
 

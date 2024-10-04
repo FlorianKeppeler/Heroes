@@ -8,9 +8,6 @@ library(randomForest)
 data = import_data_surv(Path="C:/Heroes/Downloads soscisurvey/CSV/data_HerOEs_2023-08-27_16-42.csv")
 
 
-# Leute entfernen die nicht mit jM arbeiten:
-
-data = data[-unique(c(which(data$C207_07 == 2), which(data$B101_04 == 2))), ]
 
 
 

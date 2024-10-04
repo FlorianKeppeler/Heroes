@@ -25,26 +25,29 @@ get_codebook_varnames = function(var_name){
 
 ####################################################
 
-
+#' Liest Csv Datei mit Umfrageantworten ein und bereitet Daten auf
+#'
+#' @param Path: Pfad zur csv Datei mit Fragebogenantworten 
+#'
 import_data_surv <- function(Path){
   
-  data <- read.csv("C:/Heroes/Downloads soscisurvey/CSV/data_HerOEs_2023-08-27_16-42.csv",
+  data <- read.csv(Path,
                    skipNul = T, na.strings = "-9", stringsAsFactors = FALSE)
   
-  
+  # Personen rausschmeißen, die nicht zugestimmt haben dass Daten Fragebogen genutzt werden darf
   data_compl <- data[!(is.na(as.numeric(data$A003)) | as.numeric((data$A003) == 2)),]
   
-  
+  # Strukturfragebogen aus Datensatz entfernen
   data_compl <- data_compl[,-c(598:680)]
   
   # CASE umbenennen
   names(data_compl)[1] <- "CASE"
   
-  # Eva Stuttgart rausnehmen
+  # Eva Stuttgart rausnehmen -> Einrichtung hat nur einen einzigen Fragebogen
+  # mit gesammelten Antworten der Mitarbeiter abgeben
   data_compl <- data_compl[-which(data_compl$CASE==1164), ]
-  
-  ## Umkodieren Soziale Erwünschtheit
-  
+
+  # Umkodieren Soziale Erwünschtheit
   data_compl$M401_01 <- 5 - as.numeric(data_compl$M401_01)
   
   #beide items mit 4 bewertet
@@ -58,8 +61,16 @@ import_data_surv <- function(Path){
   data_compl <- data_compl[!data_compl$sozialErw,]
   
   
-  # items in numeric transformieren
+  # Leute entfernen die nicht mit jM arbeiten:
+  data = data[-unique(c(which(data$C207_07 == 2), which(data$B101_04 == 2))), ]
   
+  # Johannes Falk Haus zu eva Stuttgart dazuzählen
+  data$B107[data$B107 == 14] = 12
+  
+  # Stiftung Jugendhilfe aktiv zusammenfassen:
+  data$B107[data$B107 %in% c(34, 35, 36)] = 50
+  
+  # items in numeric transformieren
   test <- apply(data_compl, 2, FUN=function(x){ mean(nchar(x), na.rm=T)})
   
   col_index <- test < 3
@@ -1707,8 +1718,19 @@ get_ums_scores = function(ums_data, skalen, skalen_names){
 }
 
 
+
+#' Erzeugt Plots mit 
+#'
+#'
+#'
+#'
 descriptive_anal_plots = function(data, type, path, se=F){
   
+  
+  if(!dir.exists(path)) {
+    
+    dir.create(path, recursive = T)
+  }
   
   #  Begriffe:
   
