@@ -193,14 +193,14 @@ norm_est = function(x, yx){
 
 
 
-get_ranking = function(data, var_name, type, yx){
+get_ranking = function(plot_data, var_name, type, yx){
   
   if (type == "norm"){
-    tmp = apply(data[complete.cases(data[,keys[[var_name]]]),keys[[var_name]]], 2, FUN=norm_est)
+    tmp = apply(plot_data[complete.cases(plot_data[,keys[[var_name]]]),keys[[var_name]]], 2, FUN=norm_est)
   }
   
   if (type == "beta"){
-    tmp = apply(data[complete.cases(data[,keys[[var_name]]]),keys[[var_name]]], 2, FUN=beta_est, yx=yx)
+    tmp = apply(plot_data[complete.cases(plot_data[,keys[[var_name]]]),keys[[var_name]]], 2, FUN=beta_est, yx=yx)
     
     # for(i in 1:length(tmp)){
     #   if(tmp[1, i] > tmp[3, i]){
@@ -211,7 +211,7 @@ get_ranking = function(data, var_name, type, yx){
   
   if (type == "binom"){
     
-    tmp = apply(data[complete.cases(data[,keys[[var_name]]]), keys[[var_name]]],
+    tmp = apply(plot_data[complete.cases(plot_data[,keys[[var_name]]]), keys[[var_name]]],
                 MARGIN = 2,
                 FUN=binom_est,
                 yx=yx)
@@ -220,8 +220,8 @@ get_ranking = function(data, var_name, type, yx){
   
   if (type == "mean"){
     
-    tmp_mean = apply(data[complete.cases(data[,keys[[var_name]]]),keys[[var_name]]], 2, mean, na.rm=T) 
-    tmp_sd = apply(data[complete.cases(data[,keys[[var_name]]]),keys[[var_name]]], 2, sd, na.rm=T)
+    tmp_mean = apply(plot_data[complete.cases(plot_data[,keys[[var_name]]]),keys[[var_name]]], 2, mean, na.rm=T) 
+    tmp_sd = apply(plot_data[complete.cases(data[,keys[[var_name]]]),keys[[var_name]]], 2, sd, na.rm=T)
     tmp = rbind(tmp_mean,tmp_mean - tmp_sd, tmp_mean + tmp_sd)
   }
   
@@ -286,8 +286,15 @@ plot_ranked = function(plot_data,
       }
       
       
-      ranked = get_ranking(plot_data, var_name, type=type, yx)
-      ranked2 = get_ranking(add[[1]], var_name = var_name, type=type, yx)
+      ranked = get_ranking(plot_data,
+                           var_name,
+                           type=type,
+                           yx)
+      
+      ranked2 = get_ranking(plot_data=add[[1]],
+                            var_name = var_name,
+                            type=type,
+                            yx)
       
       ranked_tmp = merge(ranked, ranked2, by="name", sort = "False")
       
@@ -512,7 +519,7 @@ plot_ranked_all = function(plot_data,
               type=type,
               mar=mar,
               main=main,
-              add = list(data[data$B107 != Index_einrichtung]),  # alle anderen Einrichtungen
+              add = list(data[data$B107 != Index_einrichtung,]),  # alle anderen Einrichtungen
               file=paste0(file,"_gesamt_Vergleich.pdf"),
               label = c(Einrichtung, "Andere"),
               se=se)
@@ -1100,7 +1107,7 @@ check_items_by_group = function(data, variables, group_index, group_names){
 }
 
 
-get_skalen_scores = function(data, skalen, skalen_names){
+get_skalen_scores = function(plot_data, skalen, skalen_names){
   
   skalen_scores = list()
   
@@ -1110,7 +1117,7 @@ get_skalen_scores = function(data, skalen, skalen_names){
     tmp_ls = list()
     
     
-    tmp = data[,skalen[[skalen_names[i]]]]
+    tmp = plot_data[,skalen[[skalen_names[i]]]]
     
     na_index = complete.cases(tmp)
     
@@ -1119,17 +1126,17 @@ get_skalen_scores = function(data, skalen, skalen_names){
       
       tmp_ls[["scores_mean"]] = as.numeric(tmp)
       
-      tmp_ls[["scores_fact"]] = rep(NA, length(tmp))
-      
-      tmp_ls[["loadings"]] = rep(NA, 1)
-      
-      tmp_ls[["p"]] = NA
+      # tmp_ls[["scores_fact"]] = rep(NA, length(tmp))
+      # 
+      # tmp_ls[["loadings"]] = rep(NA, 1)
+      # 
+      # tmp_ls[["p"]] = NA
       
       skalen_scores[[skalen_names[i]]] = tmp_ls
       
     }else{
       
-      tmp = tmp[na_index,]
+      tmp = tmp[na_index,] # hier gibts nen Fehler weil ein vector ankommt
       
       tmp_na = rep(NA, length(na_index))
       
@@ -1137,32 +1144,35 @@ get_skalen_scores = function(data, skalen, skalen_names){
       
       tmp_ls[["scores_mean"]] = tmp_na
       
-      if(ncol(tmp) < 3){
-        tmp_ls[["scores_fact"]] = rep(NA, nrow(tmp))
-        
-        tmp_ls[["loadings"]] = rep(NA, ncol(tmp))
-        
-        tmp_ls[["p"]] = NA
-        
-        skalen_scores[[skalen_names[i]]] = tmp_ls
-        
-      }else{
-        
-        tmp_jittered = apply(tmp, 2, jitter, factor = 0.01)
-        
-        fact = factanal(tmp_jittered, 1, scores = "regression")
-        
-        tmp_na[na_index] = fact$scores
-        
-        tmp_ls[["scores_fact"]] = tmp_na
-        
-        tmp_ls[["loadings"]] = fact$loadings
-        
-        tmp_ls[["p"]] = fact$PVAL
-        
-        
-        skalen_scores[[skalen_names[i]]] = tmp_ls
-      }
+      # if(ncol(tmp) < 3){
+      #   
+      #   tmp_ls[["scores_fact"]] = rep(NA, nrow(tmp))
+      #   
+      #   tmp_ls[["loadings"]] = rep(NA, ncol(tmp))
+      #   
+      #   tmp_ls[["p"]] = NA
+      #   
+      #   skalen_scores[[skalen_names[i]]] = tmp_ls
+      #   
+      # }else{
+      #   
+      #   tmp_jittered = apply(tmp, 2, jitter, factor = 0.01)
+      #   
+      #   fact = factanal(tmp_jittered, 1, scores = "regression")
+      #   
+      #   tmp_na[na_index] = fact$scores
+      #   
+      #   tmp_ls[["scores_fact"]] = tmp_na
+      #   
+      #   tmp_ls[["loadings"]] = fact$loadings
+      #   
+      #   tmp_ls[["p"]] = fact$PVAL
+      #   
+      #   
+      #   skalen_scores[[skalen_names[i]]] = tmp_ls
+      # }
+      
+      skalen_scores[[skalen_names[i]]] = tmp_ls
     }
   }
   
@@ -1254,7 +1264,9 @@ check_skalen = function(data, skalen_scores, variables, pred_var,
 }
 
 
-create_skalen_imp = function(score_type, skalen_scores=skalen_scores, group_index){
+create_skalen_imp = function(score_type,
+                             skalen_scores=skalen_scores,
+                             group_index){
   
   tmp_name = c()
   tmp_mean = c()
@@ -1856,11 +1868,11 @@ get_ums_scores = function(ums_data, skalen, skalen_names){
         
         tmp_ls[["scores_mean"]] = as.numeric(tmp[,1])
         
-        tmp_ls[["scores_fact"]] = rep(NA, length(tmp[,1]))
-        
-        tmp_ls[["loadings"]] = rep(NA, 1)
-        
-        tmp_ls[["p"]] = NA
+        # tmp_ls[["scores_fact"]] = rep(NA, length(tmp[,1]))
+        # 
+        # tmp_ls[["loadings"]] = rep(NA, 1)
+        # 
+        # tmp_ls[["p"]] = NA
         
         skalen_scores[[skalen_names[i]]] = tmp_ls
         
@@ -1876,33 +1888,35 @@ get_ums_scores = function(ums_data, skalen, skalen_names){
         
         tmp_ls[["scores_mean"]] = tmp_na
         
-        if(ncol(tmp) < 3){
-          
-          tmp_ls[["scores_fact"]] = rep(NA, nrow(tmp))
-          
-          tmp_ls[["loadings"]] = rep(NA, ncol(tmp))
-          
-          tmp_ls[["p"]] = NA
-          
-          skalen_scores[[skalen_names[i]]] = tmp_ls
-          
-        }else{
-          
-          tmp_jittered = apply(tmp, 2, jitter, factor = 0.01)
-          
-          fact = factanal(tmp_jittered, 1, scores = "regression")
-          
-          tmp_na[na_index] = fact$scores
-          
-          tmp_ls[["scores_fact"]] = tmp_na
-          
-          tmp_ls[["loadings"]] = fact$loadings
-          
-          tmp_ls[["p"]] = fact$PVAL
-          
-          
-          skalen_scores[[skalen_names[i]]] = tmp_ls
-        }
+        # if(ncol(tmp) < 3){
+        #   
+        #   tmp_ls[["scores_fact"]] = rep(NA, nrow(tmp))
+        #   
+        #   tmp_ls[["loadings"]] = rep(NA, ncol(tmp))
+        #   
+        #   tmp_ls[["p"]] = NA
+        #   
+        #   skalen_scores[[skalen_names[i]]] = tmp_ls
+        #   
+        # }else{
+        #   
+        #   tmp_jittered = apply(tmp, 2, jitter, factor = 0.01)
+        #   
+        #   fact = factanal(tmp_jittered, 1, scores = "regression")
+        #   
+        #   tmp_na[na_index] = fact$scores
+        #   
+        #   tmp_ls[["scores_fact"]] = tmp_na
+        #   
+        #   tmp_ls[["loadings"]] = fact$loadings
+        #   
+        #   tmp_ls[["p"]] = fact$PVAL
+        #   
+        #   
+        #   skalen_scores[[skalen_names[i]]] = tmp_ls
+        # }
+        
+        skalen_scores[[skalen_names[i]]] = tmp_ls
       }
     }else{
       print(paste(skalen_names[i], "besitzt keine Umsetzungsabfrage"))
@@ -2383,7 +2397,7 @@ fit_randomForest = function(data,
   
   ums_scores = get_ums_scores(ums_data, skalen = data_skalen, names(data_skalen))
   
-  Halte_scores = get_skalen_scores(data = data,
+  Halte_scores = get_skalen_scores(plot_data = data,
                                    skalen = data_skalen,
                                    skalen_names = "HK.subj.Einrichtung")
   
@@ -2562,7 +2576,7 @@ plot_rel_density = function(plot_data,
   ums_tmp = create_model_df(ums_scores = ums_scores,
                             score_type = "scores_mean")
   
-  Halte_scores = get_skalen_scores(data = plot_data,
+  Halte_scores = get_skalen_scores(plot_data = plot_data,
                                    skalen = data_skalen,
                                    skalen_names = "HK.subj.Einrichtung")
   

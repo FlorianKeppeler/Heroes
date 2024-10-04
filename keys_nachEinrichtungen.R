@@ -12,8 +12,8 @@ imp_names[["B105"]] = c("< 3", "4 - 10", "> 11")
 imp_names[["B110"]] = c("< 30", "31 - 50", "> 51")
 imp_names[["B107"]] = codebook[codebook$Variable == "B107",]$`Response Label`
 
-imp_names[["B107"]][c(10, 14, 21, 28, 37, 50)] = c("Ev Jugendhilfe Friedenshort", "Johannes_Falk_Haus Stuttgart", "Kinder und Jugendhilfe Karlshöhe Ludwigsburg",
-                                                   "Oberlin Jugendhilfe Reutlingen", "Stiftung Tragwerk KirchheimTeck", "Stiftung Jugendhilfe aktiv")
+imp_names[["B107"]][c(10, 14, 21, 28, 37, 50, 51)] = c("Ev Jugendhilfe Friedenshort", "Johannes_Falk_Haus Stuttgart", "Kinder und Jugendhilfe Karlshöhe Ludwigsburg",
+                                                   "Oberlin Jugendhilfe Reutlingen", "Stiftung Tragwerk KirchheimTeck", "Stiftung Jugendhilfe aktiv", "EVA")
 
 
 
