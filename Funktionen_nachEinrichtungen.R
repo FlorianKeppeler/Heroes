@@ -512,7 +512,7 @@ plot_ranked_all = function(plot_data,
               type=type,
               mar=mar,
               main=main,
-              add = list(data[data$B107 != i]),  # alle anderen Einrichtungen
+              add = list(data[data$B107 != Index_einrichtung]),  # alle anderen Einrichtungen
               file=paste0(file,"_gesamt_Vergleich.pdf"),
               label = c(Einrichtung, "Andere"),
               se=se)
@@ -859,7 +859,7 @@ plot_binary_all = function(plot_data,
               ylab=ylab,
               file=paste0(file,"_gesamt_Vergleich.pdf"),
               ranked = ranked,
-              add = list(data[data$B107 != i, ]),
+              add = list(data[data$B107 != Index_einrichtung, ]),
               label = c(Einrichtung, "Andere"))
   
   
@@ -1278,45 +1278,145 @@ create_skalen_imp = function(score_type, skalen_scores=skalen_scores, group_inde
   
 }
 
+# "#1b9e77", "#e7298a",
 
-plot_skalen_imp = function(most_imp, mar, ylim, main, offset, plot=T, file="", se=T){
+plot_skalen_imp = function(most_imp,
+                           mar,
+                           ylim,
+                           main,
+                           offset,
+                           plot=T,
+                           file="",
+                           se=T,
+                           combined = FALSE){
   
   par(mfrow=c(1,1), mar=mar)
   
   if(plot){
     
-    pdf(file=file, width=14, height = 12, paper = "a4r")
+    pdf(file=file,
+        width=14,
+        height = 12,
+        paper = "a4r")
   }
   
-  plot(most_imp[,"mean"], xaxt="n", xlab="", pch=20, ylim=ylim, main=main, type="n", yaxt="n", ylab="")
+  plot(most_imp[,"mean"],
+       xaxt="n",
+       xlab="",
+       pch=20,
+       ylim=ylim,
+       main=main,
+       type="n",
+       yaxt="n",
+       ylab="")
   
   abline(h=c(1,2,3,4,5,6), col="grey70")
   
   
-  axis(side = 1, at = 1:nrow(most_imp), labels = most_imp[,1], las=2)
+  axis(side = 1,
+       at = 1:nrow(most_imp),
+       labels = most_imp[,1],
+       las=2)
   
-  axis(side = 2, at = 1:6, labels = c("gar nicht wichtig", "nicht wichtig", "eher nicht wichtig",
-                                      "eher wichtig", "wichtig", "vollkommen wichtig"), las=2)
+  axis(side = 2,
+       at = 1:6,
+       labels = c("gar nicht wichtig", "nicht wichtig", "eher nicht wichtig",
+                  "eher wichtig", "wichtig", "vollkommen wichtig"),
+       las=2)
   
-  arrows(x0 = 1:nrow(most_imp) + offset, y0 = rep(0, nrow(most_imp)),
-         y1 = most_imp[,"mean"], col="grey50", length = 0, lwd=5)
-  
-  if(se==TRUE){
+  if(combined == FALSE){
     
-    arrows(x0 = (1:nrow(most_imp)) + offset, y0 = most_imp[,"mean"],
-           y1 = most_imp[,"se.1"], col="grey30", length = 0.1, lwd=1, angle=90)
+    arrows(x0 = 1:nrow(most_imp) + offset,
+           y0 = rep(0, nrow(most_imp)),
+           y1 = most_imp[,"mean"],
+           col="#1b9e77",
+           length = 0,
+           lwd=5)
     
-    arrows(x0 = (1:nrow(most_imp)) + offset, y0 = most_imp[,"mean"],
-           y1 = most_imp[,"se.2"], col="grey30", length = 0.1, lwd=1, angle=90)
+    arrows(x0 = 1:nrow(most_imp) - offset,
+           y0 = rep(0, nrow(most_imp)),
+           y1 = most_imp[,"mean.andere"],
+           col="#e7298a",
+           length = 0,
+           lwd=5)
+    
+    if(se==TRUE){
+      
+      arrows(x0 = (1:nrow(most_imp)) + offset,
+             y0 = most_imp[,"mean"],
+             y1 = most_imp[,"se.1"],
+             col="#1b9e77",
+             length = 0.1,
+             lwd=1,
+             angle=90)
+      
+      arrows(x0 = (1:nrow(most_imp)) + offset,
+             y0 = most_imp[,"mean"],
+             y1 = most_imp[,"se.2"],
+             col="#1b9e77",
+             length = 0.1,
+             lwd=1,
+             angle=90)
+      
+      arrows(x0 = (1:nrow(most_imp)) - offset,
+             y0 = most_imp[,"mean.andere"],
+             y1 = most_imp[,"se.1.andere"],
+             col="#e7298a",
+             length = 0.1,
+             lwd=1,
+             angle=90)
+      
+      arrows(x0 = (1:nrow(most_imp)) - offset,
+             y0 = most_imp[,"mean.andere"],
+             y1 = most_imp[,"se.2.andere"],
+             col="#e7298a",
+             length = 0.1,
+             lwd=1,
+             angle=90)
+    }
+    
+    points(1:nrow(most_imp) + offset, most_imp[,"mean"], pch = 20)
+    
+    points(1:nrow(most_imp) - offset, most_imp[,"mean.andere"], pch = 20)
+    
+    legend("topright",
+           bty="n",
+           col=c("#1b9e77", "#e7298a"),
+           lty=1,
+           lwd=3,
+           legend = c(Einrichtung,"Andere"))#, cex=1, text.width =5,
+    
+    if(plot){
+      
+      dev.off()
+    }
+  }else {
+    
+    arrows(x0 = 1:nrow(most_imp) + offset,
+           y0 = rep(0, nrow(most_imp)),
+           y1 = most_imp[,"mean"],
+           col="grey50",
+           length = 0,
+           lwd=5)
+    
+    points(1:nrow(most_imp) + offset, most_imp[,"mean"], pch = 20)
+    
+    abline(h=c(3.5), col="red3", lty=2, lwd=1)
+    
+    offset = 1
+    
+    # axis(4, at = c(offset, (max(merged_imp[,2]) + offset)/2, max(merged_imp[,2])), labels = c("0 %", "50 %", "100 %"), las = 2)
+    axis(4, at = c(1, 3.5, 6), labels = c("0 %", "50 %", "100 %"), las = 2)
+    
+    arrows(x0 = 1:nrow(most_imp) + 0.1, # x1 = 1:nrow(merged_imp),
+           y0 = rep(offset, nrow(most_imp)),  y1 = offset + most_imp[,"Prozente"]*max(most_imp[,"mean"]-offset),
+           length=0, col="red3", lwd=5)
+    
+    points(1:nrow(most_imp) + 0.1, offset + most_imp[,"Prozente"]*max(most_imp[,"mean"]-offset), pch=20)
+    
+    legend("topright", bty="n", col=c("grey50", "red3"), lty=1, lwd=3, legend = c("Wichtigkeit","Umsetzung"))#, cex=1, text.width =5,
+    # seg.len=0.5, y.intersp = 0.2)
   }
-  
-  points(1:nrow(most_imp) + offset, most_imp[,"mean"], pch = 20)
-  
-  if(plot){
-    
-    dev.off()
-  }
-  
   return(most_imp)
 }
 
@@ -1337,22 +1437,51 @@ create_ums_data = function(data, umsetzung){
 
 
 
-plot_combined_imp = function(skalen, data, mar, skalen_scores,
-                             umsetzung, ums_data, var_name_group, group_list, path, combined=T){
+plot_combined_imp = function(skalen,
+                             plot_data,
+                             mar,
+                             skalen_scores,
+                             skalen_scores_andere,
+                             umsetzung,
+                             ums_data,
+                             var_name_group,
+                             group_list,
+                             path,
+                             combined=T){
   
   for(i in 1:length(group_list)){
     
-    ums_proz = create_ums_proz(data_skalen_ohne, umsetzung, ums_data,
-                               group_index=get_index_by_group(data, var_name_group = var_name_group,  group_keys = group_list[[i]]))
+    ums_proz = create_ums_proz(data_skalen_ohne,
+                               umsetzung,
+                               ums_data,
+                               group_index=get_index_by_group(plot_data,
+                                                              var_name_group = var_name_group,
+                                                              group_keys = group_list[[i]]))
     
     skalen_imp = create_skalen_imp(score_type = "scores_mean",
                                    skalen_scores = skalen_scores,
-                                   group_index=get_index_by_group(data, var_name_group = var_name_group, group_keys = group_list[[i]]))
+                                   group_index=get_index_by_group(plot_data,
+                                                                  var_name_group = var_name_group,
+                                                                  group_keys = group_list[[i]]))
+    
+    skalen_imp_andere = create_skalen_imp(score_type = "scores_mean",
+                                          skalen_scores = skalen_scores_andere,
+                                          group_index=get_index_by_group(data[data$B107 != Index_einrichtung, ],
+                                                                         var_name_group = var_name_group,
+                                                                         group_keys = group_list[[i]]))
     
     
-    merged_imp = merge(skalen_imp, ums_proz, by.x = "Name", by.y="Skalen")
+    merged_imp = merge(skalen_imp,
+                       ums_proz,
+                       by.x = "Name",
+                       by.y="Skalen")
     
-    merged_imp = merged_imp[order(merged_imp[,"mean"], decreasing = T),]
+    merged_imp = merge(merged_imp, skalen_imp_andere, by = "Name")
+    
+    names(merged_imp) = c("Name","se.1", "se.2", "mean", "Prozente", "se.1.andere", "se.2.andere", "mean.andere")
+    
+    merged_imp = merged_imp[order(merged_imp[,"mean"],
+                                  decreasing = T),]
     
     
     # Gemeinsame Darstellung: Skalen_scores und Umsetzung
@@ -1368,24 +1497,8 @@ plot_combined_imp = function(skalen, data, mar, skalen_scores,
                       ylim=c(1, 6),
                       offset = - 0.1,
                       plot=FALSE,
-                      se=FALSE)
-      
-      
-      abline(h=c(3.5), col="red3", lty=2, lwd=1)
-      
-      offset = 1
-      
-      # axis(4, at = c(offset, (max(merged_imp[,2]) + offset)/2, max(merged_imp[,2])), labels = c("0 %", "50 %", "100 %"), las = 2)
-      axis(4, at = c(1, 3.5, 6), labels = c("0 %", "50 %", "100 %"), las = 2)
-      
-      arrows(x0 = 1:nrow(merged_imp) + 0.1, # x1 = 1:nrow(merged_imp),
-             y0 = rep(offset, nrow(merged_imp)),  y1 = offset + merged_imp[,"Prozente"]*max(merged_imp[,"mean"]-offset),
-             length=0, col="red3", lwd=5)
-      
-      points(1:nrow(merged_imp) + 0.1, offset + merged_imp[,"Prozente"]*max(merged_imp[,"mean"]-offset), pch=20)
-      
-      legend("topright", bty="n", col=c("grey50", "red3"), lty=1, lwd=3, legend = c("Wichtigkeit","Umsetzung"))#, cex=1, text.width =5,
-      # seg.len=0.5, y.intersp = 0.2)
+                      se=FALSE,
+                      combined = TRUE)
       
     }else{
       
@@ -1393,9 +1506,10 @@ plot_combined_imp = function(skalen, data, mar, skalen_scores,
                       mar=mar,
                       main = names(group_list)[i],
                       ylim=c(1, 6),
-                      offset = 0,
+                      offset = -0.1,
                       plot=FALSE,
-                      se=T)
+                      se=T,
+                      combined = FALSE)
     }
     
     dev.off()
@@ -1588,18 +1702,35 @@ check_loadings = function(skalen_scores){
 }
 
 
-plot_group_diff = function(skalen, umsetzung, ums_data, mar, group_list, path){
+plot_group_diff = function(plot_data,
+                           skalen,
+                           umsetzung,
+                           ums_data,
+                           mar,
+                           group_list,
+                           path){
+  
+  for(j in group_list){
+    
+    if(!any(j %in% plot_data$B102)) { # wenn von der Gruppe kein Antrag gefunden:
+      
+      return("Gruppen Vergleich nicht möglich in plot_group_diff")
+    }
+  }
+  
   
   tmp = list()
   
   for(i in 1:length(group_list)){
     
-    ums_proz = create_ums_proz(data_skalen_ohne, umsetzung, ums_data,
-                               group_index=get_index_by_group(data, var_name_group = "B102", group_keys = group_list[[i]]))
+    ums_proz = create_ums_proz(data_skalen_ohne,
+                               umsetzung,
+                               ums_data,
+                               group_index=get_index_by_group(plot_data, var_name_group = "B102", group_keys = group_list[[i]]))
     
     skalen_imp = create_skalen_imp(score_type = "scores_mean",
                                    skalen_scores = skalen_scores,
-                                   group_index=get_index_by_group(data, var_name_group = "B102", group_keys = group_list[[i]]))
+                                   group_index=get_index_by_group(plot_data, var_name_group = "B102", group_keys = group_list[[i]]))
     
     
     merged_imp = merge(skalen_imp, ums_proz, by.x = "Name", by.y="Skalen")
@@ -1628,7 +1759,7 @@ plot_group_diff = function(skalen, umsetzung, ums_data, mar, group_list, path){
        xlab="",
        type="n",
        main=paste("Bewertung:", paste(names(group_list), collapse = " - ")),
-       ylim=c(-0.5, 0.5), 
+       # ylim=c(-0.5, 0.5), 
        ylab="Unterschiede Bewertung")
   
   
@@ -1673,7 +1804,8 @@ plot_group_diff = function(skalen, umsetzung, ums_data, mar, group_list, path){
        xlab="",
        pch=20,
        main=  paste("Umsetzung:", paste(names(group_list), collapse = " - ")),
-       ylab = "Unterschied Einschätzung Umsetzung", ylim=c(-0.2, 0.2))
+       # ylim=c(-0.2, 0.2),
+       ylab = "Unterschied Einschätzung Umsetzung")
   
   arrows(x0 = 1:nrow(tmp_Proz), y0 = rep(-1, nrow(tmp_Proz)),
          y1 = 0,
@@ -2030,7 +2162,7 @@ descriptive_anal_plots = function(plot_data, data, type, path, se=F){
             labels=c("Entscheidung", "Vetorecht", "Vetoempfehlung"))
   
   
-  plot_veto(data=data[data$B107 != i,],
+  plot_veto(data=data[data$B107 != Index_einrichtung,],
             var_name=c("Entscheidung.Auf","Vetor.Auf","Vetoem.Auf"),
             main="Aufnahme: Entscheidung und Veto",
             mar=c(12,6,3,3),
@@ -2050,7 +2182,7 @@ descriptive_anal_plots = function(plot_data, data, type, path, se=F){
             labels=c("Entscheidung", "Vetorecht", "Vetoempfehlung"))
   
   
-  plot_veto(data=data[data$B107 != i,],
+  plot_veto(data=data[data$B107 != Index_einrichtung,],
             var_name=c("Entscheidung.Ent","Vetor.Ent","Vetoem.Ent"),
             main="Entlassung: Entscheidung und Veto",
             mar=c(12,6,3,3),
@@ -2420,11 +2552,17 @@ plot_most_important = function(data,
 
 
 
-plot_rel_density = function(data, ums_scores, mar, main, file){
+plot_rel_density = function(plot_data,
+                            ums_scores,
+                            mar,
+                            main,
+                            file,
+                            ylim){
   
-  ums_tmp = create_model_df(ums_scores = ums_scores, score_type = "scores_mean")
+  ums_tmp = create_model_df(ums_scores = ums_scores,
+                            score_type = "scores_mean")
   
-  Halte_scores = get_skalen_scores(data = data,
+  Halte_scores = get_skalen_scores(data = plot_data,
                                    skalen = data_skalen,
                                    skalen_names = "HK.subj.Einrichtung")
   
@@ -2432,7 +2570,8 @@ plot_rel_density = function(data, ums_scores, mar, main, file){
   ums_scores[["HK.subj.Einrichtung"]] = Halte_scores[["HK.subj.Einrichtung"]]
   
   
-  ums_tmp = create_model_df(ums_scores = ums_scores, score_type = "scores_mean")
+  ums_tmp = create_model_df(ums_scores = ums_scores,
+                            score_type = "scores_mean")
   
   ums_df = ums_tmp[[1]]
   
@@ -2440,8 +2579,8 @@ plot_rel_density = function(data, ums_scores, mar, main, file){
   
   ums_df_agg = ums_df
   
-  ums_df_agg$Einrichtung = data$B107
-  ums_df_agg$Gruppe = data$B102
+  ums_df_agg$Einrichtung = plot_data$B107
+  ums_df_agg$Gruppe = plot_data$B102
   
   
   data_slice = ums_df_agg
@@ -2455,7 +2594,7 @@ plot_rel_density = function(data, ums_scores, mar, main, file){
        col="#1b9e77", 
        main="subjektive Haltekraft der Einrichtung",
        xlim=c(1, 6),
-       ylim=c(0, 0.65),
+       ylim=ylim,
        lwd=2,
        xlab="",
        ylab="relative Häufigkeitsdichte", xaxt="n", type="n")

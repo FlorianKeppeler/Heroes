@@ -335,7 +335,6 @@ plot_group_diff(skalen,
 
 
 
-
 plot_most_important(data,
                     skalen_scores,
                     mar=c(12,4,5,3),
