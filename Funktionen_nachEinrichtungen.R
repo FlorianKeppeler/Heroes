@@ -245,7 +245,10 @@ plot_ranked = function(plot_data,
   
   ranked = get_ranking(plot_data, var_name, type=type, yx)
   
-  pdf(file=file, width=14, height = 12, paper = "a4r")
+  jpeg(file=file,
+       width=2000,
+       height = 1200,
+       pointsize = 30)
   
   # jpeg(filename=file, width=1200, height = 730, units = "px", pointsize = 20)
   
@@ -509,7 +512,7 @@ plot_ranked_all = function(plot_data,
               type=type,
               mar=mar,
               main=main,
-              file=paste0(file,"_gesamt.pdf"),
+              file=paste0(file,"_gesamt.jpeg"),
               se=se)
   
   # Alle Mitarbeiter
@@ -520,7 +523,7 @@ plot_ranked_all = function(plot_data,
               mar=mar,
               main=main,
               add = list(data[data$B107 != Index_einrichtung,]),  # alle anderen Einrichtungen
-              file=paste0(file,"_gesamt_Vergleich.pdf"),
+              file=paste0(file,"_gesamt_Vergleich.jpeg"),
               label = c(Einrichtung, "Andere"),
               se=se)
   
@@ -540,7 +543,7 @@ plot_ranked_all = function(plot_data,
   # plot_ranked(plot_data = data[data$B103 == 1,],
   #             var_name = var_name,
   #             yx= yx,
-  #             type=type,
+  #             type=type, 
   #             mar=mar,
   #             main=paste(main, "Mitarbeiterinnen/Mitarbeiter"),
   #             file=paste0(file,"_Geschlecht.pdf"),
@@ -606,7 +609,10 @@ plot_binary = function(data, var_name, main, mar, ylab, file, ranked=FALSE, add 
     
   }
   
-  pdf(file=file, width=14, height = 12, paper = "a4r")
+  jpeg(file=file,
+       width=2000,
+       height = 1200,
+       pointsize = 30)
   
   par(mar=mar)
   
@@ -779,7 +785,10 @@ plot_veto = function(data, var_name, main, mar, ylab, file, ranked=FALSE, labels
     
   }
   
-  pdf(file=file, width=14, height = 12, paper = "a4r")
+  jpeg(file=file,
+       width=2000,
+       height = 1200,
+       pointsize = 30)
   
   par(mar=mar)
   
@@ -855,7 +864,7 @@ plot_binary_all = function(plot_data,
               main=main,
               mar=mar,
               ylab=ylab,
-              file=paste0(file,"_gesamt.pdf"),
+              file=paste0(file,"_gesamt.jpeg"),
               ranked = ranked)
   
   
@@ -864,7 +873,7 @@ plot_binary_all = function(plot_data,
               main=paste(main),
               mar=mar,
               ylab=ylab,
-              file=paste0(file,"_gesamt_Vergleich.pdf"),
+              file=paste0(file,"_gesamt_Vergleich.jpeg"),
               ranked = ranked,
               add = list(data[data$B107 != Index_einrichtung, ]),
               label = c(Einrichtung, "Andere"))
@@ -875,7 +884,7 @@ plot_binary_all = function(plot_data,
   #             main=paste(main, "Mitarbeiterinnen/Mitarbeiter"),
   #             mar=mar,
   #             ylab=ylab,
-  #             file=paste0(file,"_Geschlecht.pdf"),
+  #             file=paste0(file,"_Geschlecht.jpeg"),
   #             ranked = ranked,
   #             add = list(data[data$B103 == 2, ]),
   #             label = c("Mitarbeiterinnen", "Mitarbeiter"))
@@ -886,7 +895,7 @@ plot_binary_all = function(plot_data,
   #             main=paste(main, "nach Berufserfahrung"),
   #             mar=mar,
   #             ylab=ylab,
-  #             file=paste0(file,"_Berufserfahrung.pdf"),
+  #             file=paste0(file,"_Berufserfahrung.jpeg"),
   #             ranked = ranked,
   #             add = list(data[data$B105 == 2, ], data[data$B105 == 3, ]),
   #             label = imp_names[["B105"]][c(1,2,3)])
@@ -1306,10 +1315,12 @@ plot_skalen_imp = function(most_imp,
   
   if(plot){
     
-    pdf(file=file,
-        width=14,
-        height = 12,
-        paper = "a4r")
+    # jpeg(file=file, width=1000, height = 570, pointsize = 20)
+    
+    jpeg(file=file,
+        width = 2000,
+        height = 1200,
+        pointsize = 30)
   }
   
   plot(most_imp[,"mean"],
@@ -1498,7 +1509,10 @@ plot_combined_imp = function(skalen,
     
     # Gemeinsame Darstellung: Skalen_scores und Umsetzung
     
-    pdf(file=paste0(path,"_", names(group_list)[i], ".pdf"), width=14, height = 12, paper = "a4r")
+    jpeg(file=paste0(path,"_", names(group_list)[i], ".jpeg"),
+         width=2000,
+         height = 1200,
+         pointsize = 30)
     
     
     if(combined == TRUE){
@@ -1761,8 +1775,10 @@ plot_group_diff = function(plot_data,
   
   
   
-  pdf(file=paste0(path, "Vergleich_Bewertung_", paste(names(group_list), collapse = "_"), ".pdf"),
-      width=14, height = 12, paper = "a4r")
+  jpeg(file=paste0(path, "Vergleich_Bewertung_", paste(names(group_list), collapse = "_"), ".jpeg"),
+      width=2000,
+      height = 1200,
+      pointsize = 30)
   
   par(mar=mar)
   
@@ -1806,8 +1822,10 @@ plot_group_diff = function(plot_data,
   tmp_Proz = res[order(res[,"Diff.Proz"], decreasing = F),]
   tmp_Proz = tmp_Proz[complete.cases(tmp_Proz),]
   
-  pdf(file=paste0(path, "Vergleich_Umsetzung_", paste(names(group_list), collapse = "_"), ".pdf"),
-      width=14, height = 12, paper = "a4r")
+  jpeg(file=paste0(path, "Vergleich_Umsetzung_", paste(names(group_list), collapse = "_"), ".jpeg"),
+      width=2000,
+      height = 1200,
+      pointsize = 30)
   
   
   par(mar=mar)
@@ -2171,7 +2189,7 @@ descriptive_anal_plots = function(plot_data, data, type, path, se=F){
             main="Aufnahme: Entscheidung und Veto",
             mar=c(12,6,3,3),
             ylab="Prozent der Mitarbeitenden",
-            file=paste0(path,"/Aufnahme_Einrichtung_gesamt.pdf"),
+            file=paste0(path,"/Aufnahme_Einrichtung_gesamt.jpeg"),
             ranked = T,
             labels=c("Entscheidung", "Vetorecht", "Vetoempfehlung"))
   
@@ -2181,7 +2199,7 @@ descriptive_anal_plots = function(plot_data, data, type, path, se=F){
             main="Aufnahme: Entscheidung und Veto",
             mar=c(12,6,3,3),
             ylab="Prozent der Mitarbeitenden",
-            file=paste0(path,"/Aufnahme_Andere_gesamt.pdf"),
+            file=paste0(path,"/Aufnahme_Andere_gesamt.jpeg"),
             ranked = T,
             labels=c("Entscheidung", "Vetorecht", "Vetoempfehlung"))
   
@@ -2191,7 +2209,7 @@ descriptive_anal_plots = function(plot_data, data, type, path, se=F){
             main="Entlassung: Entscheidung und Veto",
             mar=c(12,6,3,3),
             ylab="Prozent der Mitarbeitenden",
-            file=paste0(path,"/Entlassung_gesamt.pdf"),
+            file=paste0(path,"/Entlassung_gesamt.jpeg"),
             ranked = T,
             labels=c("Entscheidung", "Vetorecht", "Vetoempfehlung"))
   
@@ -2201,7 +2219,7 @@ descriptive_anal_plots = function(plot_data, data, type, path, se=F){
             main="Entlassung: Entscheidung und Veto",
             mar=c(12,6,3,3),
             ylab="Prozent der Mitarbeitenden",
-            file=paste0(path,"/Entlassung_Andere_gesamt.pdf"),
+            file=paste0(path,"/Entlassung_Andere_gesamt.jpeg"),
             ranked = T,
             labels=c("Entscheidung", "Vetorecht", "Vetoempfehlung"))
 }
@@ -2322,7 +2340,10 @@ get_item_summary = function(data, file, file.excel, path.plot){
     
     if(length(fit) > 0){
       
-      jpeg(filename = paste0(path.plot, "/Skala_", i, ".jpg"), width=1000, height=570, pointsize = 20)
+      jpeg(filename = paste0(path.plot, "/Skala_", i, ".jpg"),
+           width=2000,
+           height=1200,
+           pointsize = 30)
       
       par(mar=c(10, 5, 3, 3))
       
@@ -2419,7 +2440,10 @@ fit_randomForest = function(data,
   m_names = m_names[order(m_imp, decreasing = T)]
   m_imp = sort(m_imp, decreasing = T)
   
-  pdf(file=file, width=14, height = 12, paper = "a4r")
+  jpeg(file=file,
+       width=2000,
+       height = 1200,
+       pointsize = 30)
   
   par(mar=c(12,4,3,3))
   
@@ -2514,7 +2538,10 @@ plot_most_important = function(data,
   
   
   
-  pdf(file=file, width=14, height = 12, paper = "a4r")
+  jpeg(file=file,
+       width=2000,
+       height = 1200,
+       pointsize = 30)
   
   par(mar=mar, xpd = F)
   
@@ -2600,7 +2627,10 @@ plot_rel_density = function(plot_data,
   data_slice = ums_df_agg
   
   
-  pdf(file=file, width=14, height = 12, paper = "a4r")
+  jpeg(file=file,
+       width=2000,
+       height = 1200, 
+       pointsize = 30)
   
   par(mar=mar)
   

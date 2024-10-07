@@ -88,7 +88,7 @@ for(Einrichtung in Einrichtungen){
                     skalen_scores_andere = skalen_scores_andere,
                     umsetzung = umsetzung,
                     var_name_group= "B102",
-                    mar=c(16, 9, 3,3),
+                    mar=c(11, 9, 3,3),
                     ums_data = ums_data,
                     group_list = group_list,
                     path=paste0(meta_path,"/Grafiken/Wichtigkeit und Umsetzung/Oberskala_Wichtigkeit"), 
@@ -100,7 +100,7 @@ for(Einrichtung in Einrichtungen){
                     skalen_scores_andere = skalen_scores_andere,
                     umsetzung = umsetzung,
                     var_name_group= "B102",
-                    mar=c(16, 9, 3,3),
+                    mar=c(11, 9, 3,3),
                     ums_data = ums_data,
                     group_list = group_list,
                     path=paste0(meta_path,"/Grafiken/Wichtigkeit und Umsetzung/Oberskala_Wichtigkeit_Umsetzung"), 
@@ -114,7 +114,7 @@ for(Einrichtung in Einrichtungen){
                   skalen=skalen2,
                   umsetzung=umsetzung,
                   ums_data=ums_data,
-                  mar=c(16, 6, 3, 3),
+                  mar=c(11, 6, 3, 3),
                   group_list = list("SBBZ" = 2,"HZE" = 3:5),
                   path = paste0(meta_path,"/Grafiken/Wichtigkeit und Umsetzung/Oberskala_"))
   
@@ -123,7 +123,7 @@ for(Einrichtung in Einrichtungen){
                   skalen = skalen2,
                   umsetzung=umsetzung,
                   ums_data=ums_data,
-                  mar=c(16, 6, 3,3),
+                  mar=c(11, 6, 3,3),
                   group_list = list("Leitung" = 1,"Mitarbeitende" = 2:5),
                   path = paste0(meta_path,"/Grafiken/Wichtigkeit und Umsetzung/Oberskala_"))
   
@@ -132,7 +132,7 @@ for(Einrichtung in Einrichtungen){
   #                     skalen_scores,
   #                     mar=c(12,4,5,3),
   #                     main="Wichtigste nach MA",
-  #                     file=paste0(meta_path,"/Grafiken/Wichtigkeit und Umsetzung/Wichtigste_nachMA_Einrichtungen.pdf"),
+  #                     file=paste0(meta_path,"/Grafiken/Wichtigkeit und Umsetzung/Wichtigste_nachMA_Einrichtungen.jpeg"),
   #                     best_var = 0)
   
   
@@ -217,7 +217,7 @@ for(Einrichtung in Einrichtungen){
                     skalen_scores_andere = skalen_scores_andere,
                     umsetzung = umsetzung,
                     var_name_group= "B102",
-                    mar=c(16, 9, 3,3),
+                    mar=c(11, 9, 3,3),
                     ums_data = ums_data,
                     group_list = group_list,
                     path=paste0(meta_path,"/Grafiken/Wichtigkeit und Umsetzung/Wichtigkeit"), 
@@ -229,7 +229,7 @@ for(Einrichtung in Einrichtungen){
                     skalen_scores_andere = skalen_scores_andere,
                     umsetzung = umsetzung,
                     var_name_group= "B102",
-                    mar=c(16, 9, 3,3),
+                    mar=c(11, 9, 3,3),
                     ums_data = ums_data,
                     group_list = group_list,
                     path=paste0(meta_path,"/Grafiken/Wichtigkeit und Umsetzung/Wichtigkeit_Umsetzung"), 
@@ -243,7 +243,7 @@ for(Einrichtung in Einrichtungen){
                   skalen=skalen,
                   umsetzung=umsetzung,
                   ums_data=ums_data,
-                  mar=c(16, 6, 3, 3),
+                  mar=c(11, 6, 3, 3),
                   group_list = list("SBBZ" = 2,"HZE" = 3:5),
                   path = paste0(meta_path,"/Grafiken/Wichtigkeit und Umsetzung/"))
   
@@ -252,7 +252,7 @@ for(Einrichtung in Einrichtungen){
                   skalen = skalen,
                   umsetzung=umsetzung,
                   ums_data=ums_data,
-                  mar=c(16, 6, 3,3),
+                  mar=c(11, 6, 3,3),
                   group_list = list("Leitung" = 1,"Mitarbeitende" = 2:5),
                   path = paste0(meta_path,"/Grafiken/Wichtigkeit und Umsetzung/"))
   
@@ -273,7 +273,7 @@ for(Einrichtung in Einrichtungen){
                    ums_scores=ums_scores,
                    mar=c(11,4,4,3),
                    main = "subjektive Haltekraft der Einrichtung",
-                   file=paste0(meta_path,"/Grafiken/Dichte/Haltekraft_gesamt.pdf"),
+                   file=paste0(meta_path,"/Grafiken/Dichte/Haltekraft_gesamt.jpeg"),
                    ylim=c(0, 0.9))
   
   
