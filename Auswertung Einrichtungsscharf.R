@@ -22,7 +22,8 @@ imp_names[["B107"]]
 Einrichtungen = c("EVA", "Scout am Löwentor Stuttgart", "Mutpol Tuttlingen",
                   "Jugendhilfe Hochdorf", "Stiftung Tragwerk KirchheimTeck", "Stiftung Jugendhilfe aktiv",
                   "Diasporahaus Bietenhausen", "Jugendhilfeverbund Paulinenpflege Winnenden",
-                  "Jugendhilfe Hoffmannhaus Wilhelmsdorf", "Jugendhilfeverbund Kinderheim Rodt")
+                  "Jugendhilfe Hoffmannhaus Wilhelmsdorf", "Jugendhilfeverbund Kinderheim Rodt",
+                  "Ev Jugendhilfe Friedenshort")
 
 
 
